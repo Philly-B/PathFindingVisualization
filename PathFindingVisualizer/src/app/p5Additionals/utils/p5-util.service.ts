@@ -63,22 +63,30 @@ export class P5UtilService {
       for (let col = startForRow; col < settings.N - 1; col++) {
         const centerOfHexagonPx = this.hexToPixel(picture, col, row, pictureShift, settings);
         graph[row][col].center = centerOfHexagonPx;
-        this.drawOneHexagon(picture, centerOfHexagonPx, settings);
+        this.drawOneHexagon(picture, graph[row][col], settings);
       }
     }
   };
 
-  private drawOneHexagon = (picture, centerOfHexagonPx: P5Vector, settings: P5Settings) => {
+  private drawOneHexagon = (picture, hexagon: Hexagon, settings: P5Settings) => {
     const points = [];
     for (let i = 0; i < 6; i++) {
-      points.push(this.hexCorner(picture, centerOfHexagonPx, i, settings));
+      points.push(this.hexCorner(picture, hexagon.center, i, settings));
     }
 
     picture.stroke(ColorMapping.hexagonBorder);
     picture.strokeWeight(settings.hexagonLinesBetweenSizePx);
     picture.beginShape();
     for (let i = 0; i <= points.length; i++) {
-      picture.fill(ColorMapping.hexagonInside);
+      if (hexagon.isStart) {
+        picture.fill(ColorMapping.hexagonInsideStart);
+      } else if (hexagon.isEnd) {
+        picture.fill(ColorMapping.hexagonInsideEnd);
+      } else if (hexagon.isWall) {
+        picture.fill(ColorMapping.hexagonInsideWall);
+      } else {
+        picture.fill(ColorMapping.hexagonInsideEmpty);
+      }
       picture.vertex(points[i % points.length].x, points[i % points.length].y);
     }
     picture.endShape();

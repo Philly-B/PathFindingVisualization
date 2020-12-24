@@ -5,6 +5,10 @@ export class Hexagon {
   row: number;
   column: number;
 
+  isStart = false;
+  isEnd = false;
+  isWall = false;
+
   constructor(center: P5Vector, row: number, column: number) {
     this.center = center;
     this.row = row;

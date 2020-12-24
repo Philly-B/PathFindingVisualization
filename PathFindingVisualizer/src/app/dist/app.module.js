@@ -13,13 +13,21 @@ var store_1 = require("@ngrx/store");
 var app_component_1 = require("./app.component");
 var path_finder_module_1 = require("src/app/path-finder/path-finder.module");
 var graph_reducer_1 = require("./store/graph.reducer");
+var effects_1 = require("@ngrx/effects");
+var graph_effects_1 = require("./store/graph.effects");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
     AppModule = __decorate([
         core_1.NgModule({
             declarations: [app_component_1.AppComponent],
-            imports: [platform_browser_1.BrowserModule, path_finder_module_1.PathFinderModule, store_1.StoreModule.forRoot({ graph: graph_reducer_1.graphReducer })],
+            imports: [
+                platform_browser_1.BrowserModule,
+                path_finder_module_1.PathFinderModule,
+                store_1.StoreModule.forRoot({ graph: graph_reducer_1.graphReducer }),
+                effects_1.EffectsModule.forRoot([]),
+                effects_1.EffectsModule.forFeature([graph_effects_1.GraphEffects]),
+            ],
             providers: [],
             bootstrap: [app_component_1.AppComponent]
         })
