@@ -1,4 +1,4 @@
-import { P5Vector } from "src/app/p5jModels/P5Vector";
+import { P5Vector } from 'src/app/p5Additionals/models/P5Vector';
 
 export class Hexagon {
   center: P5Vector;
