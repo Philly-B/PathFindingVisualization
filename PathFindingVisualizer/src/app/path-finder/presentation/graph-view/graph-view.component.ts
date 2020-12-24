@@ -1,7 +1,11 @@
 import { Component, ElementRef, OnInit, Renderer2 } from "@angular/core";
 import * as p5 from "p5";
 import * as ColorMapping from "src/app/constants/ColorMapping";
+import { P5MouseClickEvent } from "src/app/p5jModels/P5MouseClickEvent";
+import { P5Vector } from "src/app/p5jModels/P5Vector";
 import { Graph } from "../../model/Graph";
+import { Hexagon } from "../../model/Hexagon";
+import { RowColumnPair } from "../../model/RowColumnPair";
 
 @Component({
   selector: "app-graph-view",
@@ -15,17 +19,24 @@ export class GraphViewComponent implements OnInit {
 
   private N: number;
 
-  private graph;
+  private hexGrid: Graph;
 
   constructor(private el: ElementRef, private renderer: Renderer2) {
     this.N = Math.floor(this.canvasSizePx / (this.hexagonSizePx * 1.8));
 
-    this.graph = new Graph();
+    this.hexGrid = new Graph();
     this.initGraph();
   }
 
   initGraph() {
-    this.graph.graph = [this.N][this.N];
+    this.hexGrid.graph = [];
+    for (let row = 0; row < this.N; row++) {
+      const currRow = [];
+      for (let col = 0; col < this.N; col++) {
+        currRow.push(new Hexagon(undefined, row, col));
+      }
+      this.hexGrid.graph.push(currRow);
+    }
   }
 
   ngOnInit(): void {
@@ -33,38 +44,43 @@ export class GraphViewComponent implements OnInit {
   }
 
   private graphDefinition = (picture) => {
+    const pictureShift: P5Vector = {
+      x: this.hexagonSizePx * 1.8,
+      y: this.hexagonSizePx * 3,
+      z: 0,
+    };
+
     picture.setup = () => {
       picture.createCanvas(this.canvasSizePx, this.canvasSizePx);
       picture.angleMode(picture.RADIANS);
     };
     picture.draw = () => {
       picture.background(ColorMapping.background);
-      this.drawHexagons(picture);
+      this.drawHexagons(picture, pictureShift);
+    };
+
+    picture.mouseClicked = (event: P5MouseClickEvent) => {
+      console.log(this.pixelToHex(picture, event.clientX, event.clientY));
     };
   };
 
-  private drawHexagons = (picture) => {
-    const pictureShift = {
-      x: this.hexagonSizePx * 1.8,
-      y: this.hexagonSizePx * 3,
-      z: 0,
-    };
-
+  private drawHexagons = (picture, pictureShift: P5Vector): void => {
     for (let row = 0; row < this.N; row++) {
       const startForRow = row % 2 === 1 ? 1 : 0;
       for (let col = startForRow; col < this.N - 1; col++) {
-        this.drawOneHexagon(
+        const centerOfHexagonPx = this.hexToPixel(
           picture,
-          this.hex_to_pixel(picture, col, row, pictureShift)
+          col,
+          row,
+          pictureShift
         );
+        this.hexGrid.graph[row][col].center = centerOfHexagonPx;
+        this.drawOneHexagon(picture, centerOfHexagonPx);
       }
     }
   };
 
-  private drawOneHexagon = (
-    picture,
-    centerOfHexagonPx: { x: number; y: number }
-  ) => {
+  private drawOneHexagon = (picture, centerOfHexagonPx: P5Vector) => {
     const points = [];
     for (let i = 0; i < 6; i++) {
       points.push(this.hexCorner(picture, centerOfHexagonPx, i));
@@ -80,8 +96,15 @@ export class GraphViewComponent implements OnInit {
     picture.endShape();
   };
 
-  private hexCorner = (picture: any, center, i) => {
-    const angleDeg = 60 * i + 30;
+  /**
+   * Index of points is clockwise and starts with 0 at the bottom right corner of a hexagon
+   */
+  private hexCorner = (
+    picture: any,
+    center: P5Vector,
+    indexOfPoint: number
+  ) => {
+    const angleDeg = 60 * indexOfPoint + 30;
     const angleRad = (picture.PI / 180) * angleDeg;
     return picture.createVector(
       center.x + this.hexagonSizePx * picture.cos(angleRad),
@@ -89,18 +112,30 @@ export class GraphViewComponent implements OnInit {
     );
   };
 
-  private pixel_to_hex(picture, x, y) {
-    const q = ((x * picture.sqrt(3)) / 3 - y / 3) / this.hexagonSizePx;
-    const r = (-x / 3 + (picture.sqrt(3) / 3) * y) / this.hexagonSizePx;
-    return picture.createVector(picture.round(q), picture.round(r));
+  private pixelToHex(picture, x: number, y: number): Hexagon {
+    for (let row = 0; row < this.N; row++) {
+      const startForRow = row % 2 === 1 ? 1 : 0;
+      for (let col = startForRow; col < this.N - 1; col++) {
+        const currHex = this.hexGrid.graph[row][col];
+        const dist = picture.sqrt(
+          picture.pow(x - currHex.center.x, 2) +
+            picture.pow(y - currHex.center.y, 2)
+        );
+        if (dist <= this.hexToPixel) {
+          return currHex;
+        }
+      }
+    }
+
+    return undefined;
   }
 
-  private hex_to_pixel(
+  private hexToPixel(
     picture: any,
     col: number,
     row: number,
-    pictureShift: { x: number; y: number; z: number }
-  ): { x: number; y: number; z: number } {
+    pictureShift: P5Vector
+  ): P5Vector {
     const isUnevenRow = row % 2 === 1;
     const x =
       (picture.sqrt(3) * col + (picture.sqrt(3) / 2) * (isUnevenRow ? 0 : 1)) *

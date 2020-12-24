@@ -1,8 +1,12 @@
+import { P5Vector } from "src/app/p5jModels/P5Vector";
+
 export class Hexagon {
+  center: P5Vector;
   row: number;
   column: number;
 
-  constructor(row: number, column: number) {
+  constructor(center: P5Vector, row: number, column: number) {
+    this.center = center;
     this.row = row;
     this.column = column;
   }
