@@ -9,8 +9,10 @@ exports.__esModule = true;
 exports.GraphUtilService = void 0;
 var core_1 = require("@angular/core");
 var Hexagon_1 = require("../path-finder/model/Hexagon");
+var RowColumnPair_1 = require("../path-finder/model/RowColumnPair");
 var GraphUtilService = /** @class */ (function () {
     function GraphUtilService() {
+        var _this = this;
         this.initGraph = function (N) {
             var graph = [];
             for (var row = 0; row < N; row++) {
@@ -21,6 +23,25 @@ var GraphUtilService = /** @class */ (function () {
                 graph.push(currRow);
             }
             return graph;
+        };
+        this.getAllWalls = function (graph) {
+            var walls = [];
+            _this.doSomethingForEveryHex(graph, function (hexagon) { return walls.push(new RowColumnPair_1.RowColumnPair(hexagon.row, hexagon.column)); }, function (hexagon) { return hexagon.isWall; });
+            return walls;
+        };
+        this.setFieldOfHexagon = function (graph, fieldName, newValue) {
+            _this.doSomethingForEveryHex(graph, function (hexagon) { return (hexagon[fieldName] = newValue); });
+        };
+        this.doSomethingForEveryHex = function (graph, hexagonConsumer, hexagonFilter) {
+            for (var _i = 0, graph_1 = graph; _i < graph_1.length; _i++) {
+                var hexRow = graph_1[_i];
+                for (var _a = 0, hexRow_1 = hexRow; _a < hexRow_1.length; _a++) {
+                    var hexagon = hexRow_1[_a];
+                    if (hexagonFilter === undefined || hexagonFilter(hexagon)) {
+                        hexagonConsumer(hexagon);
+                    }
+                }
+            }
         };
     }
     GraphUtilService = __decorate([

@@ -53,20 +53,31 @@ var P5UtilService = /** @class */ (function () {
                 for (var col = startForRow; col < settings.N - 1; col++) {
                     var centerOfHexagonPx = _this.hexToPixel(picture, col, row, pictureShift, settings);
                     graph[row][col].center = centerOfHexagonPx;
-                    _this.drawOneHexagon(picture, centerOfHexagonPx, settings);
+                    _this.drawOneHexagon(picture, graph[row][col], settings);
                 }
             }
         };
-        this.drawOneHexagon = function (picture, centerOfHexagonPx, settings) {
+        this.drawOneHexagon = function (picture, hexagon, settings) {
             var points = [];
             for (var i = 0; i < 6; i++) {
-                points.push(_this.hexCorner(picture, centerOfHexagonPx, i, settings));
+                points.push(_this.hexCorner(picture, hexagon.center, i, settings));
             }
             picture.stroke(ColorMapping.hexagonBorder);
             picture.strokeWeight(settings.hexagonLinesBetweenSizePx);
             picture.beginShape();
             for (var i = 0; i <= points.length; i++) {
-                picture.fill(ColorMapping.hexagonInside);
+                if (hexagon.isStart) {
+                    picture.fill(ColorMapping.hexagonInsideStart);
+                }
+                else if (hexagon.isEnd) {
+                    picture.fill(ColorMapping.hexagonInsideEnd);
+                }
+                else if (hexagon.isWall) {
+                    picture.fill(ColorMapping.hexagonInsideWall);
+                }
+                else {
+                    picture.fill(ColorMapping.hexagonInsideEmpty);
+                }
                 picture.vertex(points[i % points.length].x, points[i % points.length].y);
             }
             picture.endShape();
