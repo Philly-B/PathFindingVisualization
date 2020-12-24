@@ -60,7 +60,14 @@ export class GraphViewComponent implements OnInit {
     };
 
     picture.mouseClicked = (event: P5MouseClickEvent) => {
-      console.log(this.pixelToHex(picture, event.clientX, event.clientY));
+      const hexagonClicked = this.pixelToHex(
+        picture,
+        event.layerX,
+        event.layerY
+      );
+      if (hexagonClicked === undefined) {
+        return;
+      }
     };
   };
 
@@ -121,7 +128,7 @@ export class GraphViewComponent implements OnInit {
           picture.pow(x - currHex.center.x, 2) +
             picture.pow(y - currHex.center.y, 2)
         );
-        if (dist <= this.hexToPixel) {
+        if (dist <= this.hexagonSizePx) {
           return currHex;
         }
       }

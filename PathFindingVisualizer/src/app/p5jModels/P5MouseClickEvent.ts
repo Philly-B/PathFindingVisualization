@@ -1,6 +1,4 @@
 export class P5MouseClickEvent {
-  screenX: number;
-  screenY: number;
-  clientX: number;
-  clientY: number;
+  layerX: number;
+  layerY: number;
 }
