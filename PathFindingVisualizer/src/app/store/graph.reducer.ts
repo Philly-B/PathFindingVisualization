@@ -28,7 +28,7 @@ export const initialState: GraphState = {
   endPosition: undefined,
   walls: [],
   graph: undefined,
-  graphSize: 25,
+  graphSize: 15,
 };
 
 const graphReducerInternal = createReducer(

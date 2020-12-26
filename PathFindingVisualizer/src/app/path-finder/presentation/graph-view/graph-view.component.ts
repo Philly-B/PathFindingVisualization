@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
-import { ofType } from '@ngrx/effects';
+import { Actions, ofType } from '@ngrx/effects';
 import { ActionsSubject, Store } from '@ngrx/store';
 import * as p5 from 'p5';
 import { Subscription } from 'rxjs';
@@ -10,6 +10,7 @@ import {
   FINALIZE_SET_END,
   FINALIZE_SET_START,
   FINALIZE_SET_WALLS,
+  GraphActionsTypes,
   INIT_MODIFY_WALLS,
   INIT_SET_END,
   INIT_SET_START,
@@ -17,19 +18,25 @@ import {
   setEnd,
   setNewGraph,
   setStart,
+  SET_NEW_GRAPH,
 } from 'src/app/store/graph.actions';
 import { GraphState } from 'src/app/store/graph.reducer';
+import { selectGraphSize } from 'src/app/store/graph.selectors';
 import { VisualizedGraph } from '../../visualisation-model/VisualizedGraph';
 import { Hexagon } from '../../visualisation-model/Hexagon';
 import { RowColumnPair } from '../../visualisation-model/RowColumnPair';
 import { MOUSE_DRAG_WALL_TIMEOUT_MS } from 'src/app/constants/GeneralConstants';
 import { Graph } from 'src/app/model/Graph';
+import { GraphCellConstraint } from 'src/app/model/GraphCell';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
   styleUrls: ['./graph-view.component.scss'],
 })
 export class GraphViewComponent implements OnInit, OnDestroy {
+  private hexagonSizePx = 15;
+  private canvasSizePx = 450;
+
   private p5Settings: P5Settings;
   private hexGrid: VisualizedGraph;
 
@@ -44,22 +51,18 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     private p5UtilService: P5UtilService,
     private graphUtilService: GraphUtilService,
     private store: Store<{ graph: GraphState }>,
-    private actions: ActionsSubject
+    private actions: Actions<GraphActionsTypes>
   ) {
-    const hexagonSizePx = 15;
-    const canvasSizePx = 450;
+    this.hexGrid = new VisualizedGraph();
     this.p5Settings = {
-      N: Math.floor(canvasSizePx / (hexagonSizePx * 1.8)),
-      canvasSizePx,
-      hexagonSizePx,
+      N: 10,
+      canvasSizePx: this.canvasSizePx,
+      hexagonSizePx: this.hexagonSizePx,
       hexagonLinesBetweenSizePx: 3,
     };
-
-    this.hexGrid = new VisualizedGraph();
-    this.hexGrid.graph = this.graphUtilService.initVisualisationGraph(this.p5Settings.N);
-
-    const graph = new Graph(this.graphUtilService.initGraph(this.p5Settings.N));
-    store.dispatch(setNewGraph({ graph }));
+    const graphDefinition = (picture) =>
+      this.p5UtilService.graphDefinition(picture, this.hexGrid, this.p5Settings, this.handleHexagonClickEvent);
+    const p5Graph = new p5(graphDefinition, this.el.nativeElement);
 
     this.subscriptions.add(
       actions.pipe(ofType(INIT_SET_START)).subscribe((a) => (this.setNextClickedHexagonToStart = true))
@@ -79,16 +82,39 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       actions.pipe(ofType(FINALIZE_SET_WALLS)).subscribe((a) => (this.isModifyWallsEnabled = false))
     );
+
+    this.subscriptions.add(actions.pipe(ofType(SET_NEW_GRAPH)).subscribe((a) => this.initVisualisationGraph(a.graph)));
   }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
   ngOnInit(): void {
-    const graphDefinition = (picture) =>
-      this.p5UtilService.graphDefinition(picture, this.hexGrid.graph, this.p5Settings, this.handleHexagonClickEvent);
-    const graph = new p5(graphDefinition, this.el.nativeElement);
+    this.subscriptions.add(
+      this.store.select(selectGraphSize).subscribe((graphSize) => this.initVisualisationGraphWithNewSize(graphSize))
+    );
   }
+
+  private initVisualisationGraphWithNewSize = (graphSize: number): void => {
+    this.p5Settings.N = graphSize;
+
+    this.initVisualisationGraph();
+  };
+
+  private initVisualisationGraph = (graph?: Graph): void => {
+    this.hexGrid.graph = this.graphUtilService.initVisualisationGraph(this.p5Settings.N);
+
+    if (graph) {
+      for (let row = 0; row < graph.grid.length; row++) {
+        for (let col = 0; col < graph.grid[row].length; col++) {
+          const currentCell = graph.grid[row][col];
+          this.hexGrid.graph[row][col].isStart = currentCell.graphCellConstraint === GraphCellConstraint.START;
+          this.hexGrid.graph[row][col].isEnd = currentCell.graphCellConstraint === GraphCellConstraint.END;
+          this.hexGrid.graph[row][col].isWall = currentCell.graphCellConstraint === GraphCellConstraint.WALL;
+        }
+      }
+    }
+  };
 
   private handleHexagonClickEvent = (hexagonClicked: Hexagon): void => {
     if (this.setNextClickedHexagonToStart) {

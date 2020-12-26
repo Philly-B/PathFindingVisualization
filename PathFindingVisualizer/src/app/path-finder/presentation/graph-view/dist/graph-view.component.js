@@ -12,10 +12,11 @@ var effects_1 = require("@ngrx/effects");
 var p5 = require("p5");
 var rxjs_1 = require("rxjs");
 var graph_actions_1 = require("src/app/store/graph.actions");
+var graph_selectors_1 = require("src/app/store/graph.selectors");
 var VisualizedGraph_1 = require("../../visualisation-model/VisualizedGraph");
 var RowColumnPair_1 = require("../../visualisation-model/RowColumnPair");
 var GeneralConstants_1 = require("src/app/constants/GeneralConstants");
-var Graph_1 = require("src/app/model/Graph");
+var GraphCell_1 = require("src/app/model/GraphCell");
 var GraphViewComponent = /** @class */ (function () {
     function GraphViewComponent(el, p5UtilService, graphUtilService, store, actions) {
         var _this = this;
@@ -24,10 +25,29 @@ var GraphViewComponent = /** @class */ (function () {
         this.graphUtilService = graphUtilService;
         this.store = store;
         this.actions = actions;
+        this.hexagonSizePx = 15;
+        this.canvasSizePx = 450;
         this.subscriptions = new rxjs_1.Subscription();
         this.setNextClickedHexagonToStart = false;
         this.setNextClickedHexagonToEnd = false;
         this.isModifyWallsEnabled = false;
+        this.initVisualisationGraphWithNewSize = function (graphSize) {
+            _this.p5Settings.N = graphSize;
+            _this.initVisualisationGraph();
+        };
+        this.initVisualisationGraph = function (graph) {
+            _this.hexGrid.graph = _this.graphUtilService.initVisualisationGraph(_this.p5Settings.N);
+            if (graph) {
+                for (var row = 0; row < graph.grid.length; row++) {
+                    for (var col = 0; col < graph.grid[row].length; col++) {
+                        var currentCell = graph.grid[row][col];
+                        _this.hexGrid.graph[row][col].isStart = currentCell.graphCellConstraint === GraphCell_1.GraphCellConstraint.START;
+                        _this.hexGrid.graph[row][col].isEnd = currentCell.graphCellConstraint === GraphCell_1.GraphCellConstraint.END;
+                        _this.hexGrid.graph[row][col].isWall = currentCell.graphCellConstraint === GraphCell_1.GraphCellConstraint.WALL;
+                    }
+                }
+            }
+        };
         this.handleHexagonClickEvent = function (hexagonClicked) {
             if (_this.setNextClickedHexagonToStart) {
                 _this.graphUtilService.setFieldOfHexagon(_this.hexGrid.graph, 'isStart', false);
@@ -55,34 +75,31 @@ var GraphViewComponent = /** @class */ (function () {
                 _this.store.dispatch(graph_actions_1.modifyWalls({ walls: allWalls }));
             }
         };
-        var hexagonSizePx = 15;
-        var canvasSizePx = 450;
+        this.hexGrid = new VisualizedGraph_1.VisualizedGraph();
         this.p5Settings = {
-            N: Math.floor(canvasSizePx / (hexagonSizePx * 1.8)),
-            canvasSizePx: canvasSizePx,
-            hexagonSizePx: hexagonSizePx,
+            N: 10,
+            canvasSizePx: this.canvasSizePx,
+            hexagonSizePx: this.hexagonSizePx,
             hexagonLinesBetweenSizePx: 3
         };
-        this.hexGrid = new VisualizedGraph_1.VisualizedGraph();
-        this.hexGrid.graph = this.graphUtilService.initVisualisationGraph(this.p5Settings.N);
-        var graph = new Graph_1.Graph(this.graphUtilService.initGraph(this.p5Settings.N));
-        store.dispatch(graph_actions_1.setNewGraph({ graph: graph }));
+        var graphDefinition = function (picture) {
+            return _this.p5UtilService.graphDefinition(picture, _this.hexGrid, _this.p5Settings, _this.handleHexagonClickEvent);
+        };
+        var p5Graph = new p5(graphDefinition, this.el.nativeElement);
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.INIT_SET_START)).subscribe(function (a) { return (_this.setNextClickedHexagonToStart = true); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.FINALIZE_SET_START)).subscribe(function (a) { return (_this.setNextClickedHexagonToStart = false); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.INIT_SET_END)).subscribe(function (a) { return (_this.setNextClickedHexagonToEnd = true); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.FINALIZE_SET_END)).subscribe(function (a) { return (_this.setNextClickedHexagonToEnd = false); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.INIT_MODIFY_WALLS)).subscribe(function (a) { return (_this.isModifyWallsEnabled = true); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.FINALIZE_SET_WALLS)).subscribe(function (a) { return (_this.isModifyWallsEnabled = false); }));
+        this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.SET_NEW_GRAPH)).subscribe(function (a) { return _this.initVisualisationGraph(a.graph); }));
     }
     GraphViewComponent.prototype.ngOnDestroy = function () {
         this.subscriptions.unsubscribe();
     };
     GraphViewComponent.prototype.ngOnInit = function () {
         var _this = this;
-        var graphDefinition = function (picture) {
-            return _this.p5UtilService.graphDefinition(picture, _this.hexGrid.graph, _this.p5Settings, _this.handleHexagonClickEvent);
-        };
-        var graph = new p5(graphDefinition, this.el.nativeElement);
+        this.subscriptions.add(this.store.select(graph_selectors_1.selectGraphSize).subscribe(function (graphSize) { return _this.initVisualisationGraphWithNewSize(graphSize); }));
     };
     GraphViewComponent = __decorate([
         core_1.Component({

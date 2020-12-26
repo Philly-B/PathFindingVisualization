@@ -24,13 +24,13 @@ var P5UtilService = /** @class */ (function () {
             };
             picture.draw = function () {
                 picture.background(ColorMapping.background);
-                _this.drawHexagons(picture, graph, pictureShift, settings);
+                _this.drawHexagons(picture, graph.graph, pictureShift, settings);
             };
             picture.mouseClicked = function () {
-                _this.handleMouseEvent(graph, settings, hexagonClickedCallback, picture);
+                _this.handleMouseEvent(graph.graph, settings, hexagonClickedCallback, picture);
             };
             picture.mouseDragged = function () {
-                _this.handleMouseEvent(graph, settings, hexagonClickedCallback, picture);
+                _this.handleMouseEvent(graph.graph, settings, hexagonClickedCallback, picture);
             };
         };
         this.pixelToHex = function (graph, picture, x, y, settings) {

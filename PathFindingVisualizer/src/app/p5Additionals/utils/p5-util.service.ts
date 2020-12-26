@@ -4,6 +4,7 @@ import { P5Vector } from '../models/P5Vector';
 
 import * as ColorMapping from 'src/app/constants/ColorMapping';
 import { P5Settings } from '../models/P5Settings';
+import { VisualizedGraph } from 'src/app/path-finder/visualisation-model/VisualizedGraph';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ export class P5UtilService {
 
   graphDefinition = (
     picture,
-    graph: Hexagon[][],
+    graph: VisualizedGraph,
     settings: P5Settings,
     hexagonClickedCallback: (hexagonClicked) => void
   ) => {
@@ -29,14 +30,14 @@ export class P5UtilService {
     };
     picture.draw = () => {
       picture.background(ColorMapping.background);
-      this.drawHexagons(picture, graph, pictureShift, settings);
+      this.drawHexagons(picture, graph.graph, pictureShift, settings);
     };
 
     picture.mouseClicked = () => {
-      this.handleMouseEvent(graph, settings, hexagonClickedCallback, picture);
+      this.handleMouseEvent(graph.graph, settings, hexagonClickedCallback, picture);
     };
     picture.mouseDragged = () => {
-      this.handleMouseEvent(graph, settings, hexagonClickedCallback, picture);
+      this.handleMouseEvent(graph.graph, settings, hexagonClickedCallback, picture);
     };
   };
 
