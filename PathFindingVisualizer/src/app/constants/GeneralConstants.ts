@@ -1,0 +1,1 @@
+export const MOUSE_DRAG_WALL_TIMEOUT_MS = 150;

@@ -21,6 +21,7 @@ import { GraphState } from 'src/app/store/graph.reducer';
 import { VisualizedGraph } from '../../visualisation-model/VisualizedGraph';
 import { Hexagon } from '../../visualisation-model/Hexagon';
 import { RowColumnPair } from '../../visualisation-model/RowColumnPair';
+import { MOUSE_DRAG_WALL_TIMEOUT_MS } from 'src/app/constants/GeneralConstants';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
@@ -98,9 +99,13 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       hexagonClicked.isWall = false;
       this.store.dispatch(setEnd({ endPosition: new RowColumnPair(hexagonClicked.row, hexagonClicked.column) }));
     } else if (this.isModifyWallsEnabled) {
+      if (Date.now() - hexagonClicked.lastChange < MOUSE_DRAG_WALL_TIMEOUT_MS) {
+        return;
+      }
+      hexagonClicked.lastChange = Date.now();
+      hexagonClicked.isWall = !hexagonClicked.isWall;
       hexagonClicked.isStart = false;
       hexagonClicked.isEnd = false;
-      hexagonClicked.isWall = true;
       const allWalls = this.graphUtilService.getAllWalls(this.hexGrid.graph);
       this.store.dispatch(modifyWalls({ walls: allWalls }));
     }

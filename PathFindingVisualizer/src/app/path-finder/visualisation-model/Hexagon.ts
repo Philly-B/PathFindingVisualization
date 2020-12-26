@@ -9,6 +9,8 @@ export class Hexagon {
   isEnd = false;
   isWall = false;
 
+  lastChange: number;
+
   constructor(center: P5Vector, row: number, column: number) {
     this.center = center;
     this.row = row;

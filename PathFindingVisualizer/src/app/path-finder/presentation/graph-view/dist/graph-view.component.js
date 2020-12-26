@@ -14,6 +14,7 @@ var rxjs_1 = require("rxjs");
 var graph_actions_1 = require("src/app/store/graph.actions");
 var VisualizedGraph_1 = require("../../visualisation-model/VisualizedGraph");
 var RowColumnPair_1 = require("../../visualisation-model/RowColumnPair");
+var GeneralConstants_1 = require("src/app/constants/GeneralConstants");
 var GraphViewComponent = /** @class */ (function () {
     function GraphViewComponent(el, p5UtilService, graphUtilService, store, actions) {
         var _this = this;
@@ -42,9 +43,13 @@ var GraphViewComponent = /** @class */ (function () {
                 _this.store.dispatch(graph_actions_1.setEnd({ endPosition: new RowColumnPair_1.RowColumnPair(hexagonClicked.row, hexagonClicked.column) }));
             }
             else if (_this.isModifyWallsEnabled) {
+                if (Date.now() - hexagonClicked.lastChange < GeneralConstants_1.MOUSE_DRAG_WALL_TIMEOUT_MS) {
+                    return;
+                }
+                hexagonClicked.lastChange = Date.now();
+                hexagonClicked.isWall = !hexagonClicked.isWall;
                 hexagonClicked.isStart = false;
                 hexagonClicked.isEnd = false;
-                hexagonClicked.isWall = true;
                 var allWalls = _this.graphUtilService.getAllWalls(_this.hexGrid.graph);
                 _this.store.dispatch(graph_actions_1.modifyWalls({ walls: allWalls }));
             }
