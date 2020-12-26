@@ -15,6 +15,7 @@ import {
   INIT_SET_START,
   modifyWalls,
   setEnd,
+  setNewGraph,
   setStart,
 } from 'src/app/store/graph.actions';
 import { GraphState } from 'src/app/store/graph.reducer';
@@ -22,6 +23,7 @@ import { VisualizedGraph } from '../../visualisation-model/VisualizedGraph';
 import { Hexagon } from '../../visualisation-model/Hexagon';
 import { RowColumnPair } from '../../visualisation-model/RowColumnPair';
 import { MOUSE_DRAG_WALL_TIMEOUT_MS } from 'src/app/constants/GeneralConstants';
+import { Graph } from 'src/app/model/Graph';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
@@ -55,6 +57,9 @@ export class GraphViewComponent implements OnInit, OnDestroy {
 
     this.hexGrid = new VisualizedGraph();
     this.hexGrid.graph = this.graphUtilService.initVisualisationGraph(this.p5Settings.N);
+
+    const graph = new Graph(this.graphUtilService.initGraph(this.p5Settings.N));
+    store.dispatch(setNewGraph({ graph }));
 
     this.subscriptions.add(
       actions.pipe(ofType(INIT_SET_START)).subscribe((a) => (this.setNextClickedHexagonToStart = true))
