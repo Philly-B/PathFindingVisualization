@@ -26,9 +26,8 @@ var P5UtilService = /** @class */ (function () {
                 picture.background(ColorMapping.background);
                 _this.drawHexagons(picture, graph, pictureShift, settings);
             };
-            picture.mousePressed = function (event) {
-                console.log(event);
-                var hexagonClicked = _this.pixelToHex(graph, picture, event.layerX, event.layerY, settings);
+            picture.mouseClicked = function () {
+                var hexagonClicked = _this.pixelToHex(graph, picture, picture.mouseX, picture.mouseY, settings);
                 if (hexagonClicked === undefined) {
                     return false;
                 }

@@ -4,7 +4,6 @@ import { P5Vector } from '../models/P5Vector';
 
 import * as ColorMapping from 'src/app/constants/ColorMapping';
 import { P5Settings } from '../models/P5Settings';
-import { P5MouseClickEvent } from '../models/P5MouseClickEvent';
 
 @Injectable({
   providedIn: 'root',
@@ -33,9 +32,8 @@ export class P5UtilService {
       this.drawHexagons(picture, graph, pictureShift, settings);
     };
 
-    picture.mousePressed = (event: P5MouseClickEvent) => {
-      console.log(event);
-      const hexagonClicked = this.pixelToHex(graph, picture, event.layerX, event.layerY, settings);
+    picture.mouseClicked = () => {
+      const hexagonClicked = this.pixelToHex(graph, picture, picture.mouseX, picture.mouseY, settings);
       if (hexagonClicked === undefined) {
         return false;
       }
