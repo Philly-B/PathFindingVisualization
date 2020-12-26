@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Hexagon } from '../path-finder/model/Hexagon';
-import { RowColumnPair } from '../path-finder/model/RowColumnPair';
+import { GraphCell } from '../model/GraphCell';
+import { Hexagon } from '../path-finder/visualisation-model/Hexagon';
+import { RowColumnPair } from '../path-finder/visualisation-model/RowColumnPair';
 
 @Injectable({
   providedIn: 'root',
@@ -8,17 +9,26 @@ import { RowColumnPair } from '../path-finder/model/RowColumnPair';
 export class GraphUtilService {
   constructor() {}
 
-  initGraph = (N: number): Hexagon[][] => {
+  initGraph = (N: number): GraphCell[][] => {
+    return this.genericCreateGraph(N, (row, col) => new GraphCell(row, col));
+  };
+
+  initVisualisationGraph = (N: number): Hexagon[][] => {
+    return this.genericCreateGraph(N, (row, col) => new Hexagon(undefined, row, col));
+  };
+
+  private genericCreateGraph<T>(N: number, objectCreator: (row: number, column: number) => T): T[][] {
     const graph = [];
     for (let row = 0; row < N; row++) {
       const currRow = [];
-      for (let col = 0; col < N; col++) {
-        currRow.push(new Hexagon(undefined, row, col));
+      const sizeOfNForRow = row % 2 === 1 ? N - 1 : N;
+      for (let col = 0; col < sizeOfNForRow; col++) {
+        currRow.push(objectCreator(row, col));
       }
       graph.push(currRow);
     }
     return graph;
-  };
+  }
 
   getAllWalls = (graph: Hexagon[][]): RowColumnPair[] => {
     const walls = [];

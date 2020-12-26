@@ -1,0 +1,5 @@
+<div class="form-group">
+  <label for="formControlRange">Grid size: {{value}} square</label>
+  <input type="range" min="10" max="100" step="10" value="{{defaultValue}}" class="custom-range"
+    (change)="graphSizeChanged($event)">
+</div>

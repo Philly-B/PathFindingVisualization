@@ -12,8 +12,8 @@ var effects_1 = require("@ngrx/effects");
 var p5 = require("p5");
 var rxjs_1 = require("rxjs");
 var graph_actions_1 = require("src/app/store/graph.actions");
-var VisualizedGraph_1 = require("../../model/VisualizedGraph");
-var RowColumnPair_1 = require("../../model/RowColumnPair");
+var VisualizedGraph_1 = require("../../visualisation-model/VisualizedGraph");
+var RowColumnPair_1 = require("../../visualisation-model/RowColumnPair");
 var GraphViewComponent = /** @class */ (function () {
     function GraphViewComponent(el, p5UtilService, graphUtilService, store, actions) {
         var _this = this;
@@ -58,7 +58,7 @@ var GraphViewComponent = /** @class */ (function () {
             hexagonLinesBetweenSizePx: 3
         };
         this.hexGrid = new VisualizedGraph_1.VisualizedGraph();
-        this.hexGrid.graph = this.graphUtilService.initGraph(this.p5Settings.N);
+        this.hexGrid.graph = this.graphUtilService.initVisualisationGraph(this.p5Settings.N);
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.INIT_SET_START)).subscribe(function (a) { return (_this.setNextClickedHexagonToStart = true); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.FINALIZE_SET_START)).subscribe(function (a) { return (_this.setNextClickedHexagonToStart = false); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.INIT_SET_END)).subscribe(function (a) { return (_this.setNextClickedHexagonToEnd = true); }));

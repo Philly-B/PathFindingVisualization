@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Hexagon } from 'src/app/path-finder/model/Hexagon';
+import { Hexagon } from 'src/app/path-finder/visualisation-model/Hexagon';
 import { P5Vector } from '../models/P5Vector';
 
 import * as ColorMapping from 'src/app/constants/ColorMapping';

@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { Graph } from '../model/Graph';
-import { RowColumnPair } from '../path-finder/model/RowColumnPair';
+import { RowColumnPair } from '../path-finder/visualisation-model/RowColumnPair';
 import {
   modifyWalls,
   setEnd,
@@ -11,6 +11,8 @@ import {
   finalizeModifyWalls,
   finalizeSetStart,
   finalizeSetEnd,
+  modifyGridSize,
+  setNewGraph,
 } from './graph.actions';
 
 export class GraphState {
@@ -18,6 +20,7 @@ export class GraphState {
   endPosition: RowColumnPair;
   walls: RowColumnPair[];
   graph: Graph;
+  graphSize: number;
 }
 
 export const initialState: GraphState = {
@@ -25,6 +28,7 @@ export const initialState: GraphState = {
   endPosition: undefined,
   walls: [],
   graph: undefined,
+  graphSize: 25,
 };
 
 const graphReducerInternal = createReducer(
@@ -39,7 +43,10 @@ const graphReducerInternal = createReducer(
 
   on(initiateSetEnd, (state) => ({ ...state })),
   on(setEnd, (state, { endPosition }) => ({ ...state, endPosition })),
-  on(finalizeSetEnd, (state) => ({ ...state }))
+  on(finalizeSetEnd, (state) => ({ ...state })),
+
+  on(modifyGridSize, (state, { newGridSize }) => ({ ...state, graphSize: newGridSize })),
+  on(setNewGraph, (state, { graph }) => ({ ...state, graph }))
 );
 
 export function graphReducer(state, action) {

@@ -24,7 +24,8 @@ exports.initialState = {
     startPosition: undefined,
     endPosition: undefined,
     walls: [],
-    graph: undefined
+    graph: undefined,
+    graphSize: 25
 };
 var graphReducerInternal = store_1.createReducer(exports.initialState, store_1.on(graph_actions_1.initiateSetStart, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.setStart, function (state, _a) {
     var startPosition = _a.startPosition;
@@ -35,7 +36,13 @@ var graphReducerInternal = store_1.createReducer(exports.initialState, store_1.o
 }), store_1.on(graph_actions_1.finalizeModifyWalls, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.initiateSetEnd, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.setEnd, function (state, _a) {
     var endPosition = _a.endPosition;
     return (__assign(__assign({}, state), { endPosition: endPosition }));
-}), store_1.on(graph_actions_1.finalizeSetEnd, function (state) { return (__assign({}, state)); }));
+}), store_1.on(graph_actions_1.finalizeSetEnd, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.modifyGridSize, function (state, _a) {
+    var newGridSize = _a.newGridSize;
+    return (__assign(__assign({}, state), { graphSize: newGridSize }));
+}), store_1.on(graph_actions_1.setNewGraph, function (state, _a) {
+    var graph = _a.graph;
+    return (__assign(__assign({}, state), { graph: graph }));
+}));
 function graphReducer(state, action) {
     return graphReducerInternal(state, action);
 }

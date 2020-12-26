@@ -2,7 +2,10 @@
 exports.__esModule = true;
 exports.GraphCellConstraint = exports.GraphCell = void 0;
 var GraphCell = /** @class */ (function () {
-    function GraphCell() {
+    function GraphCell(row, column) {
+        this.row = row;
+        this.column = column;
+        this.graphCellConstraint = GraphCellConstraint.PASSABLE;
     }
     return GraphCell;
 }());

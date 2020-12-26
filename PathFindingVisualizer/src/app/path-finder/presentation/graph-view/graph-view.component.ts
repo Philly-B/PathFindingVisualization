@@ -18,9 +18,9 @@ import {
   setStart,
 } from 'src/app/store/graph.actions';
 import { GraphState } from 'src/app/store/graph.reducer';
-import { VisualizedGraph } from '../../model/VisualizedGraph';
-import { Hexagon } from '../../model/Hexagon';
-import { RowColumnPair } from '../../model/RowColumnPair';
+import { VisualizedGraph } from '../../visualisation-model/VisualizedGraph';
+import { Hexagon } from '../../visualisation-model/Hexagon';
+import { RowColumnPair } from '../../visualisation-model/RowColumnPair';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
@@ -53,7 +53,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     };
 
     this.hexGrid = new VisualizedGraph();
-    this.hexGrid.graph = this.graphUtilService.initGraph(this.p5Settings.N);
+    this.hexGrid.graph = this.graphUtilService.initVisualisationGraph(this.p5Settings.N);
 
     this.subscriptions.add(
       actions.pipe(ofType(INIT_SET_START)).subscribe((a) => (this.setNextClickedHexagonToStart = true))
