@@ -8,7 +8,6 @@ import { AstarControlsComponent } from './presentation/astar-controls/astar-cont
 import { AstarSpeedComponent } from './presentation/astar-speed/astar-speed.component';
 import { AstarInfoComponent } from './presentation/astar-info/astar-info.component';
 import { AstarOverviewComponent } from './presentation/astar-overview/astar-overview.component';
-import { GraphSizeControlComponent } from './presentation/graph-size-control/graph-size-control.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +19,6 @@ import { GraphSizeControlComponent } from './presentation/graph-size-control/gra
     AstarSpeedComponent,
     AstarInfoComponent,
     AstarOverviewComponent,
-    GraphSizeControlComponent,
   ],
   imports: [CommonModule],
   exports: [OverviewComponent],

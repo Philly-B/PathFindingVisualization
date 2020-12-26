@@ -17,7 +17,6 @@ var astar_controls_component_1 = require("./presentation/astar-controls/astar-co
 var astar_speed_component_1 = require("./presentation/astar-speed/astar-speed.component");
 var astar_info_component_1 = require("./presentation/astar-info/astar-info.component");
 var astar_overview_component_1 = require("./presentation/astar-overview/astar-overview.component");
-var graph_size_control_component_1 = require("./presentation/graph-size-control/graph-size-control.component");
 var PathFinderModule = /** @class */ (function () {
     function PathFinderModule() {
     }
@@ -32,7 +31,6 @@ var PathFinderModule = /** @class */ (function () {
                 astar_speed_component_1.AstarSpeedComponent,
                 astar_info_component_1.AstarInfoComponent,
                 astar_overview_component_1.AstarOverviewComponent,
-                graph_size_control_component_1.GraphSizeControlComponent,
             ],
             imports: [common_1.CommonModule],
             exports: [overview_component_1.OverviewComponent]

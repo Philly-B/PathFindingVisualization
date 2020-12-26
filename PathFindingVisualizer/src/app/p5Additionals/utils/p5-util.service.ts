@@ -25,7 +25,7 @@ export class P5UtilService {
     };
 
     picture.setup = () => {
-      picture.createCanvas(settings.canvasSizePx, settings.canvasSizePx);
+      const canvas = picture.createCanvas(settings.canvasSizePx, settings.canvasSizePx);
       picture.angleMode(picture.RADIANS);
     };
     picture.draw = () => {
@@ -33,12 +33,14 @@ export class P5UtilService {
       this.drawHexagons(picture, graph, pictureShift, settings);
     };
 
-    picture.mouseClicked = (event: P5MouseClickEvent) => {
+    picture.mousePressed = (event: P5MouseClickEvent) => {
+      console.log(event);
       const hexagonClicked = this.pixelToHex(graph, picture, event.layerX, event.layerY, settings);
       if (hexagonClicked === undefined) {
-        return;
+        return false;
       }
       hexagonClickedCallback(hexagonClicked);
+      return false;
     };
   };
 

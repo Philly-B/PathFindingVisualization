@@ -19,19 +19,21 @@ var P5UtilService = /** @class */ (function () {
                 z: 0
             };
             picture.setup = function () {
-                picture.createCanvas(settings.canvasSizePx, settings.canvasSizePx);
+                var canvas = picture.createCanvas(settings.canvasSizePx, settings.canvasSizePx);
                 picture.angleMode(picture.RADIANS);
             };
             picture.draw = function () {
                 picture.background(ColorMapping.background);
                 _this.drawHexagons(picture, graph, pictureShift, settings);
             };
-            picture.mouseClicked = function (event) {
+            picture.mousePressed = function (event) {
+                console.log(event);
                 var hexagonClicked = _this.pixelToHex(graph, picture, event.layerX, event.layerY, settings);
                 if (hexagonClicked === undefined) {
-                    return;
+                    return false;
                 }
                 hexagonClickedCallback(hexagonClicked);
+                return false;
             };
         };
         this.pixelToHex = function (graph, picture, x, y, settings) {
