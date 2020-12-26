@@ -26,13 +26,11 @@ var P5UtilService = /** @class */ (function () {
                 picture.background(ColorMapping.background);
                 _this.drawHexagons(picture, graph, pictureShift, settings);
             };
+            picture.mouseClicked = function () {
+                _this.handleMouseEvent(graph, settings, hexagonClickedCallback, picture);
+            };
             picture.mouseDragged = function () {
-                var hexagonClicked = _this.pixelToHex(graph, picture, picture.mouseX, picture.mouseY, settings);
-                if (hexagonClicked === undefined) {
-                    return false;
-                }
-                hexagonClickedCallback(hexagonClicked);
-                return false;
+                _this.handleMouseEvent(graph, settings, hexagonClickedCallback, picture);
             };
         };
         this.pixelToHex = function (graph, picture, x, y, settings) {
@@ -47,6 +45,14 @@ var P5UtilService = /** @class */ (function () {
                 }
             }
             return undefined;
+        };
+        this.handleMouseEvent = function (graph, settings, hexagonClickedCallback, picture) {
+            var hexagonClicked = _this.pixelToHex(graph, picture, picture.mouseX, picture.mouseY, settings);
+            if (hexagonClicked === undefined) {
+                return false;
+            }
+            hexagonClickedCallback(hexagonClicked);
+            return false;
         };
         this.drawHexagons = function (picture, graph, pictureShift, settings) {
             for (var row = 0; row < settings.N; row++) {

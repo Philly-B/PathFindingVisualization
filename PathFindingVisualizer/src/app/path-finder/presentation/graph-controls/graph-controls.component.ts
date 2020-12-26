@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import {
   FINALIZE_SET_END,
   FINALIZE_SET_START,
+  FINALIZE_SET_WALLS,
   initiateModifyWalls,
   initiateSetEnd,
   initiateSetStart,
@@ -26,6 +27,9 @@ export class GraphControlsComponent implements OnDestroy {
   constructor(private store: Store<{ graph: GraphState }>, private actions: ActionsSubject) {
     this.subscriptions.add(actions.pipe(ofType(FINALIZE_SET_START)).subscribe((a) => (this.startIsActivated = false)));
     this.subscriptions.add(actions.pipe(ofType(FINALIZE_SET_END)).subscribe((a) => (this.setEndActivated = false)));
+    this.subscriptions.add(
+      actions.pipe(ofType(FINALIZE_SET_WALLS)).subscribe((a) => (this.modifyWallsActivated = false))
+    );
   }
 
   ngOnDestroy(): void {

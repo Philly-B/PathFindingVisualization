@@ -18,7 +18,7 @@ var GraphEffects = /** @class */ (function () {
         this.actions$ = actions$;
         this.graphUtils = graphUtils;
         this.onlyOneControlEnabled$ = effects_1.createEffect(function () {
-            return _this.actions$.pipe(effects_1.ofType(graph_actions_1.INIT_SET_START, graph_actions_1.INIT_SET_END, graph_actions_1.INIT_MODIFY_WALLS), operators_1.switchMap(function (currentInit) { return _this.getAllActionsBut(currentInit.type); }));
+            return _this.actions$.pipe(effects_1.ofType(graph_actions_1.INIT_SET_START, graph_actions_1.INIT_SET_END, graph_actions_1.INIT_MODIFY_WALLS), operators_1.switchMap(function (currentInit) { return _this.finalizeOthers(currentInit.type); }));
         });
         this.setStart$ = effects_1.createEffect(function () {
             return _this.actions$.pipe(effects_1.ofType(graph_actions_1.SET_START), operators_1.map(function () { return graph_actions_1.finalizeSetStart(); }));
@@ -29,14 +29,17 @@ var GraphEffects = /** @class */ (function () {
         this.setGraphSize$ = effects_1.createEffect(function () {
             return _this.actions$.pipe(effects_1.ofType(graph_actions_1.MODIFY_GRID_SIZE), operators_1.map(function (action) { return graph_actions_1.setNewGraph({ graph: new Graph_1.Graph(_this.graphUtils.initGraph(action.newGridSize)) }); }));
         });
-        this.getAllActionsBut = function (typeToExclude) {
-            var result = [graph_actions_1.finalizeSetStart(), graph_actions_1.finalizeSetEnd(), graph_actions_1.finalizeModifyWalls()];
-            for (var i = 0; i < result.length; i++) {
-                if (result[i].type === typeToExclude) {
-                    result.splice(i, 1);
-                }
+        this.finalizeOthers = function (typeToRun) {
+            if (typeToRun === graph_actions_1.initiateSetStart.type) {
+                return [graph_actions_1.finalizeSetEnd(), graph_actions_1.finalizeModifyWalls()];
             }
-            return result;
+            else if (typeToRun === graph_actions_1.initiateSetEnd.type) {
+                return [graph_actions_1.finalizeSetStart(), graph_actions_1.finalizeModifyWalls()];
+            }
+            else if (typeToRun === graph_actions_1.initiateModifyWalls.type) {
+                return [graph_actions_1.finalizeSetStart(), graph_actions_1.finalizeSetEnd()];
+            }
+            throw new Error('Unknown type to handle ' + typeToRun);
         };
     }
     GraphEffects = __decorate([

@@ -9,6 +9,9 @@ import {
   finalizeSetEnd,
   finalizeSetStart,
   GraphActionsTypes,
+  initiateModifyWalls,
+  initiateSetEnd,
+  initiateSetStart,
   INIT_MODIFY_WALLS,
   INIT_SET_END,
   INIT_SET_START,
@@ -25,7 +28,7 @@ export class GraphEffects {
   onlyOneControlEnabled$ = createEffect(() =>
     this.actions$.pipe(
       ofType(INIT_SET_START, INIT_SET_END, INIT_MODIFY_WALLS),
-      switchMap((currentInit: Action) => this.getAllActionsBut(currentInit.type))
+      switchMap((currentInit: Action) => this.finalizeOthers(currentInit.type))
     )
   );
 
@@ -50,13 +53,14 @@ export class GraphEffects {
     )
   );
 
-  private getAllActionsBut = (typeToExclude: string): Action[] => {
-    const result = [finalizeSetStart(), finalizeSetEnd(), finalizeModifyWalls()];
-    for (let i = 0; i < result.length; i++) {
-      if (result[i].type === typeToExclude) {
-        result.splice(i, 1);
-      }
+  private finalizeOthers = (typeToRun: string): Action[] => {
+    if (typeToRun === initiateSetStart.type) {
+      return [finalizeSetEnd(), finalizeModifyWalls()];
+    } else if (typeToRun === initiateSetEnd.type) {
+      return [finalizeSetStart(), finalizeModifyWalls()];
+    } else if (typeToRun === initiateModifyWalls.type) {
+      return [finalizeSetStart(), finalizeSetEnd()];
     }
-    return result;
+    throw new Error('Unknown type to handle ' + typeToRun);
   };
 }

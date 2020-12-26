@@ -32,13 +32,11 @@ export class P5UtilService {
       this.drawHexagons(picture, graph, pictureShift, settings);
     };
 
+    picture.mouseClicked = () => {
+      this.handleMouseEvent(graph, settings, hexagonClickedCallback, picture);
+    };
     picture.mouseDragged = () => {
-      const hexagonClicked = this.pixelToHex(graph, picture, picture.mouseX, picture.mouseY, settings);
-      if (hexagonClicked === undefined) {
-        return false;
-      }
-      hexagonClickedCallback(hexagonClicked);
-      return false;
+      this.handleMouseEvent(graph, settings, hexagonClickedCallback, picture);
     };
   };
 
@@ -55,6 +53,20 @@ export class P5UtilService {
     }
 
     return undefined;
+  };
+
+  private handleMouseEvent = (
+    graph: Hexagon[][],
+    settings: P5Settings,
+    hexagonClickedCallback: (hexagonClicked) => void,
+    picture: any
+  ) => {
+    const hexagonClicked = this.pixelToHex(graph, picture, picture.mouseX, picture.mouseY, settings);
+    if (hexagonClicked === undefined) {
+      return false;
+    }
+    hexagonClickedCallback(hexagonClicked);
+    return false;
   };
 
   private drawHexagons = (picture, graph: Hexagon[][], pictureShift: P5Vector, settings: P5Settings): void => {
