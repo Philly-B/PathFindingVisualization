@@ -6,6 +6,10 @@ The concept
 
 ## Technology
 
+- Angular 11
+- NGRX Store
+- Bootstrap
+
 ## Links
 
 ## Todos
