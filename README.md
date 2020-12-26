@@ -14,7 +14,9 @@ The concept
 
 ## Todos
 
-- allow to interact with the grid (set walls, start, end)
+- fix start/end/walls are set randomly when clicked on button
+- implement algorithm
 - let algorithm run
 - visualize the algorithm
 - styling of page
+- allow different algorithms
