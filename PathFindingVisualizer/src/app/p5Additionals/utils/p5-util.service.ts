@@ -32,7 +32,7 @@ export class P5UtilService {
       this.drawHexagons(picture, graph, pictureShift, settings);
     };
 
-    picture.mouseClicked = () => {
+    picture.mouseDragged = () => {
       const hexagonClicked = this.pixelToHex(graph, picture, picture.mouseX, picture.mouseY, settings);
       if (hexagonClicked === undefined) {
         return false;
