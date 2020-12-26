@@ -46,7 +46,7 @@ export class AStarAlgorithm {
         if (rowDelta === 0 && colDelta === 0) {
           continue;
         }
-        if (this.isValidCellIndex(graph, currElement.graphCell.row + rowDelta, col + colDelta)) {
+        if (this.isValidCell(graph, currElement.graphCell.row + rowDelta, col + colDelta)) {
           queue.pushElement(
             new PrioritizedGraphCell(
               graph.grid[row][col],
@@ -66,7 +66,7 @@ export class AStarAlgorithm {
   ) {
     const row = currElement.graphCell.row;
     const col = currElement.graphCell.column;
-    if (this.isValidCellIndex(graph, currElement.graphCell.row, col - 1)) {
+    if (this.isValidCell(graph, currElement.graphCell.row, col - 1)) {
       queue.pushElement(
         new PrioritizedGraphCell(
           graph.grid[row][col],
@@ -77,8 +77,14 @@ export class AStarAlgorithm {
     }
   }
 
-  private isValidCellIndex(graph: Graph, row: number, col: number): boolean {
-    return row >= 0 && row < graph.grid.length && col >= 0 && col < graph.grid[row].length;
+  private isValidCell(graph: Graph, row: number, col: number): boolean {
+    return (
+      row >= 0 &&
+      row < graph.grid.length &&
+      col >= 0 &&
+      col < graph.grid[row].length &&
+      graph.grid[row][col].graphCellConstraint !== GraphCellConstraint.WALL
+    );
   }
 
   private createReversePath(node: PrioritizedGraphCell): GraphCell[] {
