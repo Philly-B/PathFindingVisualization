@@ -23,7 +23,8 @@ exports.GraphState = GraphState;
 exports.initialState = {
     startPosition: undefined,
     endPosition: undefined,
-    walls: []
+    walls: [],
+    graph: undefined
 };
 var graphReducerInternal = store_1.createReducer(exports.initialState, store_1.on(graph_actions_1.initiateSetStart, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.setStart, function (state, _a) {
     var startPosition = _a.startPosition;

@@ -3,7 +3,6 @@ import { ofType } from '@ngrx/effects';
 import { ActionsSubject, Store } from '@ngrx/store';
 import * as p5 from 'p5';
 import { Subscription } from 'rxjs';
-import { P5MouseClickEvent } from 'src/app/p5Additionals/models/P5MouseClickEvent';
 import { P5Settings } from 'src/app/p5Additionals/models/P5Settings';
 import { P5UtilService } from 'src/app/p5Additionals/utils/p5-util.service';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
@@ -19,7 +18,7 @@ import {
   setStart,
 } from 'src/app/store/graph.actions';
 import { GraphState } from 'src/app/store/graph.reducer';
-import { Graph } from '../../model/Graph';
+import { VisualizedGraph } from '../../model/VisualizedGraph';
 import { Hexagon } from '../../model/Hexagon';
 import { RowColumnPair } from '../../model/RowColumnPair';
 @Component({
@@ -29,7 +28,7 @@ import { RowColumnPair } from '../../model/RowColumnPair';
 })
 export class GraphViewComponent implements OnInit, OnDestroy {
   private p5Settings: P5Settings;
-  private hexGrid: Graph;
+  private hexGrid: VisualizedGraph;
 
   private subscriptions = new Subscription();
 
@@ -53,7 +52,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       hexagonLinesBetweenSizePx: 3,
     };
 
-    this.hexGrid = new Graph();
+    this.hexGrid = new VisualizedGraph();
     this.hexGrid.graph = this.graphUtilService.initGraph(this.p5Settings.N);
 
     this.subscriptions.add(

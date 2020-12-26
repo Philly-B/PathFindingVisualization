@@ -1,6 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { P5Vector } from '../p5Additionals/models/P5Vector';
-import { Hexagon } from '../path-finder/model/Hexagon';
+import { Graph } from '../model/Graph';
 import { RowColumnPair } from '../path-finder/model/RowColumnPair';
 import {
   modifyWalls,
@@ -18,12 +17,14 @@ export class GraphState {
   startPosition: RowColumnPair;
   endPosition: RowColumnPair;
   walls: RowColumnPair[];
+  graph: Graph;
 }
 
 export const initialState: GraphState = {
   startPosition: undefined,
   endPosition: undefined,
   walls: [],
+  graph: undefined,
 };
 
 const graphReducerInternal = createReducer(

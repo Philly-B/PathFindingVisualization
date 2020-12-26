@@ -85,7 +85,7 @@ export class P5UtilService {
       } else if (hexagon.isWall) {
         picture.fill(ColorMapping.hexagonInsideWall);
       } else {
-        picture.fill(ColorMapping.hexagonInsideEmpty);
+        picture.fill(ColorMapping.hexagonInsidePassable);
       }
       picture.vertex(points[i % points.length].x, points[i % points.length].y);
     }
