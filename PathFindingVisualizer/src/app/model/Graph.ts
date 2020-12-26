@@ -1,5 +1,9 @@
 import { GraphCell } from './GraphCell';
 
 export class Graph {
-  grid: GraphCell[];
+  grid: GraphCell[][];
+
+  constructor(grid: GraphCell[][]) {
+    this.grid = grid;
+  }
 }

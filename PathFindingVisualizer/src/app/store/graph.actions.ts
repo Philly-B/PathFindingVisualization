@@ -1,5 +1,6 @@
-import { createAction, props } from '@ngrx/store';
-import { RowColumnPair } from '../path-finder/model/RowColumnPair';
+import { createAction, props, union } from '@ngrx/store';
+import { Graph } from '../model/Graph';
+import { RowColumnPair } from '../path-finder/visualisation-model/RowColumnPair';
 
 export const INIT_SET_START = '[Graph Component] initiate set start';
 export const initiateSetStart = createAction(INIT_SET_START);
@@ -21,3 +22,24 @@ export const MODIFY_WALLS = '[Graph Component] modify walls';
 export const modifyWalls = createAction(MODIFY_WALLS, props<{ walls: RowColumnPair[] }>());
 export const FINALIZE_SET_WALLS = '[Graph Component] finalize modify walls';
 export const finalizeModifyWalls = createAction(FINALIZE_SET_WALLS);
+
+export const MODIFY_GRID_SIZE = '[Graph Component] modify grid size';
+export const modifyGridSize = createAction(MODIFY_GRID_SIZE, props<{ newGridSize: number }>());
+export const SET_NEW_GRAPH = '[Graph Component] set new graph';
+export const setNewGraph = createAction(SET_NEW_GRAPH, props<{ graph: Graph }>());
+
+const all = union({
+  initiateSetStart,
+  setStart,
+  finalizeSetStart,
+  initiateSetEnd,
+  setEnd,
+  finalizeSetEnd,
+  initiateModifyWalls,
+  modifyWalls,
+  finalizeModifyWalls,
+  modifyGridSize,
+  setNewGraph,
+});
+
+export type GraphActionsTypes = typeof all;
