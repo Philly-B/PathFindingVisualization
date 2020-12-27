@@ -1,5 +1,6 @@
 import { createAction, props, union } from '@ngrx/store';
 import { Graph } from '../model/Graph';
+import { GraphCellConstraint } from '../model/GraphCell';
 import { RowColumnPair } from '../model/RowColumnPair';
 
 export const INIT_SET_START = '[Graph Component] initiate set start';
@@ -28,6 +29,13 @@ export const removeWall = createAction(REMOVE_WALL, props<{ exWall: RowColumnPai
 export const FINALIZE_SET_WALLS = '[Graph Component] finalize modify walls';
 export const finalizeModifyWalls = createAction(FINALIZE_SET_WALLS);
 
+// ALGORITHM RELATED
+export const UPDATE_GRAPH_CELL = '[Graph Component] algorithm update cell';
+export const updateGraphCell = createAction(
+  UPDATE_GRAPH_CELL,
+  props<{ cell: RowColumnPair; newConstraint: GraphCellConstraint }>()
+);
+
 const all = union({
   initiateSetStart,
   setStart,
@@ -39,6 +47,7 @@ const all = union({
   setWall,
   removeWall,
   finalizeModifyWalls,
+  updateGraphCell,
 });
 
 export type GraphActionsTypes = typeof all;

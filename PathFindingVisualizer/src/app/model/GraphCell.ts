@@ -20,5 +20,7 @@ export enum GraphCellConstraint {
   START,
   END,
   PASSABLE,
+  IN_CONSIDERATION,
+  VISITED,
   FINAL_PATH,
 }

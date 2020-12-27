@@ -1,4 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
+import { GraphCellConstraint } from '../model/GraphCell';
 import { RowColumnPair } from '../model/RowColumnPair';
 import {
   setEnd,
@@ -11,6 +12,7 @@ import {
   finalizeSetEnd,
   setWall,
   removeWall,
+  updateGraphCell,
 } from './graph.actions';
 
 export class GraphState {
@@ -18,6 +20,10 @@ export class GraphState {
   startPosition: RowColumnPair;
   endPosition: RowColumnPair;
   walls: RowColumnPair[];
+
+  inConsideration: RowColumnPair[];
+  visited: RowColumnPair[];
+  finalPath: RowColumnPair[];
 }
 
 export const initialState: GraphState = {
@@ -25,8 +31,13 @@ export const initialState: GraphState = {
   endPosition: undefined,
   walls: [],
   N: 15,
+
+  inConsideration: [],
+  visited: [],
+  finalPath: [],
 };
 
+// TODO every array should be duplicated!
 const graphReducerInternal = createReducer(
   initialState,
   on(initiateSetStart, (state) => ({ ...state })),
@@ -40,15 +51,43 @@ const graphReducerInternal = createReducer(
 
   on(initiateSetEnd, (state) => ({ ...state })),
   on(setEnd, (state, { endPosition }) => ({ ...state, endPosition })),
-  on(finalizeSetEnd, (state) => ({ ...state }))
+  on(finalizeSetEnd, (state) => ({ ...state })),
+
+  on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint))
 );
 
 export function graphReducer(state, action) {
   return graphReducerInternal(state, action);
 }
 
+const addChangeCellToCorrectList = (
+  state: GraphState,
+  cell: RowColumnPair,
+  newConstraint: GraphCellConstraint
+): GraphState => {
+  const newState: GraphState = {
+    ...state,
+    visited: duplicateArray(state.visited),
+    inConsideration: duplicateArray(state.inConsideration),
+    finalPath: duplicateArray(state.finalPath),
+  };
+
+  switch (newConstraint) {
+    case GraphCellConstraint.IN_CONSIDERATION:
+      newState.inConsideration.push(cell);
+      break;
+    case GraphCellConstraint.VISITED:
+      newState.visited.push(cell);
+      break;
+    case GraphCellConstraint.FINAL_PATH:
+      newState.finalPath.push(cell);
+  }
+
+  return newState;
+};
+
 const duplicateAndRemoveWall = (walls: RowColumnPair[], exWall: RowColumnPair): RowColumnPair[] => {
-  const nextWalls = duplicateWalls(walls);
+  const nextWalls = duplicateArray(walls);
   for (let i = 0; i < nextWalls.length; i++) {
     if (RowColumnPair.equals(nextWalls[i], exWall)) {
       nextWalls.splice(i, 1);
@@ -58,12 +97,12 @@ const duplicateAndRemoveWall = (walls: RowColumnPair[], exWall: RowColumnPair): 
   return nextWalls;
 };
 const duplicateAndAddWall = (walls: RowColumnPair[], newWall: RowColumnPair): RowColumnPair[] => {
-  const nextWalls = duplicateWalls(walls);
+  const nextWalls = duplicateArray(walls);
   nextWalls.push(newWall);
   return nextWalls;
 };
 
-const duplicateWalls = (walls: RowColumnPair[]): RowColumnPair[] => {
+const duplicateArray = (walls: RowColumnPair[]): RowColumnPair[] => {
   const wallsCopy: RowColumnPair[] = [];
   for (const wall of walls) {
     wallsCopy.push(new RowColumnPair(wall.row, wall.column));

@@ -17,5 +17,7 @@ var GraphCellConstraint;
     GraphCellConstraint[GraphCellConstraint["START"] = 1] = "START";
     GraphCellConstraint[GraphCellConstraint["END"] = 2] = "END";
     GraphCellConstraint[GraphCellConstraint["PASSABLE"] = 3] = "PASSABLE";
-    GraphCellConstraint[GraphCellConstraint["FINAL_PATH"] = 4] = "FINAL_PATH";
+    GraphCellConstraint[GraphCellConstraint["IN_CONSIDERATION"] = 4] = "IN_CONSIDERATION";
+    GraphCellConstraint[GraphCellConstraint["VISITED"] = 5] = "VISITED";
+    GraphCellConstraint[GraphCellConstraint["FINAL_PATH"] = 6] = "FINAL_PATH";
 })(GraphCellConstraint = exports.GraphCellConstraint || (exports.GraphCellConstraint = {}));

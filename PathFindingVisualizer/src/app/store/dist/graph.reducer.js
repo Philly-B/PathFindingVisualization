@@ -13,6 +13,7 @@ var __assign = (this && this.__assign) || function () {
 exports.__esModule = true;
 exports.graphReducer = exports.initialState = exports.GraphState = void 0;
 var store_1 = require("@ngrx/store");
+var GraphCell_1 = require("../model/GraphCell");
 var RowColumnPair_1 = require("../model/RowColumnPair");
 var graph_actions_1 = require("./graph.actions");
 var GraphState = /** @class */ (function () {
@@ -25,8 +26,12 @@ exports.initialState = {
     startPosition: undefined,
     endPosition: undefined,
     walls: [],
-    N: 15
+    N: 15,
+    inConsideration: [],
+    visited: [],
+    finalPath: []
 };
+// TODO every array should be duplicated!
 var graphReducerInternal = store_1.createReducer(exports.initialState, store_1.on(graph_actions_1.initiateSetStart, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.setStart, function (state, _a) {
     var startPosition = _a.startPosition;
     return (__assign(__assign({}, state), { startPosition: startPosition }));
@@ -39,13 +44,30 @@ var graphReducerInternal = store_1.createReducer(exports.initialState, store_1.o
 }), store_1.on(graph_actions_1.finalizeModifyWalls, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.initiateSetEnd, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.setEnd, function (state, _a) {
     var endPosition = _a.endPosition;
     return (__assign(__assign({}, state), { endPosition: endPosition }));
-}), store_1.on(graph_actions_1.finalizeSetEnd, function (state) { return (__assign({}, state)); }));
+}), store_1.on(graph_actions_1.finalizeSetEnd, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.updateGraphCell, function (state, _a) {
+    var cell = _a.cell, newConstraint = _a.newConstraint;
+    return addChangeCellToCorrectList(state, cell, newConstraint);
+}));
 function graphReducer(state, action) {
     return graphReducerInternal(state, action);
 }
 exports.graphReducer = graphReducer;
+var addChangeCellToCorrectList = function (state, cell, newConstraint) {
+    var newState = __assign(__assign({}, state), { visited: duplicateArray(state.visited), inConsideration: duplicateArray(state.inConsideration), finalPath: duplicateArray(state.finalPath) });
+    switch (newConstraint) {
+        case GraphCell_1.GraphCellConstraint.IN_CONSIDERATION:
+            newState.inConsideration.push(cell);
+            break;
+        case GraphCell_1.GraphCellConstraint.VISITED:
+            newState.visited.push(cell);
+            break;
+        case GraphCell_1.GraphCellConstraint.FINAL_PATH:
+            newState.finalPath.push(cell);
+    }
+    return newState;
+};
 var duplicateAndRemoveWall = function (walls, exWall) {
-    var nextWalls = duplicateWalls(walls);
+    var nextWalls = duplicateArray(walls);
     for (var i = 0; i < nextWalls.length; i++) {
         if (RowColumnPair_1.RowColumnPair.equals(nextWalls[i], exWall)) {
             nextWalls.splice(i, 1);
@@ -55,11 +77,11 @@ var duplicateAndRemoveWall = function (walls, exWall) {
     return nextWalls;
 };
 var duplicateAndAddWall = function (walls, newWall) {
-    var nextWalls = duplicateWalls(walls);
+    var nextWalls = duplicateArray(walls);
     nextWalls.push(newWall);
     return nextWalls;
 };
-var duplicateWalls = function (walls) {
+var duplicateArray = function (walls) {
     var wallsCopy = [];
     for (var _i = 0, walls_1 = walls; _i < walls_1.length; _i++) {
         var wall = walls_1[_i];

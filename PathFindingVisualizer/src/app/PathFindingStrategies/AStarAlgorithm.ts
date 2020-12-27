@@ -12,7 +12,11 @@ import { RowColumnPair } from '../model/RowColumnPair';
 export class AStarAlgorithm {
   constructor() {}
 
-  public runAlgorithm(graph: number[][], options: AStarAlgorithmOptions): RowColumnPair[] {
+  public runAlgorithm(
+    graph: number[][],
+    options: AStarAlgorithmOptions,
+    graphIterationCallback: (cell: RowColumnPair, newState: number) => void
+  ): RowColumnPair[] {
     const start = this.getElementWithConstraint(graph, START_FIELD_ID);
     const end = this.getElementWithConstraint(graph, END_FIELD_ID);
 
@@ -34,10 +38,10 @@ export class AStarAlgorithm {
       if (graph[currElement.rowAndColumn.row][currElement.rowAndColumn.column] === VISITED_FIELD_ID) {
         continue;
       }
-      graph[currElement.rowAndColumn.row][currElement.rowAndColumn.column] = VISITED_FIELD_ID;
+      this.setValueToGraphCell(graph, currElement.rowAndColumn, VISITED_FIELD_ID, graphIterationCallback);
 
-      this.checkNeighborToLeft(graph, currElement, queue, end);
-      this.checkNeighborsSameColumnAndRight(graph, currElement, queue, end);
+      this.checkNeighborToLeft(graph, currElement, queue, end, graphIterationCallback);
+      this.checkNeighborsSameColumnAndRight(graph, currElement, queue, end, graphIterationCallback);
     }
 
     if (lastNode === undefined) {
@@ -46,11 +50,22 @@ export class AStarAlgorithm {
     return this.createReversePath(lastNode);
   }
 
+  private setValueToGraphCell(
+    graph: number[][],
+    rowCol: RowColumnPair,
+    newValue: number,
+    graphIterationCallback: (cell: RowColumnPair, newState: number) => void
+  ): void {
+    graph[rowCol.row][rowCol.column] = newValue;
+    graphIterationCallback(RowColumnPair.copy(rowCol), newValue);
+  }
+
   private checkNeighborsSameColumnAndRight(
     graph: number[][],
     currElement: PrioritizedGraphCell,
     queue: PriorityQueue<PrioritizedGraphCell>,
-    end: RowColumnPair
+    end: RowColumnPair,
+    graphIterationCallback: (cell: RowColumnPair, newState: number) => void
   ) {
     const row = currElement.rowAndColumn.row;
     const col = currElement.rowAndColumn.column;
@@ -72,10 +87,12 @@ export class AStarAlgorithm {
           ) {
             continue;
           }
-          graph[rowOfNeigh][colOfNeigh] = IN_CONSIDERATION_FIELD_ID;
+          const newLocal = new RowColumnPair(rowOfNeigh, colOfNeigh);
+          this.setValueToGraphCell(graph, newLocal, IN_CONSIDERATION_FIELD_ID, graphIterationCallback);
+
           queue.pushElement(
             new PrioritizedGraphCell(
-              new RowColumnPair(rowOfNeigh, colOfNeigh),
+              newLocal,
               this.calculateManhattenDistanceOfTwoCells(rowOfNeigh, colOfNeigh, end),
               currElement
             )
@@ -88,7 +105,8 @@ export class AStarAlgorithm {
     graph: number[][],
     currElement: PrioritizedGraphCell,
     queue: PriorityQueue<PrioritizedGraphCell>,
-    end: RowColumnPair
+    end: RowColumnPair,
+    graphIterationCallback: (cell: RowColumnPair, newState: number) => void
   ) {
     const row = currElement.rowAndColumn.row;
     const col = currElement.rowAndColumn.column;
@@ -97,13 +115,11 @@ export class AStarAlgorithm {
       if (graph[row][colOfNeigh] === IN_CONSIDERATION_FIELD_ID || graph[row][colOfNeigh] === VISITED_FIELD_ID) {
         return;
       }
-      graph[row][colOfNeigh] = IN_CONSIDERATION_FIELD_ID;
+      const newLocal = new RowColumnPair(row, colOfNeigh);
+      this.setValueToGraphCell(graph, newLocal, IN_CONSIDERATION_FIELD_ID, graphIterationCallback);
+
       queue.pushElement(
-        new PrioritizedGraphCell(
-          new RowColumnPair(row, colOfNeigh),
-          this.calculateManhattenDistanceOfTwoCells(row, colOfNeigh, end),
-          currElement
-        )
+        new PrioritizedGraphCell(newLocal, this.calculateManhattenDistanceOfTwoCells(row, colOfNeigh, end), currElement)
       );
     }
   }
