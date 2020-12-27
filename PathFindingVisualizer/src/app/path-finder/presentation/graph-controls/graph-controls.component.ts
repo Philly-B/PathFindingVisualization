@@ -2,6 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { ofType } from '@ngrx/effects';
 import { ActionsSubject, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
+import { concatAll, switchMap, take, tap } from 'rxjs/operators';
 import {
   FINALIZE_SET_END,
   FINALIZE_SET_START,
@@ -9,8 +10,11 @@ import {
   initiateModifyWalls,
   initiateSetEnd,
   initiateSetStart,
+  removeAllWalls,
+  removeWall,
 } from 'src/app/store/graph.actions';
 import { GraphState } from 'src/app/store/graph.reducer';
+import { selectFeatureWalls } from 'src/app/store/graph.selectors';
 
 @Component({
   selector: 'app-graph-controls',
@@ -42,6 +46,10 @@ export class GraphControlsComponent implements OnDestroy {
     }
     this.startIsActivated = true;
     this.store.dispatch(initiateSetStart());
+  };
+
+  clearWalls = () => {
+    this.store.dispatch(removeAllWalls());
   };
 
   modifyWalls = () => {

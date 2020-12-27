@@ -26,10 +26,6 @@ export class PriorityQueue<T> {
     return this.elements.length === 0;
   }
 
-  print(): void {
-    console.log(this.elements);
-  }
-
   private moveElementDown(index: number): void {
     const lastIndex = this.elements.length - 1;
     let currentIndex = index;

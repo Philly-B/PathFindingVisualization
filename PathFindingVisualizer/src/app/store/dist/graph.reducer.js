@@ -71,13 +71,18 @@ var duplicateAndRemoveWall = function (walls, exWall) {
     for (var i = 0; i < nextWalls.length; i++) {
         if (RowColumnPair_1.RowColumnPair.equals(nextWalls[i], exWall)) {
             nextWalls.splice(i, 1);
-            break;
         }
     }
     return nextWalls;
 };
 var duplicateAndAddWall = function (walls, newWall) {
     var nextWalls = duplicateArray(walls);
+    for (var _i = 0, nextWalls_1 = nextWalls; _i < nextWalls_1.length; _i++) {
+        var nextWall = nextWalls_1[_i];
+        if (RowColumnPair_1.RowColumnPair.equals(nextWall, newWall)) {
+            return;
+        }
+    }
     nextWalls.push(newWall);
     return nextWalls;
 };

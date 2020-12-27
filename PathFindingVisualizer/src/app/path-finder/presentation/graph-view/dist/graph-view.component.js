@@ -52,7 +52,6 @@ var GraphViewComponent = /** @class */ (function () {
         };
         this.handleHexagonClickEvent = function (hexagonClicked) {
             var referenceToGraphCell = new RowColumnPair_1.RowColumnPair(hexagonClicked.row, hexagonClicked.column);
-            console.log(hexagonClicked);
             if (_this.setNextClickedHexagonToStart) {
                 _this.graphUtilService.setGraphConstraintOfGraphCell(_this.graph.grid, GraphCell_1.GraphCellConstraint.START, GraphCell_1.GraphCellConstraint.PASSABLE);
                 hexagonClicked.graphCellConstraint = GraphCell_1.GraphCellConstraint.START;
@@ -78,6 +77,9 @@ var GraphViewComponent = /** @class */ (function () {
                 }
             }
         };
+        this.removeWall = function (wallToRemove) {
+            _this.graph.grid[wallToRemove.row][wallToRemove.column].graphCellConstraint = GraphCell_1.GraphCellConstraint.PASSABLE;
+        };
         this.p5Settings = {
             N: 15,
             canvasSizePx: this.canvasSizePx,
@@ -98,6 +100,7 @@ var GraphViewComponent = /** @class */ (function () {
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.FINALIZE_SET_WALLS)).subscribe(function (a) { return (_this.isModifyWallsEnabled = false); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.UPDATE_GRAPH_CELL)).subscribe(function (a) { return _this.updateGraphCell(a.cell, a.newConstraint); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.RESET_ALGORITHM_DATA)).subscribe(function (a) { return _this.resetAlgorithmDataInGraph(); }));
+        this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.REMOVE_WALL)).subscribe(function (a) { return _this.removeWall(a.exWall); }));
     }
     GraphViewComponent.prototype.ngOnDestroy = function () {
         this.subscriptions.unsubscribe();

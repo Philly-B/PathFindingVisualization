@@ -25,6 +25,8 @@ export const setWall = createAction(SET_WALL, props<{ wall: RowColumnPair }>());
 
 export const REMOVE_WALL = '[Graph Component] remove wall';
 export const removeWall = createAction(REMOVE_WALL, props<{ exWall: RowColumnPair }>());
+export const REMOVE_ALL_WALLS = '[Graph Component] remove all walls';
+export const removeAllWalls = createAction(REMOVE_ALL_WALLS);
 
 export const FINALIZE_SET_WALLS = '[Graph Component] finalize modify walls';
 export const finalizeModifyWalls = createAction(FINALIZE_SET_WALLS);
@@ -52,6 +54,7 @@ const all = union({
   finalizeModifyWalls,
   updateGraphCell,
   resetAlgorithmData,
+  removeAllWalls,
 });
 
 export type GraphActionsTypes = typeof all;

@@ -66,7 +66,6 @@ export class AstarControlsComponent implements OnInit, OnDestroy {
 
   private async runAlgorithm() {
     while (!this.done && !this.stopped) {
-      console.log('one iter');
       this.runOneIterationOfAlgorithm();
       await new Promise((resolve) => setTimeout(resolve, this.astartOptions.algorithmSpeed));
     }

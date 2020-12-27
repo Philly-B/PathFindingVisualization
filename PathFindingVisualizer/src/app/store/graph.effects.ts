@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { map, switchMap } from 'rxjs/operators';
-import { Graph } from '../model/Graph';
+import { concatAll, map, mergeMap, switchMap, tap, toArray, withLatestFrom } from 'rxjs/operators';
 import { GraphUtilService } from '../services/graph-util.service';
 import {
   finalizeModifyWalls,
@@ -15,16 +14,18 @@ import {
   INIT_MODIFY_WALLS,
   INIT_SET_END,
   INIT_SET_START,
+  removeWall,
+  REMOVE_ALL_WALLS,
   SET_END,
   SET_START,
 } from './graph.actions';
-import { GraphState } from './graph.reducer';
+import { AppState, selectGraphFeature, selectFeatureWalls } from './graph.selectors';
 
 @Injectable()
 export class GraphEffects {
   constructor(
     private actions$: Actions<GraphActionsTypes>,
-    private store$: Store<GraphState>,
+    private store$: Store<AppState>,
     private graphUtils: GraphUtilService
   ) {}
 
@@ -46,6 +47,16 @@ export class GraphEffects {
     this.actions$.pipe(
       ofType(SET_END),
       map(() => finalizeSetEnd())
+    )
+  );
+
+  removeAllWalls$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(REMOVE_ALL_WALLS),
+      withLatestFrom(this.store$.select(selectGraphFeature)),
+      map(([a, store]) => store.walls),
+      concatAll(),
+      map((exWall) => removeWall({ exWall }))
     )
   );
 

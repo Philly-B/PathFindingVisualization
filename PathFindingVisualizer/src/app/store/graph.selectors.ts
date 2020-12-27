@@ -5,10 +5,13 @@ export interface AppState {
   graph: GraphState;
 }
 
-export const selectFeature = (state: AppState) => state.graph;
+export const selectGraphFeature = (state: AppState) => state.graph;
 
-export const selectFeatureStartPosition = createSelector(selectFeature, (state: GraphState) => state.startPosition);
+export const selectFeatureStartPosition = createSelector(
+  selectGraphFeature,
+  (state: GraphState) => state.startPosition
+);
 
-export const selectFeatureEndPosition = createSelector(selectFeature, (state: GraphState) => state.endPosition);
+export const selectFeatureEndPosition = createSelector(selectGraphFeature, (state: GraphState) => state.endPosition);
 
-export const selectFeatureWalls = createSelector(selectFeature, (state: GraphState) => state.walls);
+export const selectFeatureWalls = createSelector(selectGraphFeature, (state: GraphState) => state.walls);

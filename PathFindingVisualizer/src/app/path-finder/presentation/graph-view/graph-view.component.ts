@@ -15,6 +15,7 @@ import {
   INIT_SET_END,
   INIT_SET_START,
   removeWall,
+  REMOVE_WALL,
   RESET_ALGORITHM_DATA,
   setEnd,
   setStart,
@@ -90,6 +91,8 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       actions.pipe(ofType(RESET_ALGORITHM_DATA)).subscribe((a) => this.resetAlgorithmDataInGraph())
     );
+
+    this.subscriptions.add(actions.pipe(ofType(REMOVE_WALL)).subscribe((a) => this.removeWall(a.exWall)));
   }
 
   ngOnDestroy(): void {
@@ -124,7 +127,6 @@ export class GraphViewComponent implements OnInit, OnDestroy {
 
   private handleHexagonClickEvent = (hexagonClicked: GraphCell): void => {
     const referenceToGraphCell = new RowColumnPair(hexagonClicked.row, hexagonClicked.column);
-    console.log(hexagonClicked);
     if (this.setNextClickedHexagonToStart) {
       this.graphUtilService.setGraphConstraintOfGraphCell(
         this.graph.grid,
@@ -154,5 +156,9 @@ export class GraphViewComponent implements OnInit, OnDestroy {
         this.store.dispatch(setWall({ wall: referenceToGraphCell }));
       }
     }
+  };
+
+  private removeWall = (wallToRemove: RowColumnPair): void => {
+    this.graph.grid[wallToRemove.row][wallToRemove.column].graphCellConstraint = GraphCellConstraint.PASSABLE;
   };
 }

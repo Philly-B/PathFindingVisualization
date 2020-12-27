@@ -93,13 +93,17 @@ const duplicateAndRemoveWall = (walls: RowColumnPair[], exWall: RowColumnPair): 
   for (let i = 0; i < nextWalls.length; i++) {
     if (RowColumnPair.equals(nextWalls[i], exWall)) {
       nextWalls.splice(i, 1);
-      break;
     }
   }
   return nextWalls;
 };
 const duplicateAndAddWall = (walls: RowColumnPair[], newWall: RowColumnPair): RowColumnPair[] => {
   const nextWalls = duplicateArray(walls);
+  for (const nextWall of nextWalls) {
+    if (RowColumnPair.equals(nextWall, newWall)) {
+      return;
+    }
+  }
   nextWalls.push(newWall);
   return nextWalls;
 };
