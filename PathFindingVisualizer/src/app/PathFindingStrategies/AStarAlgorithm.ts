@@ -28,7 +28,7 @@ export class AStarAlgorithm {
     this.queue.pushElement(
       new PrioritizedGraphCell(
         this.start,
-        this.calculateManhattenDistanceOfTwoCells(this.start.row, this.start.column, this.end)
+        this.calculateDistanceOfTwoCells(this.start.row, this.start.column, this.end)
       )
     );
   }
@@ -51,9 +51,7 @@ export class AStarAlgorithm {
         continue;
       }
       this.setValueToGraphCell(currElement.rowAndColumn, VISITED_FIELD_ID);
-
-      this.checkNeighborToLeft(currElement);
-      this.checkNeighborsSameColumnAndRight(currElement);
+      this.checkNeighbors(currElement);
       break;
     }
   }
@@ -63,17 +61,21 @@ export class AStarAlgorithm {
     this.graphIterationCallback(RowColumnPair.copy(rowCol), newValue);
   }
 
-  private checkNeighborsSameColumnAndRight(currElement: PrioritizedGraphCell) {
+  private checkNeighbors(currElement: PrioritizedGraphCell) {
     const row = currElement.rowAndColumn.row;
     const col = currElement.rowAndColumn.column;
     for (let rowDelta = -1; rowDelta <= 1; rowDelta++) {
-      const colDeltaStart = row % 2 === 1 ? 0 : -1;
-      const colDeltaEnd = row % 2 === 1 ? 1 : 0;
+      let colDeltaStart: number;
+      let colDeltaEnd: number;
+      if (rowDelta === 0) {
+        colDeltaStart = -1;
+        colDeltaEnd = 1;
+      } else {
+        colDeltaStart = row % 2 === 1 ? 0 : -1;
+        colDeltaEnd = row % 2 === 1 ? 1 : 0;
+      }
 
       for (let colDelta = colDeltaStart; colDelta <= colDeltaEnd; colDelta++) {
-        if (rowDelta === 0 && colDelta === 0) {
-          continue;
-        }
         const rowOfNeigh = row + rowDelta;
         const colOfNeigh = col + colDelta;
 
@@ -90,35 +92,12 @@ export class AStarAlgorithm {
           this.queue.pushElement(
             new PrioritizedGraphCell(
               newLocal,
-              this.calculateManhattenDistanceOfTwoCells(rowOfNeigh, colOfNeigh, this.end),
+              this.calculateDistanceOfTwoCells(rowOfNeigh, colOfNeigh, this.end),
               currElement
             )
           );
         }
       }
-    }
-  }
-  private checkNeighborToLeft(currElement: PrioritizedGraphCell) {
-    const row = currElement.rowAndColumn.row;
-    const col = currElement.rowAndColumn.column;
-    const colOfNeigh = col - 1;
-    if (this.isValidCell(currElement.rowAndColumn.row, colOfNeigh)) {
-      if (
-        this.graph[row][colOfNeigh] === IN_CONSIDERATION_FIELD_ID ||
-        this.graph[row][colOfNeigh] === VISITED_FIELD_ID
-      ) {
-        return;
-      }
-      const newLocal = new RowColumnPair(row, colOfNeigh);
-      this.setValueToGraphCell(newLocal, IN_CONSIDERATION_FIELD_ID);
-
-      this.queue.pushElement(
-        new PrioritizedGraphCell(
-          newLocal,
-          this.calculateManhattenDistanceOfTwoCells(row, colOfNeigh, this.end),
-          currElement
-        )
-      );
     }
   }
 
@@ -155,10 +134,8 @@ export class AStarAlgorithm {
   private prioritizedGraphCellComparator(cell1: PrioritizedGraphCell, cell2: PrioritizedGraphCell): number {
     return cell1.priority - cell2.priority;
   }
-  private calculateManhattenDistanceOfTwoCells(currentRow: number, currentCol: number, cell2: RowColumnPair) {
-    const colShiftCurr = currentRow % 2 === 1 ? 1 : 0;
-    const colShiftCell2 = cell2.row % 2 === 1 ? 1 : 0;
-    return Math.abs(currentRow - cell2.row) + Math.abs(currentCol + colShiftCurr - (cell2.column + colShiftCell2));
+  private calculateDistanceOfTwoCells(currentRow: number, currentCol: number, cell2: RowColumnPair) {
+    return Math.abs(currentRow - cell2.row) + Math.abs(currentCol - cell2.column);
   }
 }
 
