@@ -15,13 +15,14 @@ import {
   INIT_SET_END,
   INIT_SET_START,
   removeWall,
+  RESET_ALGORITHM_DATA,
   setEnd,
   setStart,
   setWall,
   updateGraphCell,
   UPDATE_GRAPH_CELL,
 } from 'src/app/store/graph.actions';
-import { GraphState } from 'src/app/store/graph.reducer';
+import { graphReducer, GraphState } from 'src/app/store/graph.reducer';
 import { RowColumnPair } from '../../../model/RowColumnPair';
 import { MOUSE_DRAG_WALL_TIMEOUT_MS } from 'src/app/constants/GeneralConstants';
 import { Graph } from 'src/app/model/Graph';
@@ -86,6 +87,10 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       actions.pipe(ofType(UPDATE_GRAPH_CELL)).subscribe((a) => this.updateGraphCell(a.cell, a.newConstraint))
     );
+
+    this.subscriptions.add(
+      actions.pipe(ofType(RESET_ALGORITHM_DATA)).subscribe((a) => this.resetAlgorithmDataInGraph())
+    );
   }
 
   ngOnDestroy(): void {
@@ -93,6 +98,20 @@ export class GraphViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {}
+
+  private resetAlgorithmDataInGraph = (): void => {
+    for (const graphRow of this.graph.grid) {
+      for (const graphCell of graphRow) {
+        if (
+          graphCell.graphCellConstraint === GraphCellConstraint.IN_CONSIDERATION ||
+          graphCell.graphCellConstraint === GraphCellConstraint.VISITED ||
+          graphCell.graphCellConstraint === GraphCellConstraint.FINAL_PATH
+        ) {
+          graphCell.graphCellConstraint = GraphCellConstraint.PASSABLE;
+        }
+      }
+    }
+  };
 
   private updateGraphCell = (rowCol: RowColumnPair, newConstraint: GraphCellConstraint): void => {
     const cell = this.graph.grid[rowCol.row][rowCol.column];

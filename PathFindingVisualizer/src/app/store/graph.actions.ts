@@ -36,6 +36,9 @@ export const updateGraphCell = createAction(
   props<{ cell: RowColumnPair; newConstraint: GraphCellConstraint }>()
 );
 
+export const RESET_ALGORITHM_DATA = '[Graph Component] reset algorithm data';
+export const resetAlgorithmData = createAction(RESET_ALGORITHM_DATA);
+
 const all = union({
   initiateSetStart,
   setStart,
@@ -48,6 +51,7 @@ const all = union({
   removeWall,
   finalizeModifyWalls,
   updateGraphCell,
+  resetAlgorithmData,
 });
 
 export type GraphActionsTypes = typeof all;

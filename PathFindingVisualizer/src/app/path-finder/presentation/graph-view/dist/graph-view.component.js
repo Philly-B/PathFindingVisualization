@@ -30,6 +30,19 @@ var GraphViewComponent = /** @class */ (function () {
         this.setNextClickedHexagonToStart = false;
         this.setNextClickedHexagonToEnd = false;
         this.isModifyWallsEnabled = false;
+        this.resetAlgorithmDataInGraph = function () {
+            for (var _i = 0, _a = _this.graph.grid; _i < _a.length; _i++) {
+                var graphRow = _a[_i];
+                for (var _b = 0, graphRow_1 = graphRow; _b < graphRow_1.length; _b++) {
+                    var graphCell = graphRow_1[_b];
+                    if (graphCell.graphCellConstraint === GraphCell_1.GraphCellConstraint.IN_CONSIDERATION ||
+                        graphCell.graphCellConstraint === GraphCell_1.GraphCellConstraint.VISITED ||
+                        graphCell.graphCellConstraint === GraphCell_1.GraphCellConstraint.FINAL_PATH) {
+                        graphCell.graphCellConstraint = GraphCell_1.GraphCellConstraint.PASSABLE;
+                    }
+                }
+            }
+        };
         this.updateGraphCell = function (rowCol, newConstraint) {
             var cell = _this.graph.grid[rowCol.row][rowCol.column];
             if (cell.graphCellConstraint !== GraphCell_1.GraphCellConstraint.START &&
@@ -84,6 +97,7 @@ var GraphViewComponent = /** @class */ (function () {
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.INIT_MODIFY_WALLS)).subscribe(function (a) { return (_this.isModifyWallsEnabled = true); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.FINALIZE_SET_WALLS)).subscribe(function (a) { return (_this.isModifyWallsEnabled = false); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.UPDATE_GRAPH_CELL)).subscribe(function (a) { return _this.updateGraphCell(a.cell, a.newConstraint); }));
+        this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.RESET_ALGORITHM_DATA)).subscribe(function (a) { return _this.resetAlgorithmDataInGraph(); }));
     }
     GraphViewComponent.prototype.ngOnDestroy = function () {
         this.subscriptions.unsubscribe();

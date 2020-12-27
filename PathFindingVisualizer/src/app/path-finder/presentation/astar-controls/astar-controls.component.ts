@@ -16,7 +16,7 @@ import { GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { AStarAlgorithm, AStarAlgorithmOptions } from 'src/app/PathFindingStrategies/AStarAlgorithm';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
-import { FINALIZE_SET_WALLS, updateGraphCell } from 'src/app/store/graph.actions';
+import { FINALIZE_SET_WALLS, resetAlgorithmData, updateGraphCell } from 'src/app/store/graph.actions';
 import { GraphState } from 'src/app/store/graph.reducer';
 
 @Component({
@@ -48,7 +48,9 @@ export class AstarControlsComponent implements OnInit, OnDestroy {
     this.store.pipe(take(1)).subscribe((state) => this.runAlgorithmFor(state));
   };
   stop() {}
-  reset() {}
+  reset() {
+    this.store.dispatch(resetAlgorithmData());
+  }
 
   private runAlgorithmFor(state: { graph: GraphState }): void {
     const graphState = state.graph;

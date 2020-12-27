@@ -1,4 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
+import { stat } from 'fs';
 import { GraphCellConstraint } from '../model/GraphCell';
 import { RowColumnPair } from '../model/RowColumnPair';
 import {
@@ -13,6 +14,7 @@ import {
   setWall,
   removeWall,
   updateGraphCell,
+  resetAlgorithmData,
 } from './graph.actions';
 
 export class GraphState {
@@ -53,7 +55,8 @@ const graphReducerInternal = createReducer(
   on(setEnd, (state, { endPosition }) => ({ ...state, endPosition })),
   on(finalizeSetEnd, (state) => ({ ...state })),
 
-  on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint))
+  on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint)),
+  on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] }))
 );
 
 export function graphReducer(state, action) {
