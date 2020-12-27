@@ -88,7 +88,7 @@ var GraphViewComponent = /** @class */ (function () {
         var graphDefinition = function (picture) {
             return _this.p5UtilService.graphDefinition(picture, _this.graph, _this.p5Settings, _this.handleHexagonClickEvent);
         };
-        var p5Graph = new p5(graphDefinition, this.el.nativeElement);
+        this.p5Graph = new p5(graphDefinition, this.el.nativeElement);
         // TODO Do this in a useful way
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.INIT_SET_START)).subscribe(function (a) { return (_this.setNextClickedHexagonToStart = true); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.FINALIZE_SET_START)).subscribe(function (a) { return (_this.setNextClickedHexagonToStart = false); }));

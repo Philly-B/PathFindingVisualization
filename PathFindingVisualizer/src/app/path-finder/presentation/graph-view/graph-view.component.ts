@@ -19,15 +19,13 @@ import {
   setEnd,
   setStart,
   setWall,
-  updateGraphCell,
   UPDATE_GRAPH_CELL,
 } from 'src/app/store/graph.actions';
-import { graphReducer, GraphState } from 'src/app/store/graph.reducer';
+import { GraphState } from 'src/app/store/graph.reducer';
 import { RowColumnPair } from '../../../model/RowColumnPair';
 import { MOUSE_DRAG_WALL_TIMEOUT_MS } from 'src/app/constants/GeneralConstants';
 import { Graph } from 'src/app/model/Graph';
 import { GraphCell, GraphCellConstraint } from 'src/app/model/GraphCell';
-import { CheckboxControlValueAccessor } from '@angular/forms';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
@@ -39,6 +37,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
 
   private p5Settings: P5Settings;
   private graph: Graph;
+  private p5Graph: p5;
 
   private subscriptions = new Subscription();
 
@@ -62,7 +61,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     this.graph = new Graph(graphUtilService.initGraph(this.p5Settings.N));
     const graphDefinition = (picture) =>
       this.p5UtilService.graphDefinition(picture, this.graph, this.p5Settings, this.handleHexagonClickEvent);
-    const p5Graph = new p5(graphDefinition, this.el.nativeElement);
+    this.p5Graph = new p5(graphDefinition, this.el.nativeElement);
 
     // TODO Do this in a useful way
     this.subscriptions.add(
