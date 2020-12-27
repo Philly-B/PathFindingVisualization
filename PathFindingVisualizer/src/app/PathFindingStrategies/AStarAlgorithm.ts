@@ -36,14 +36,8 @@ export class AStarAlgorithm {
       }
       graph[currElement.rowAndColumn.row][currElement.rowAndColumn.column] = VISITED_FIELD_ID;
 
-      console.log('current element', currElement);
-
-      const row = currElement.rowAndColumn.row;
-      const col = currElement.rowAndColumn.column;
       this.checkNeighborToLeft(graph, currElement, queue, end);
       this.checkNeighborsSameColumnAndRight(graph, currElement, queue, end);
-
-      queue.print();
     }
 
     if (lastNode === undefined) {
@@ -63,22 +57,26 @@ export class AStarAlgorithm {
     for (let rowDelta = -1; rowDelta <= 1; rowDelta++) {
       const colDeltaStart = row % 2 === 1 ? 0 : -1;
       const colDeltaEnd = row % 2 === 1 ? 1 : 0;
+
       for (let colDelta = colDeltaStart; colDelta <= colDeltaEnd; colDelta++) {
         if (rowDelta === 0 && colDelta === 0) {
           continue;
         }
-        if (this.isValidCell(graph, row + rowDelta, col + colDelta)) {
+        const rowOfNeigh = row + rowDelta;
+        const colOfNeigh = col + colDelta;
+
+        if (this.isValidCell(graph, rowOfNeigh, colOfNeigh)) {
           if (
-            graph[row + rowDelta][col + colDelta] === IN_CONSIDERATION_FIELD_ID ||
-            graph[row + rowDelta][col + colDelta] === VISITED_FIELD_ID
+            graph[rowOfNeigh][colOfNeigh] === IN_CONSIDERATION_FIELD_ID ||
+            graph[rowOfNeigh][colOfNeigh] === VISITED_FIELD_ID
           ) {
             continue;
           }
-          graph[row + rowDelta][col + colDelta] = IN_CONSIDERATION_FIELD_ID;
+          graph[rowOfNeigh][colOfNeigh] = IN_CONSIDERATION_FIELD_ID;
           queue.pushElement(
             new PrioritizedGraphCell(
-              new RowColumnPair(row + rowDelta, col + colDelta),
-              this.calculateManhattenDistanceOfTwoCells(row, col, end),
+              new RowColumnPair(rowOfNeigh, colOfNeigh),
+              this.calculateManhattenDistanceOfTwoCells(rowOfNeigh, colOfNeigh, end),
               currElement
             )
           );
@@ -94,15 +92,16 @@ export class AStarAlgorithm {
   ) {
     const row = currElement.rowAndColumn.row;
     const col = currElement.rowAndColumn.column;
-    if (this.isValidCell(graph, currElement.rowAndColumn.row, col - 1)) {
-      if (graph[row][col - 1] === IN_CONSIDERATION_FIELD_ID || graph[row][col - 1] === VISITED_FIELD_ID) {
+    const colOfNeigh = col - 1;
+    if (this.isValidCell(graph, currElement.rowAndColumn.row, colOfNeigh)) {
+      if (graph[row][colOfNeigh] === IN_CONSIDERATION_FIELD_ID || graph[row][colOfNeigh] === VISITED_FIELD_ID) {
         return;
       }
-      graph[row][col - 1] = IN_CONSIDERATION_FIELD_ID;
+      graph[row][colOfNeigh] = IN_CONSIDERATION_FIELD_ID;
       queue.pushElement(
         new PrioritizedGraphCell(
-          new RowColumnPair(row, col - 1),
-          this.calculateManhattenDistanceOfTwoCells(row, col, end),
+          new RowColumnPair(row, colOfNeigh),
+          this.calculateManhattenDistanceOfTwoCells(row, colOfNeigh, end),
           currElement
         )
       );
@@ -137,7 +136,9 @@ export class AStarAlgorithm {
     return cell1.priority - cell2.priority;
   }
   private calculateManhattenDistanceOfTwoCells(currentRow: number, currentCol: number, cell2: RowColumnPair) {
-    return Math.abs(currentRow - cell2.row) + Math.abs(currentCol - cell2.column);
+    const colShiftCurr = currentRow % 2 === 1 ? 1 : 0;
+    const colShiftCell2 = cell2.row % 2 === 1 ? 1 : 0;
+    return Math.abs(currentRow - cell2.row) + Math.abs(currentCol + colShiftCurr - (cell2.column + colShiftCell2));
   }
 }
 
