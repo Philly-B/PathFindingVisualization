@@ -32,6 +32,7 @@ var GraphViewComponent = /** @class */ (function () {
         this.isModifyWallsEnabled = false;
         this.handleHexagonClickEvent = function (hexagonClicked) {
             var referenceToGraphCell = new RowColumnPair_1.RowColumnPair(hexagonClicked.row, hexagonClicked.column);
+            console.log(hexagonClicked);
             if (_this.setNextClickedHexagonToStart) {
                 _this.graphUtilService.setGraphConstraintOfGraphCell(_this.graph.grid, GraphCell_1.GraphCellConstraint.START, GraphCell_1.GraphCellConstraint.PASSABLE);
                 hexagonClicked.graphCellConstraint = GraphCell_1.GraphCellConstraint.START;

@@ -37,10 +37,8 @@ export class P5UtilService {
   };
 
   pixelToHex = (graph: GraphCell[][], picture, x: number, y: number, settings: P5Settings): GraphCell => {
-    for (let row = 0; row < settings.N; row++) {
-      const startForRow = row % 2 === 1 ? 1 : 0;
-      for (let col = startForRow; col < settings.N - 1; col++) {
-        const currHex = graph[row][col];
+    for (const hexRow of graph) {
+      for (const currHex of hexRow) {
         const dist = picture.sqrt(picture.pow(x - currHex.center.x, 2) + picture.pow(y - currHex.center.y, 2));
         if (dist <= settings.hexagonSizePx) {
           return currHex;
@@ -66,10 +64,10 @@ export class P5UtilService {
   };
 
   private drawHexagons = (picture, graph: GraphCell[][], pictureShift: P5Vector, settings: P5Settings): void => {
-    for (let row = 0; row < settings.N; row++) {
-      const startForRow = row % 2 === 1 ? 1 : 0;
-      for (let col = startForRow; col < settings.N - 1; col++) {
-        const centerOfHexagonPx = this.hexToPixel(picture, col, row, pictureShift, settings);
+    for (let row = 0; row < graph.length; row++) {
+      const colShift = row % 2 === 1 ? 1 : 0;
+      for (let col = 0; col < graph[row].length; col++) {
+        const centerOfHexagonPx = this.hexToPixel(picture, col + colShift, row, pictureShift, settings);
         graph[row][col].center = centerOfHexagonPx;
         this.drawOneHexagon(picture, graph[row][col], settings);
       }

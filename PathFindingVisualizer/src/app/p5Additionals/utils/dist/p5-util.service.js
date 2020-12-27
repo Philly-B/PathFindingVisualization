@@ -34,10 +34,10 @@ var P5UtilService = /** @class */ (function () {
             };
         };
         this.pixelToHex = function (graph, picture, x, y, settings) {
-            for (var row = 0; row < settings.N; row++) {
-                var startForRow = row % 2 === 1 ? 1 : 0;
-                for (var col = startForRow; col < settings.N - 1; col++) {
-                    var currHex = graph[row][col];
+            for (var _i = 0, graph_1 = graph; _i < graph_1.length; _i++) {
+                var hexRow = graph_1[_i];
+                for (var _a = 0, hexRow_1 = hexRow; _a < hexRow_1.length; _a++) {
+                    var currHex = hexRow_1[_a];
                     var dist = picture.sqrt(picture.pow(x - currHex.center.x, 2) + picture.pow(y - currHex.center.y, 2));
                     if (dist <= settings.hexagonSizePx) {
                         return currHex;
@@ -55,10 +55,10 @@ var P5UtilService = /** @class */ (function () {
             return false;
         };
         this.drawHexagons = function (picture, graph, pictureShift, settings) {
-            for (var row = 0; row < settings.N; row++) {
-                var startForRow = row % 2 === 1 ? 1 : 0;
-                for (var col = startForRow; col < settings.N - 1; col++) {
-                    var centerOfHexagonPx = _this.hexToPixel(picture, col, row, pictureShift, settings);
+            for (var row = 0; row < graph.length; row++) {
+                var colShift = row % 2 === 1 ? 1 : 0;
+                for (var col = 0; col < graph[row].length; col++) {
+                    var centerOfHexagonPx = _this.hexToPixel(picture, col + colShift, row, pictureShift, settings);
                     graph[row][col].center = centerOfHexagonPx;
                     _this.drawOneHexagon(picture, graph[row][col], settings);
                 }

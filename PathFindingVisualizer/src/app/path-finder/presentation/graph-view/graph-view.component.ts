@@ -87,6 +87,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
 
   private handleHexagonClickEvent = (hexagonClicked: GraphCell): void => {
     const referenceToGraphCell = new RowColumnPair(hexagonClicked.row, hexagonClicked.column);
+    console.log(hexagonClicked);
     if (this.setNextClickedHexagonToStart) {
       this.graphUtilService.setGraphConstraintOfGraphCell(
         this.graph.grid,
