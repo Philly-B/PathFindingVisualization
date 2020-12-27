@@ -16,7 +16,7 @@ import { GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { AStarAlgorithm, AStarAlgorithmOptions } from 'src/app/PathFindingStrategies/AStarAlgorithm';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
-import { FINALIZE_SET_WALLS, resetAlgorithmData, updateGraphCell } from 'src/app/store/graph.actions';
+import { resetAlgorithmData, updateGraphCell } from 'src/app/store/graph.actions';
 import { GraphState } from 'src/app/store/graph.reducer';
 
 @Component({
@@ -30,13 +30,15 @@ export class AstarControlsComponent implements OnInit, OnDestroy {
 
   private subscriptions = new Subscription();
 
+  private stopped: boolean;
+  private done: boolean;
+
   constructor(
     private store: Store<{ graph: GraphState }>,
     private actions: ActionsSubject,
     private graphUtilService: GraphUtilService
   ) {
-    this.astartAlgorithm = new AStarAlgorithm();
-    this.astartOptions = new AStarAlgorithmOptions();
+    this.astartOptions = new AStarAlgorithmOptions(200);
   }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
@@ -45,35 +47,61 @@ export class AstarControlsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {}
 
   run = (): void => {
-    this.store.pipe(take(1)).subscribe((state) => this.runAlgorithmFor(state));
+    this.stopped = false;
+    if (this.astartAlgorithm === undefined) {
+      this.store.pipe(take(1)).subscribe((state) => this.initiateAlgorithm(state));
+    } else {
+      this.runAlgorithm();
+    }
   };
-  stop() {}
+  stop() {
+    this.stopped = true;
+  }
   reset() {
+    this.astartAlgorithm = undefined;
+    this.stopped = false;
+    this.done = false;
     this.store.dispatch(resetAlgorithmData());
   }
 
-  private runAlgorithmFor(state: { graph: GraphState }): void {
-    const graphState = state.graph;
+  private async runAlgorithm() {
+    while (!this.done && !this.stopped) {
+      console.log('one iter');
+      this.runOneIterationOfAlgorithm();
+      await new Promise((resolve) => setTimeout(resolve, this.astartOptions.algorithmSpeed));
+    }
+  }
 
+  private runOneIterationOfAlgorithm = () => {
+    if (this.astartAlgorithm && !this.done && this.astartAlgorithm.finished) {
+      this.stopped = true;
+      this.done = true;
+      for (const resultCell of this.astartAlgorithm.result) {
+        this.dispatchGraphState(resultCell, FINAL_PATH_FIELD_ID);
+      }
+    } else if (this.astartAlgorithm && !this.done && !this.astartAlgorithm.finished) {
+      this.astartAlgorithm.continueAlgorithm();
+    }
+  };
+
+  private initiateAlgorithm = (state: { graph: GraphState }): void => {
+    const graphState = state.graph;
     this.assertContainsStartAndEnd(graphState);
 
     const graph = this.graphUtilService.initGraphForAlgorithm(graphState.N);
     this.initGraphFromState(graph, graphState);
 
-    const resultPath = this.astartAlgorithm.runAlgorithm(graph, this.astartOptions, this.dispatchGraphState);
-    if (resultPath.length === 0) {
-      return;
-    }
-    console.log('result', resultPath);
-    for (const resultCell of resultPath) {
-      this.dispatchGraphState(resultCell, FINAL_PATH_FIELD_ID);
-    }
-  }
+    this.stopped = false;
+    this.astartAlgorithm = new AStarAlgorithm(graph, this.astartOptions, this.dispatchGraphState);
+    this.runAlgorithm();
+  };
 
-  private dispatchGraphState = (cell: RowColumnPair, newState: number): void => {
+  private dispatchGraphState = (cell: RowColumnPair, newState: number): boolean => {
     const newConstraint: GraphCellConstraint = this.mapAlgorithmNumberToGraphConstraint(newState);
 
     this.store.dispatch(updateGraphCell({ cell, newConstraint }));
+
+    return true;
   };
 
   private mapAlgorithmNumberToGraphConstraint(newState: number): GraphCellConstraint {

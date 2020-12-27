@@ -1,5 +1,4 @@
 import { createReducer, on } from '@ngrx/store';
-import { stat } from 'fs';
 import { GraphCellConstraint } from '../model/GraphCell';
 import { RowColumnPair } from '../model/RowColumnPair';
 import {
