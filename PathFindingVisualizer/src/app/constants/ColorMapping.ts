@@ -1,3 +1,5 @@
+import { GraphCell, GraphCellConstraint } from '../model/GraphCell';
+
 // GENERAL
 const background = [219, 237, 255];
 
@@ -17,4 +19,17 @@ export {
   hexagonInsideWall,
   hexagonInsideStart,
   hexagonInsideEnd,
+};
+
+export const getColorForHexagon = (graphCell: GraphCell): number[] => {
+  switch (graphCell.graphCellConstraint) {
+    case GraphCellConstraint.START:
+      return hexagonInsideStart;
+    case GraphCellConstraint.END:
+      return hexagonInsideEnd;
+    case GraphCellConstraint.WALL:
+      return hexagonInsideWall;
+    default:
+      return hexagonInsidePassable;
+  }
 };

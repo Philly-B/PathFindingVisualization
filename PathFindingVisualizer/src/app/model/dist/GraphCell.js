@@ -6,6 +6,7 @@ var GraphCell = /** @class */ (function () {
         this.row = row;
         this.column = column;
         this.graphCellConstraint = GraphCellConstraint.PASSABLE;
+        this.lastChange = Date.now();
     }
     return GraphCell;
 }());

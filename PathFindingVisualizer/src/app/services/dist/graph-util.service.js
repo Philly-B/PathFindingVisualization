@@ -9,24 +9,29 @@ exports.__esModule = true;
 exports.GraphUtilService = void 0;
 var core_1 = require("@angular/core");
 var GraphCell_1 = require("../model/GraphCell");
-var Hexagon_1 = require("../path-finder/visualisation-model/Hexagon");
-var RowColumnPair_1 = require("../path-finder/visualisation-model/RowColumnPair");
+var RowColumnPair_1 = require("../model/RowColumnPair");
 var GraphUtilService = /** @class */ (function () {
     function GraphUtilService() {
         var _this = this;
         this.initGraph = function (N) {
-            return _this.genericCreateGraph(N, function (row, col) { return new GraphCell_1.GraphCell(row, col); });
-        };
-        this.initVisualisationGraph = function (N) {
-            return _this.genericCreateGraph(N, function (row, col) { return new Hexagon_1.Hexagon(undefined, row, col); });
+            var graph = [];
+            for (var row = 0; row < N; row++) {
+                var currRow = [];
+                var sizeOfNForRow = row % 2 === 1 ? N - 1 : N;
+                for (var col = 0; col < sizeOfNForRow; col++) {
+                    currRow.push(new GraphCell_1.GraphCell(row, col));
+                }
+                graph.push(currRow);
+            }
+            return graph;
         };
         this.getAllWalls = function (graph) {
             var walls = [];
-            _this.doSomethingForEveryHex(graph, function (hexagon) { return walls.push(new RowColumnPair_1.RowColumnPair(hexagon.row, hexagon.column)); }, function (hexagon) { return hexagon.isWall; });
+            _this.doSomethingForEveryHex(graph, function (hexagon) { return walls.push(new RowColumnPair_1.RowColumnPair(hexagon.row, hexagon.column)); }, function (hexagon) { return hexagon.graphCellConstraint === GraphCell_1.GraphCellConstraint.WALL; });
             return walls;
         };
-        this.setFieldOfHexagon = function (graph, fieldName, newValue) {
-            _this.doSomethingForEveryHex(graph, function (hexagon) { return (hexagon[fieldName] = newValue); });
+        this.setGraphConstraintOfGraphCell = function (graph, oldValue, newValue) {
+            _this.doSomethingForEveryHex(graph, function (hexagon) { return (hexagon.graphCellConstraint = newValue); }, function (hexagon) { return hexagon.graphCellConstraint === oldValue; });
         };
         this.doSomethingForEveryHex = function (graph, hexagonConsumer, hexagonFilter) {
             for (var _i = 0, graph_1 = graph; _i < graph_1.length; _i++) {
@@ -40,18 +45,6 @@ var GraphUtilService = /** @class */ (function () {
             }
         };
     }
-    GraphUtilService.prototype.genericCreateGraph = function (N, objectCreator) {
-        var graph = [];
-        for (var row = 0; row < N; row++) {
-            var currRow = [];
-            var sizeOfNForRow = row % 2 === 1 ? N - 1 : N;
-            for (var col = 0; col < sizeOfNForRow; col++) {
-                currRow.push(objectCreator(row, col));
-            }
-            graph.push(currRow);
-        }
-        return graph;
-    };
     GraphUtilService = __decorate([
         core_1.Injectable({
             providedIn: 'root'

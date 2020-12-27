@@ -12,5 +12,3 @@ export const selectFeatureStartPosition = createSelector(selectFeature, (state: 
 export const selectFeatureEndPosition = createSelector(selectFeature, (state: GraphState) => state.endPosition);
 
 export const selectFeatureWalls = createSelector(selectFeature, (state: GraphState) => state.walls);
-
-export const selectGraphSize = createSelector(selectFeature, (state: GraphState) => state.graphSize);

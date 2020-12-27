@@ -1,8 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
-import { Graph } from '../model/Graph';
-import { RowColumnPair } from '../path-finder/visualisation-model/RowColumnPair';
+import { RowColumnPair } from '../model/RowColumnPair';
 import {
-  modifyWalls,
   setEnd,
   setStart,
   initiateSetStart,
@@ -11,24 +9,20 @@ import {
   finalizeModifyWalls,
   finalizeSetStart,
   finalizeSetEnd,
-  modifyGridSize,
-  setNewGraph,
+  setWall,
+  removeWall,
 } from './graph.actions';
 
 export class GraphState {
   startPosition: RowColumnPair;
   endPosition: RowColumnPair;
   walls: RowColumnPair[];
-  graph: Graph;
-  graphSize: number;
 }
 
 export const initialState: GraphState = {
   startPosition: undefined,
   endPosition: undefined,
   walls: [],
-  graph: undefined,
-  graphSize: 15,
 };
 
 const graphReducerInternal = createReducer(
@@ -38,17 +32,39 @@ const graphReducerInternal = createReducer(
   on(finalizeSetStart, (state) => ({ ...state })),
 
   on(initiateModifyWalls, (state) => ({ ...state })),
-  on(modifyWalls, (state, { walls }) => ({ ...state, walls })),
+  on(setWall, (state, { wall }) => ({ ...state, walls: duplicateAndAddWall(state.walls, wall) })),
+  on(removeWall, (state, { exWall }) => ({ ...state, walls: duplicateAndRemoveWall(state.walls, exWall) })),
   on(finalizeModifyWalls, (state) => ({ ...state })),
 
   on(initiateSetEnd, (state) => ({ ...state })),
   on(setEnd, (state, { endPosition }) => ({ ...state, endPosition })),
-  on(finalizeSetEnd, (state) => ({ ...state })),
-
-  on(modifyGridSize, (state, { newGridSize }) => ({ ...state, graphSize: newGridSize })),
-  on(setNewGraph, (state, { graph }) => ({ ...state, graph }))
+  on(finalizeSetEnd, (state) => ({ ...state }))
 );
 
 export function graphReducer(state, action) {
   return graphReducerInternal(state, action);
 }
+
+const duplicateAndRemoveWall = (walls: RowColumnPair[], exWall: RowColumnPair): RowColumnPair[] => {
+  const nextWalls = duplicateWalls(walls);
+  for (let i = 0; i < nextWalls.length; i++) {
+    if (RowColumnPair.equals(nextWalls[i], exWall)) {
+      nextWalls.splice(i, 1);
+      break;
+    }
+  }
+  return nextWalls;
+};
+const duplicateAndAddWall = (walls: RowColumnPair[], newWall: RowColumnPair): RowColumnPair[] => {
+  const nextWalls = duplicateWalls(walls);
+  nextWalls.push(newWall);
+  return nextWalls;
+};
+
+const duplicateWalls = (walls: RowColumnPair[]): RowColumnPair[] => {
+  const wallsCopy: RowColumnPair[] = [];
+  for (const wall of walls) {
+    wallsCopy.push(new RowColumnPair(wall.row, wall.column));
+  }
+  return wallsCopy;
+};

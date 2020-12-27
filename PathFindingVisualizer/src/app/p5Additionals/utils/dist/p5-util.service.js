@@ -24,13 +24,13 @@ var P5UtilService = /** @class */ (function () {
             };
             picture.draw = function () {
                 picture.background(ColorMapping.background);
-                _this.drawHexagons(picture, graph.graph, pictureShift, settings);
+                _this.drawHexagons(picture, graph.grid, pictureShift, settings);
             };
             picture.mouseClicked = function () {
-                _this.handleMouseEvent(graph.graph, settings, hexagonClickedCallback, picture);
+                _this.handleMouseEvent(graph.grid, settings, hexagonClickedCallback, picture);
             };
             picture.mouseDragged = function () {
-                _this.handleMouseEvent(graph.graph, settings, hexagonClickedCallback, picture);
+                _this.handleMouseEvent(graph.grid, settings, hexagonClickedCallback, picture);
             };
         };
         this.pixelToHex = function (graph, picture, x, y, settings) {
@@ -73,18 +73,7 @@ var P5UtilService = /** @class */ (function () {
             picture.strokeWeight(settings.hexagonLinesBetweenSizePx);
             picture.beginShape();
             for (var i = 0; i <= points.length; i++) {
-                if (hexagon.isStart) {
-                    picture.fill(ColorMapping.hexagonInsideStart);
-                }
-                else if (hexagon.isEnd) {
-                    picture.fill(ColorMapping.hexagonInsideEnd);
-                }
-                else if (hexagon.isWall) {
-                    picture.fill(ColorMapping.hexagonInsideWall);
-                }
-                else {
-                    picture.fill(ColorMapping.hexagonInsidePassable);
-                }
+                picture.fill(ColorMapping.getColorForHexagon(hexagon));
                 picture.vertex(points[i % points.length].x, points[i % points.length].y);
             }
             picture.endShape();

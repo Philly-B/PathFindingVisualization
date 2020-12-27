@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Hexagon } from 'src/app/path-finder/visualisation-model/Hexagon';
 import { P5Vector } from '../models/P5Vector';
 
 import * as ColorMapping from 'src/app/constants/ColorMapping';
 import { P5Settings } from '../models/P5Settings';
-import { VisualizedGraph } from 'src/app/path-finder/visualisation-model/VisualizedGraph';
+import { Graph } from 'src/app/model/Graph';
+import { GraphCell } from 'src/app/model/GraphCell';
 
 @Injectable({
   providedIn: 'root',
@@ -12,12 +12,7 @@ import { VisualizedGraph } from 'src/app/path-finder/visualisation-model/Visuali
 export class P5UtilService {
   constructor() {}
 
-  graphDefinition = (
-    picture,
-    graph: VisualizedGraph,
-    settings: P5Settings,
-    hexagonClickedCallback: (hexagonClicked) => void
-  ) => {
+  graphDefinition = (picture, graph: Graph, settings: P5Settings, hexagonClickedCallback: (hexagonClicked) => void) => {
     const pictureShift: P5Vector = {
       x: settings.hexagonSizePx * 1.8,
       y: settings.hexagonSizePx * 3,
@@ -30,18 +25,18 @@ export class P5UtilService {
     };
     picture.draw = () => {
       picture.background(ColorMapping.background);
-      this.drawHexagons(picture, graph.graph, pictureShift, settings);
+      this.drawHexagons(picture, graph.grid, pictureShift, settings);
     };
 
     picture.mouseClicked = () => {
-      this.handleMouseEvent(graph.graph, settings, hexagonClickedCallback, picture);
+      this.handleMouseEvent(graph.grid, settings, hexagonClickedCallback, picture);
     };
     picture.mouseDragged = () => {
-      this.handleMouseEvent(graph.graph, settings, hexagonClickedCallback, picture);
+      this.handleMouseEvent(graph.grid, settings, hexagonClickedCallback, picture);
     };
   };
 
-  pixelToHex = (graph: Hexagon[][], picture, x: number, y: number, settings: P5Settings): Hexagon => {
+  pixelToHex = (graph: GraphCell[][], picture, x: number, y: number, settings: P5Settings): GraphCell => {
     for (let row = 0; row < settings.N; row++) {
       const startForRow = row % 2 === 1 ? 1 : 0;
       for (let col = startForRow; col < settings.N - 1; col++) {
@@ -57,7 +52,7 @@ export class P5UtilService {
   };
 
   private handleMouseEvent = (
-    graph: Hexagon[][],
+    graph: GraphCell[][],
     settings: P5Settings,
     hexagonClickedCallback: (hexagonClicked) => void,
     picture: any
@@ -70,7 +65,7 @@ export class P5UtilService {
     return false;
   };
 
-  private drawHexagons = (picture, graph: Hexagon[][], pictureShift: P5Vector, settings: P5Settings): void => {
+  private drawHexagons = (picture, graph: GraphCell[][], pictureShift: P5Vector, settings: P5Settings): void => {
     for (let row = 0; row < settings.N; row++) {
       const startForRow = row % 2 === 1 ? 1 : 0;
       for (let col = startForRow; col < settings.N - 1; col++) {
@@ -81,7 +76,7 @@ export class P5UtilService {
     }
   };
 
-  private drawOneHexagon = (picture, hexagon: Hexagon, settings: P5Settings) => {
+  private drawOneHexagon = (picture, hexagon: GraphCell, settings: P5Settings) => {
     const points = [];
     for (let i = 0; i < 6; i++) {
       points.push(this.hexCorner(picture, hexagon.center, i, settings));
@@ -91,15 +86,7 @@ export class P5UtilService {
     picture.strokeWeight(settings.hexagonLinesBetweenSizePx);
     picture.beginShape();
     for (let i = 0; i <= points.length; i++) {
-      if (hexagon.isStart) {
-        picture.fill(ColorMapping.hexagonInsideStart);
-      } else if (hexagon.isEnd) {
-        picture.fill(ColorMapping.hexagonInsideEnd);
-      } else if (hexagon.isWall) {
-        picture.fill(ColorMapping.hexagonInsideWall);
-      } else {
-        picture.fill(ColorMapping.hexagonInsidePassable);
-      }
+      picture.fill(ColorMapping.getColorForHexagon(hexagon));
       picture.vertex(points[i % points.length].x, points[i % points.length].y);
     }
     picture.endShape();

@@ -12,10 +12,9 @@ var effects_1 = require("@ngrx/effects");
 var p5 = require("p5");
 var rxjs_1 = require("rxjs");
 var graph_actions_1 = require("src/app/store/graph.actions");
-var graph_selectors_1 = require("src/app/store/graph.selectors");
-var VisualizedGraph_1 = require("../../visualisation-model/VisualizedGraph");
-var RowColumnPair_1 = require("../../visualisation-model/RowColumnPair");
+var RowColumnPair_1 = require("../../../model/RowColumnPair");
 var GeneralConstants_1 = require("src/app/constants/GeneralConstants");
+var Graph_1 = require("src/app/model/Graph");
 var GraphCell_1 = require("src/app/model/GraphCell");
 var GraphViewComponent = /** @class */ (function () {
     function GraphViewComponent(el, p5UtilService, graphUtilService, store, actions) {
@@ -31,59 +30,42 @@ var GraphViewComponent = /** @class */ (function () {
         this.setNextClickedHexagonToStart = false;
         this.setNextClickedHexagonToEnd = false;
         this.isModifyWallsEnabled = false;
-        this.initVisualisationGraphWithNewSize = function (graphSize) {
-            _this.p5Settings.N = graphSize;
-            _this.initVisualisationGraph();
-        };
-        this.initVisualisationGraph = function (graph) {
-            _this.hexGrid.graph = _this.graphUtilService.initVisualisationGraph(_this.p5Settings.N);
-            if (graph) {
-                for (var row = 0; row < graph.grid.length; row++) {
-                    for (var col = 0; col < graph.grid[row].length; col++) {
-                        var currentCell = graph.grid[row][col];
-                        _this.hexGrid.graph[row][col].isStart = currentCell.graphCellConstraint === GraphCell_1.GraphCellConstraint.START;
-                        _this.hexGrid.graph[row][col].isEnd = currentCell.graphCellConstraint === GraphCell_1.GraphCellConstraint.END;
-                        _this.hexGrid.graph[row][col].isWall = currentCell.graphCellConstraint === GraphCell_1.GraphCellConstraint.WALL;
-                    }
-                }
-            }
-        };
         this.handleHexagonClickEvent = function (hexagonClicked) {
+            var referenceToGraphCell = new RowColumnPair_1.RowColumnPair(hexagonClicked.row, hexagonClicked.column);
             if (_this.setNextClickedHexagonToStart) {
-                _this.graphUtilService.setFieldOfHexagon(_this.hexGrid.graph, 'isStart', false);
-                hexagonClicked.isStart = true;
-                hexagonClicked.isEnd = false;
-                hexagonClicked.isWall = false;
-                _this.store.dispatch(graph_actions_1.setStart({ startPosition: new RowColumnPair_1.RowColumnPair(hexagonClicked.row, hexagonClicked.column) }));
+                _this.graphUtilService.setGraphConstraintOfGraphCell(_this.graph.grid, GraphCell_1.GraphCellConstraint.START, GraphCell_1.GraphCellConstraint.PASSABLE);
+                hexagonClicked.graphCellConstraint = GraphCell_1.GraphCellConstraint.START;
+                _this.store.dispatch(graph_actions_1.setStart({ startPosition: referenceToGraphCell }));
             }
             else if (_this.setNextClickedHexagonToEnd) {
-                _this.graphUtilService.setFieldOfHexagon(_this.hexGrid.graph, 'isEnd', false);
-                hexagonClicked.isStart = false;
-                hexagonClicked.isEnd = true;
-                hexagonClicked.isWall = false;
-                _this.store.dispatch(graph_actions_1.setEnd({ endPosition: new RowColumnPair_1.RowColumnPair(hexagonClicked.row, hexagonClicked.column) }));
+                _this.graphUtilService.setGraphConstraintOfGraphCell(_this.graph.grid, GraphCell_1.GraphCellConstraint.END, GraphCell_1.GraphCellConstraint.PASSABLE);
+                hexagonClicked.graphCellConstraint = GraphCell_1.GraphCellConstraint.END;
+                _this.store.dispatch(graph_actions_1.setEnd({ endPosition: referenceToGraphCell }));
             }
             else if (_this.isModifyWallsEnabled) {
                 if (Date.now() - hexagonClicked.lastChange < GeneralConstants_1.MOUSE_DRAG_WALL_TIMEOUT_MS) {
                     return;
                 }
                 hexagonClicked.lastChange = Date.now();
-                hexagonClicked.isWall = !hexagonClicked.isWall;
-                hexagonClicked.isStart = false;
-                hexagonClicked.isEnd = false;
-                var allWalls = _this.graphUtilService.getAllWalls(_this.hexGrid.graph);
-                _this.store.dispatch(graph_actions_1.modifyWalls({ walls: allWalls }));
+                if (hexagonClicked.graphCellConstraint === GraphCell_1.GraphCellConstraint.WALL) {
+                    hexagonClicked.graphCellConstraint = GraphCell_1.GraphCellConstraint.PASSABLE;
+                    _this.store.dispatch(graph_actions_1.removeWall({ exWall: referenceToGraphCell }));
+                }
+                else {
+                    hexagonClicked.graphCellConstraint = GraphCell_1.GraphCellConstraint.WALL;
+                    _this.store.dispatch(graph_actions_1.setWall({ wall: referenceToGraphCell }));
+                }
             }
         };
-        this.hexGrid = new VisualizedGraph_1.VisualizedGraph();
         this.p5Settings = {
-            N: 10,
+            N: 15,
             canvasSizePx: this.canvasSizePx,
             hexagonSizePx: this.hexagonSizePx,
             hexagonLinesBetweenSizePx: 3
         };
+        this.graph = new Graph_1.Graph(graphUtilService.initGraph(this.p5Settings.N));
         var graphDefinition = function (picture) {
-            return _this.p5UtilService.graphDefinition(picture, _this.hexGrid, _this.p5Settings, _this.handleHexagonClickEvent);
+            return _this.p5UtilService.graphDefinition(picture, _this.graph, _this.p5Settings, _this.handleHexagonClickEvent);
         };
         var p5Graph = new p5(graphDefinition, this.el.nativeElement);
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.INIT_SET_START)).subscribe(function (a) { return (_this.setNextClickedHexagonToStart = true); }));
@@ -92,15 +74,11 @@ var GraphViewComponent = /** @class */ (function () {
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.FINALIZE_SET_END)).subscribe(function (a) { return (_this.setNextClickedHexagonToEnd = false); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.INIT_MODIFY_WALLS)).subscribe(function (a) { return (_this.isModifyWallsEnabled = true); }));
         this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.FINALIZE_SET_WALLS)).subscribe(function (a) { return (_this.isModifyWallsEnabled = false); }));
-        this.subscriptions.add(actions.pipe(effects_1.ofType(graph_actions_1.SET_NEW_GRAPH)).subscribe(function (a) { return _this.initVisualisationGraph(a.graph); }));
     }
     GraphViewComponent.prototype.ngOnDestroy = function () {
         this.subscriptions.unsubscribe();
     };
-    GraphViewComponent.prototype.ngOnInit = function () {
-        var _this = this;
-        this.subscriptions.add(this.store.select(graph_selectors_1.selectGraphSize).subscribe(function (graphSize) { return _this.initVisualisationGraphWithNewSize(graphSize); }));
-    };
+    GraphViewComponent.prototype.ngOnInit = function () { };
     GraphViewComponent = __decorate([
         core_1.Component({
             selector: 'app-graph-view',
