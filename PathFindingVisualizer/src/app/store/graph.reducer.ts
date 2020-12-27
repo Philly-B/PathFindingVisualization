@@ -14,6 +14,7 @@ import {
 } from './graph.actions';
 
 export class GraphState {
+  N: number;
   startPosition: RowColumnPair;
   endPosition: RowColumnPair;
   walls: RowColumnPair[];
@@ -23,6 +24,7 @@ export const initialState: GraphState = {
   startPosition: undefined,
   endPosition: undefined,
   walls: [],
+  N: 15,
 };
 
 const graphReducerInternal = createReducer(

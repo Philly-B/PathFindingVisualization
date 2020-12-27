@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 exports.__esModule = true;
 exports.GraphUtilService = void 0;
 var core_1 = require("@angular/core");
+var AlgorithmConstants_1 = require("../constants/AlgorithmConstants");
 var GraphCell_1 = require("../model/GraphCell");
 var RowColumnPair_1 = require("../model/RowColumnPair");
 var GraphUtilService = /** @class */ (function () {
@@ -20,6 +21,18 @@ var GraphUtilService = /** @class */ (function () {
                 var sizeOfNForRow = row % 2 === 1 ? N - 1 : N;
                 for (var col = 0; col < sizeOfNForRow; col++) {
                     currRow.push(new GraphCell_1.GraphCell(row, col));
+                }
+                graph.push(currRow);
+            }
+            return graph;
+        };
+        this.initGraphForAlgorithm = function (N) {
+            var graph = [];
+            for (var row = 0; row < N; row++) {
+                var currRow = [];
+                var sizeOfNForRow = row % 2 === 1 ? N - 1 : N;
+                for (var col = 0; col < sizeOfNForRow; col++) {
+                    currRow.push(AlgorithmConstants_1.PASSABLE_FIELD_ID);
                 }
                 graph.push(currRow);
             }

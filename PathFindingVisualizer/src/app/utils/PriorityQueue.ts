@@ -4,6 +4,7 @@ export class PriorityQueue<T> {
 
   constructor(comparator: Comparator<T>) {
     this.comparator = comparator;
+    this.elements = [];
   }
 
   pushElement(element: T): void {
@@ -23,6 +24,10 @@ export class PriorityQueue<T> {
 
   isEmpty(): boolean {
     return this.elements.length === 0;
+  }
+
+  print(): void {
+    console.log(this.elements);
   }
 
   private moveElementDown(index: number): void {

@@ -1,30 +1,49 @@
-import { Graph } from '../model/Graph';
-import { GraphCell, GraphCellConstraint } from '../model/GraphCell';
-import { graphReducer } from '../store/graph.reducer';
 import { PriorityQueue } from '../utils/PriorityQueue';
-import { StartNotDefinedError } from './errors';
+import { StartNotDefinedError } from '../errors/AlgorithmErrors';
+import {
+  END_FIELD_ID,
+  IN_CONSIDERATION_FIELD_ID,
+  START_FIELD_ID,
+  VISITED_FIELD_ID,
+  WALL_FIELD_ID,
+} from '../constants/AlgorithmConstants';
+import { RowColumnPair } from '../model/RowColumnPair';
 
 export class AStarAlgorithm {
   constructor() {}
 
-  public runAlgorithm(graph: Graph, options: AStarAlgorithmOptions): GraphCell[] {
-    const start = this.getElementWithConstraint(graph, GraphCellConstraint.START);
-    const end = this.getElementWithConstraint(graph, GraphCellConstraint.START);
+  public runAlgorithm(graph: number[][], options: AStarAlgorithmOptions): RowColumnPair[] {
+    const start = this.getElementWithConstraint(graph, START_FIELD_ID);
+    const end = this.getElementWithConstraint(graph, END_FIELD_ID);
 
     const queue = new PriorityQueue<PrioritizedGraphCell>(this.prioritizedGraphCellComparator);
-    queue.pushElement(new PrioritizedGraphCell(start, this.calculateManhattenDistanceOfTwoCells(start, end)));
+    queue.pushElement(
+      new PrioritizedGraphCell(start, this.calculateManhattenDistanceOfTwoCells(start.row, start.column, end))
+    );
+
+    console.log('start', start);
+    console.log('end', end);
 
     let lastNode: PrioritizedGraphCell;
     while (!queue.isEmpty()) {
       const currElement = queue.popElement();
-      if (currElement.graphCell === end) {
+      if (RowColumnPair.equals(currElement.rowAndColumn, end)) {
         lastNode = currElement;
         break;
       }
-      const row = currElement.graphCell.row;
-      const col = currElement.graphCell.column;
+      if (graph[currElement.rowAndColumn.row][currElement.rowAndColumn.column] === VISITED_FIELD_ID) {
+        continue;
+      }
+      graph[currElement.rowAndColumn.row][currElement.rowAndColumn.column] = VISITED_FIELD_ID;
+
+      console.log('current element', currElement);
+
+      const row = currElement.rowAndColumn.row;
+      const col = currElement.rowAndColumn.column;
       this.checkNeighborToLeft(graph, currElement, queue, end);
       this.checkNeighborsSameColumnAndRight(graph, currElement, queue, end);
+
+      queue.print();
     }
 
     if (lastNode === undefined) {
@@ -34,23 +53,32 @@ export class AStarAlgorithm {
   }
 
   private checkNeighborsSameColumnAndRight(
-    graph: Graph,
+    graph: number[][],
     currElement: PrioritizedGraphCell,
     queue: PriorityQueue<PrioritizedGraphCell>,
-    end: GraphCell
+    end: RowColumnPair
   ) {
-    const row = currElement.graphCell.row;
-    const col = currElement.graphCell.column;
+    const row = currElement.rowAndColumn.row;
+    const col = currElement.rowAndColumn.column;
     for (let rowDelta = -1; rowDelta <= 1; rowDelta++) {
-      for (let colDelta = 0; colDelta <= 1; colDelta++) {
+      const colDeltaStart = row % 2 === 1 ? 0 : -1;
+      const colDeltaEnd = row % 2 === 1 ? 1 : 0;
+      for (let colDelta = colDeltaStart; colDelta <= colDeltaEnd; colDelta++) {
         if (rowDelta === 0 && colDelta === 0) {
           continue;
         }
-        if (this.isValidCell(graph, currElement.graphCell.row + rowDelta, col + colDelta)) {
+        if (this.isValidCell(graph, row + rowDelta, col + colDelta)) {
+          if (
+            graph[row + rowDelta][col + colDelta] === IN_CONSIDERATION_FIELD_ID ||
+            graph[row + rowDelta][col + colDelta] === VISITED_FIELD_ID
+          ) {
+            continue;
+          }
+          graph[row + rowDelta][col + colDelta] = IN_CONSIDERATION_FIELD_ID;
           queue.pushElement(
             new PrioritizedGraphCell(
-              graph.grid[row][col],
-              this.calculateManhattenDistanceOfTwoCells(graph.grid[row][col], end),
+              new RowColumnPair(row + rowDelta, col + colDelta),
+              this.calculateManhattenDistanceOfTwoCells(row, col, end),
               currElement
             )
           );
@@ -59,48 +87,46 @@ export class AStarAlgorithm {
     }
   }
   private checkNeighborToLeft(
-    graph: Graph,
+    graph: number[][],
     currElement: PrioritizedGraphCell,
     queue: PriorityQueue<PrioritizedGraphCell>,
-    end: GraphCell
+    end: RowColumnPair
   ) {
-    const row = currElement.graphCell.row;
-    const col = currElement.graphCell.column;
-    if (this.isValidCell(graph, currElement.graphCell.row, col - 1)) {
+    const row = currElement.rowAndColumn.row;
+    const col = currElement.rowAndColumn.column;
+    if (this.isValidCell(graph, currElement.rowAndColumn.row, col - 1)) {
+      if (graph[row][col - 1] === IN_CONSIDERATION_FIELD_ID || graph[row][col - 1] === VISITED_FIELD_ID) {
+        return;
+      }
+      graph[row][col - 1] = IN_CONSIDERATION_FIELD_ID;
       queue.pushElement(
         new PrioritizedGraphCell(
-          graph.grid[row][col],
-          this.calculateManhattenDistanceOfTwoCells(graph.grid[row][col], end),
+          new RowColumnPair(row, col - 1),
+          this.calculateManhattenDistanceOfTwoCells(row, col, end),
           currElement
         )
       );
     }
   }
 
-  private isValidCell(graph: Graph, row: number, col: number): boolean {
-    return (
-      row >= 0 &&
-      row < graph.grid.length &&
-      col >= 0 &&
-      col < graph.grid[row].length &&
-      graph.grid[row][col].graphCellConstraint !== GraphCellConstraint.WALL
-    );
+  private isValidCell(grid: number[][], row: number, col: number): boolean {
+    return row >= 0 && row < grid.length && col >= 0 && col < grid[row].length && grid[row][col] !== WALL_FIELD_ID;
   }
 
-  private createReversePath(node: PrioritizedGraphCell): GraphCell[] {
+  private createReversePath(node: PrioritizedGraphCell): RowColumnPair[] {
     if (node.cameFrom === undefined) {
       return [];
     }
     const restOfPath = this.createReversePath(node.cameFrom);
-    restOfPath.push(node.graphCell);
+    restOfPath.push(node.rowAndColumn);
     return restOfPath;
   }
 
-  private getElementWithConstraint(graph: Graph, constraint: GraphCellConstraint): GraphCell {
-    for (const graphRow of graph.grid) {
-      for (const graphCell of graphRow) {
-        if (graphCell.graphCellConstraint === constraint) {
-          return graphCell;
+  private getElementWithConstraint(graph: number[][], constraint: number): RowColumnPair {
+    for (let row = 0; row < graph.length; row++) {
+      for (let col = 0; col < graph[row].length; col++) {
+        if (graph[row][col] === constraint) {
+          return new RowColumnPair(row, col);
         }
       }
     }
@@ -110,8 +136,8 @@ export class AStarAlgorithm {
   private prioritizedGraphCellComparator(cell1: PrioritizedGraphCell, cell2: PrioritizedGraphCell): number {
     return cell1.priority - cell2.priority;
   }
-  private calculateManhattenDistanceOfTwoCells(cell1: GraphCell, cell2: GraphCell) {
-    return Math.abs(cell1.row - cell2.row) + Math.abs(cell1.column - cell2.column);
+  private calculateManhattenDistanceOfTwoCells(currentRow: number, currentCol: number, cell2: RowColumnPair) {
+    return Math.abs(currentRow - cell2.row) + Math.abs(currentCol - cell2.column);
   }
 }
 
@@ -120,5 +146,5 @@ export class AStarAlgorithmOptions {
 }
 
 class PrioritizedGraphCell {
-  constructor(public graphCell: GraphCell, public priority: number, public cameFrom?: PrioritizedGraphCell) {}
+  constructor(public rowAndColumn: RowColumnPair, public priority: number, public cameFrom?: PrioritizedGraphCell) {}
 }
