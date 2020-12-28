@@ -7,11 +7,9 @@ export interface AppState {
 
 export const selectGraphFeature = (state: AppState) => state.graph;
 
-export const selectFeatureStartPosition = createSelector(
+export const selectFeatureAlgorithmSpeed = createSelector(
   selectGraphFeature,
-  (state: GraphState) => state.startPosition
+  (state: GraphState) => state.algorithmSpeed
 );
-
-export const selectFeatureEndPosition = createSelector(selectGraphFeature, (state: GraphState) => state.endPosition);
 
 export const selectFeatureWalls = createSelector(selectGraphFeature, (state: GraphState) => state.walls);

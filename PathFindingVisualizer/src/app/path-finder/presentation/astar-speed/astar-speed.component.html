@@ -1,4 +1,5 @@
-<div class="form-group">
+<div *ngIf="initialSpeed !== -1" class="form-group">
   <label for="formControlRange">Algorithm execution speed</label>
-  <input type="range" class="form-control-range" id="formControlRange">
+  <input type="range" class="form-control-range" min="{{min}}" max="{{max}}" step="{{stepSize}}"
+    value="{{initialSpeed}}" (change)="valueChanged($event)" id="formControlRange">
 </div>

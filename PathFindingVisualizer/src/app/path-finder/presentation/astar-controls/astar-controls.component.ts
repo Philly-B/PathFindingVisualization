@@ -16,8 +16,9 @@ import { GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { AStarAlgorithm, AStarAlgorithmOptions } from 'src/app/PathFindingStrategies/AStarAlgorithm';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
-import { resetAlgorithmData, updateGraphCell } from 'src/app/store/graph.actions';
+import { resetAlgorithmData, setAlgorithmSpeed, updateGraphCell } from 'src/app/store/graph.actions';
 import { GraphState } from 'src/app/store/graph.reducer';
+import { selectFeatureAlgorithmSpeed } from 'src/app/store/graph.selectors';
 
 @Component({
   selector: 'app-astar-controls',
@@ -30,6 +31,7 @@ export class AstarControlsComponent implements OnInit, OnDestroy {
 
   private subscriptions = new Subscription();
 
+  allDisabled = true;
   private stopped: boolean;
   private done: boolean;
 
@@ -38,8 +40,20 @@ export class AstarControlsComponent implements OnInit, OnDestroy {
     private actions: ActionsSubject,
     private graphUtilService: GraphUtilService
   ) {
-    this.astartOptions = new AStarAlgorithmOptions(200);
+    this.subscriptions.add(
+      store.select(selectFeatureAlgorithmSpeed).subscribe((algorithmSpeed) => this.setAlgorithmSpeed(algorithmSpeed))
+    );
   }
+
+  private setAlgorithmSpeed = (algorithmSpeed: number): void => {
+    if (this.astartOptions === undefined) {
+      this.astartOptions = new AStarAlgorithmOptions(algorithmSpeed);
+    } else {
+      this.astartOptions.algorithmSpeed = algorithmSpeed;
+    }
+    this.allDisabled = false;
+  };
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }

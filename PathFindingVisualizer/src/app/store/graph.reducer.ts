@@ -14,6 +14,7 @@ import {
   removeWall,
   updateGraphCell,
   resetAlgorithmData,
+  setAlgorithmSpeed,
 } from './graph.actions';
 
 export class GraphState {
@@ -25,6 +26,8 @@ export class GraphState {
   inConsideration: RowColumnPair[];
   visited: RowColumnPair[];
   finalPath: RowColumnPair[];
+
+  algorithmSpeed: number;
 }
 
 export const initialState: GraphState = {
@@ -36,6 +39,8 @@ export const initialState: GraphState = {
   inConsideration: [],
   visited: [],
   finalPath: [],
+
+  algorithmSpeed: 250,
 };
 
 // TODO every array should be duplicated!
@@ -55,7 +60,8 @@ const graphReducerInternal = createReducer(
   on(finalizeSetEnd, (state) => ({ ...state })),
 
   on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint)),
-  on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] }))
+  on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] })),
+  on(setAlgorithmSpeed, (state, { speed }) => ({ ...state, algorithmSpeed: speed }))
 );
 
 export function graphReducer(state, action) {

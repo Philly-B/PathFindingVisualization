@@ -29,7 +29,8 @@ exports.initialState = {
     N: 15,
     inConsideration: [],
     visited: [],
-    finalPath: []
+    finalPath: [],
+    algorithmSpeed: 250
 };
 // TODO every array should be duplicated!
 var graphReducerInternal = store_1.createReducer(exports.initialState, store_1.on(graph_actions_1.initiateSetStart, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.setStart, function (state, _a) {
@@ -47,7 +48,10 @@ var graphReducerInternal = store_1.createReducer(exports.initialState, store_1.o
 }), store_1.on(graph_actions_1.finalizeSetEnd, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.updateGraphCell, function (state, _a) {
     var cell = _a.cell, newConstraint = _a.newConstraint;
     return addChangeCellToCorrectList(state, cell, newConstraint);
-}), store_1.on(graph_actions_1.resetAlgorithmData, function (state) { return (__assign(__assign({}, state), { visited: [], inConsideration: [], finalPath: [] })); }));
+}), store_1.on(graph_actions_1.resetAlgorithmData, function (state) { return (__assign(__assign({}, state), { visited: [], inConsideration: [], finalPath: [] })); }), store_1.on(graph_actions_1.setAlgorithmSpeed, function (state, _a) {
+    var speed = _a.speed;
+    return (__assign(__assign({}, state), { algorithmSpeed: speed }));
+}));
 function graphReducer(state, action) {
     return graphReducerInternal(state, action);
 }
