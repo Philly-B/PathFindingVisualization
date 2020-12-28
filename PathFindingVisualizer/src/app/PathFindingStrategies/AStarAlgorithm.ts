@@ -8,8 +8,10 @@ import {
   WALL_FIELD_ID,
 } from '../constants/AlgorithmConstants';
 import { RowColumnPair } from '../model/RowColumnPair';
+import { AlgorithmOptions } from './AlgorithmOptions';
+import { AbstractAlgorithm } from './AbstractAlgorithm';
 
-export class AStarAlgorithm {
+export class AStarAlgorithm extends AbstractAlgorithm {
   private start: RowColumnPair;
   private end: RowColumnPair;
   private queue: PriorityQueue<PrioritizedGraphCell>;
@@ -18,10 +20,12 @@ export class AStarAlgorithm {
   result: RowColumnPair[] = [];
 
   constructor(
-    private graph: number[][],
-    private options: AStarAlgorithmOptions,
-    private graphIterationCallback: (cell: RowColumnPair, newState: number) => void
+    graph: number[][],
+    options: AlgorithmOptions,
+    graphIterationCallback: (cell: RowColumnPair, newState: number) => void
   ) {
+    super(graph, options, graphIterationCallback);
+
     this.start = this.getElementWithConstraint(START_FIELD_ID);
     this.end = this.getElementWithConstraint(END_FIELD_ID);
     this.queue = new PriorityQueue<PrioritizedGraphCell>(this.prioritizedGraphCellComparator);
@@ -121,9 +125,9 @@ export class AStarAlgorithm {
   }
 
   private getElementWithConstraint(constraint: number): RowColumnPair {
-    for (let row = 0; row < this.graph.length; row++) {
-      for (let col = 0; col < this.graph[row].length; col++) {
-        if (this.graph[row][col] === constraint) {
+    for (let row = 0; row < super.graph.length; row++) {
+      for (let col = 0; col < super.graph[row].length; col++) {
+        if (super.graph[row][col] === constraint) {
           return new RowColumnPair(row, col);
         }
       }
@@ -137,10 +141,6 @@ export class AStarAlgorithm {
   private calculateDistanceOfTwoCells(currentRow: number, currentCol: number, cell2: RowColumnPair) {
     return Math.sqrt(Math.pow(currentRow - cell2.row, 2) + Math.pow(currentCol - cell2.column, 2));
   }
-}
-
-export class AStarAlgorithmOptions {
-  constructor(public algorithmSpeed: number) {}
 }
 
 class PrioritizedGraphCell {

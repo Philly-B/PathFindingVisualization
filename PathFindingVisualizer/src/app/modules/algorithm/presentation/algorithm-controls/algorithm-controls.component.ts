@@ -14,7 +14,8 @@ import { EndNotDefinedError, StartNotDefinedError } from 'src/app/errors/Algorit
 import { BaseError } from 'src/app/errors/BaseError';
 import { GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
-import { AStarAlgorithm, AStarAlgorithmOptions } from 'src/app/PathFindingStrategies/AStarAlgorithm';
+import { AlgorithmOptions } from 'src/app/PathFindingStrategies/AlgorithmOptions';
+import { AStarAlgorithm } from 'src/app/PathFindingStrategies/AStarAlgorithm';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
 import { resetAlgorithmData, setAlgorithmSpeed, updateGraphCell } from 'src/app/store/graph.actions';
 import { GraphState } from 'src/app/store/graph.reducer';
@@ -27,7 +28,7 @@ import { selectFeatureAlgorithmSpeed } from 'src/app/store/graph.selectors';
 })
 export class AlgorithmControlsComponent implements OnInit, OnDestroy {
   private astartAlgorithm: AStarAlgorithm;
-  private astartOptions: AStarAlgorithmOptions;
+  private astartOptions: AlgorithmOptions;
 
   private subscriptions = new Subscription();
 
@@ -47,7 +48,7 @@ export class AlgorithmControlsComponent implements OnInit, OnDestroy {
 
   private setAlgorithmSpeed = (algorithmSpeed: number): void => {
     if (this.astartOptions === undefined) {
-      this.astartOptions = new AStarAlgorithmOptions(algorithmSpeed);
+      this.astartOptions = new AlgorithmOptions(algorithmSpeed);
     } else {
       this.astartOptions.algorithmSpeed = algorithmSpeed;
     }
