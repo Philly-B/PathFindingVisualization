@@ -25,3 +25,9 @@ mat-toolbar {
     min-height: 90vh;
     max-height: 90vh;
 }
+
+.container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}

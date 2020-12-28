@@ -31,7 +31,6 @@ export class AlgorithmSpeedComponent implements OnInit {
 
   valueChanged = (event) => {
     const speed = this.getActualValue(event.target.value);
-    console.log(speed);
     this.store.dispatch(setAlgorithmSpeed({ speed }));
   };
 

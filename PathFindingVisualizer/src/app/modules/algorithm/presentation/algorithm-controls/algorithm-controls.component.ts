@@ -15,7 +15,7 @@ import { BaseError } from 'src/app/errors/BaseError';
 import { GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
-import { selectFeatureAlgorithmSpeed } from 'src/app/store/algorithm-store/algorithm.selectors';
+import { selectFeatureAlgorithm, selectFeatureAlgorithmSpeed } from 'src/app/store/algorithm-store/algorithm.selectors';
 import { AppState } from 'src/app/store/app.reducer';
 import { resetAlgorithmData, updateGraphCell } from 'src/app/store/graph-store/graph.actions';
 import { GraphState } from 'src/app/store/graph-store/graph.reducer';
@@ -28,9 +28,8 @@ import { AlgorithmOptions } from '../../algorithms/AlgorithmOptions';
   templateUrl: './algorithm-controls.component.html',
   styleUrls: ['./algorithm-controls.component.scss'],
 })
-export class AlgorithmControlsComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() algorithm: string;
-
+export class AlgorithmControlsComponent implements OnDestroy {
+  private algorithm: string;
   private algorithmImpl: AbstractAlgorithm;
   private options: AlgorithmOptions;
 
@@ -49,29 +48,12 @@ export class AlgorithmControlsComponent implements OnInit, OnDestroy, OnChanges 
     this.subscriptions.add(
       store.select(selectFeatureAlgorithmSpeed).subscribe((algorithmSpeed) => this.setAlgorithmSpeed(algorithmSpeed))
     );
+    this.subscriptions.add(store.select(selectFeatureAlgorithm).subscribe((algorithm) => this.setAlgorithm(algorithm)));
   }
-
-  private setAlgorithmSpeed = (algorithmSpeed: number): void => {
-    if (this.options === undefined) {
-      this.options = new AlgorithmOptions(algorithmSpeed);
-    } else {
-      this.options.algorithmSpeed = algorithmSpeed;
-    }
-    this.updateAllDisabled();
-  };
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['algorithm']) {
-      this.reset();
-    }
-    this.updateAllDisabled();
-  }
-
-  ngOnInit(): void {}
 
   run = (): void => {
     this.stopped = false;
@@ -90,6 +72,23 @@ export class AlgorithmControlsComponent implements OnInit, OnDestroy, OnChanges 
     this.done = false;
     this.store.dispatch(resetAlgorithmData());
   }
+
+  private setAlgorithmSpeed = (algorithmSpeed: number): void => {
+    if (this.options === undefined) {
+      this.options = new AlgorithmOptions(algorithmSpeed);
+    } else {
+      this.options.algorithmSpeed = algorithmSpeed;
+    }
+    this.updateAllDisabled();
+  };
+
+  private setAlgorithm = (algorithm: string): void => {
+    if (this.algorithmImpl !== undefined) {
+      this.reset();
+    }
+    this.algorithm = algorithm;
+    this.updateAllDisabled();
+  };
 
   private updateAllDisabled() {
     this.allDisabled = this.options === undefined || this.algorithm === undefined;
