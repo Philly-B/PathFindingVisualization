@@ -13,6 +13,7 @@ var __assign = (this && this.__assign) || function () {
 exports.__esModule = true;
 exports.graphReducer = exports.initialState = exports.GraphState = void 0;
 var store_1 = require("@ngrx/store");
+var GeneralConstants_1 = require("../constants/GeneralConstants");
 var GraphCell_1 = require("../model/GraphCell");
 var RowColumnPair_1 = require("../model/RowColumnPair");
 var graph_actions_1 = require("./graph.actions");
@@ -26,11 +27,11 @@ exports.initialState = {
     startPosition: undefined,
     endPosition: undefined,
     walls: [],
-    N: 15,
+    N: GeneralConstants_1.INITIAL_NUMBER_OF_HEX_PER_ROW,
     inConsideration: [],
     visited: [],
     finalPath: [],
-    algorithmSpeed: 250
+    algorithmSpeed: GeneralConstants_1.INITIAL_ALGORITHM_SPEED
 };
 // TODO every array should be duplicated!
 var graphReducerInternal = store_1.createReducer(exports.initialState, store_1.on(graph_actions_1.initiateSetStart, function (state) { return (__assign({}, state)); }), store_1.on(graph_actions_1.setStart, function (state, _a) {

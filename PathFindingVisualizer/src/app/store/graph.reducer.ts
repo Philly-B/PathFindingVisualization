@@ -1,4 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
+import {
+  INITIAL_ALGORITHM_SPEED,
+  INITIAL_NUMBER_OF_HEX_PER_ROW as INITIAL_NUMBER_OF_CELLS_PER_ROW,
+} from '../constants/GeneralConstants';
 import { GraphCellConstraint } from '../model/GraphCell';
 import { RowColumnPair } from '../model/RowColumnPair';
 import {
@@ -34,13 +38,13 @@ export const initialState: GraphState = {
   startPosition: undefined,
   endPosition: undefined,
   walls: [],
-  N: 15,
+  N: INITIAL_NUMBER_OF_CELLS_PER_ROW,
 
   inConsideration: [],
   visited: [],
   finalPath: [],
 
-  algorithmSpeed: 250,
+  algorithmSpeed: INITIAL_ALGORITHM_SPEED,
 };
 
 // TODO every array should be duplicated!
