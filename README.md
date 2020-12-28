@@ -16,5 +16,6 @@ The concept
 
 - allow to set the speed of the algorithm
 - styling of page
+- variable size of grid
 - Dockerfile/maven build
 - allow different algorithms
