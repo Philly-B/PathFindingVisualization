@@ -14,7 +14,7 @@ The concept
 
 ## Todos
 
-- allow to set the speed of the algorithm
+- move stores to modules + allow communication via root store?!
 - styling of page
 - variable size of grid
 - Dockerfile/maven build
