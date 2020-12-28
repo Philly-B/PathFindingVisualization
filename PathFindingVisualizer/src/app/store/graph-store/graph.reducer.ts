@@ -2,9 +2,9 @@ import { createReducer, on } from '@ngrx/store';
 import {
   INITIAL_ALGORITHM_SPEED,
   INITIAL_NUMBER_OF_HEX_PER_ROW as INITIAL_NUMBER_OF_CELLS_PER_ROW,
-} from '../constants/GeneralConstants';
-import { GraphCellConstraint } from '../model/GraphCell';
-import { RowColumnPair } from '../model/RowColumnPair';
+} from '../../constants/GeneralConstants';
+import { GraphCellConstraint } from '../../model/GraphCell';
+import { RowColumnPair } from '../../model/RowColumnPair';
 import {
   setEnd,
   setStart,
@@ -18,7 +18,6 @@ import {
   removeWall,
   updateGraphCell,
   resetAlgorithmData,
-  setAlgorithmSpeed,
 } from './graph.actions';
 
 export class GraphState {
@@ -30,8 +29,6 @@ export class GraphState {
   inConsideration: RowColumnPair[];
   visited: RowColumnPair[];
   finalPath: RowColumnPair[];
-
-  algorithmSpeed: number;
 }
 
 export const initialState: GraphState = {
@@ -43,8 +40,6 @@ export const initialState: GraphState = {
   inConsideration: [],
   visited: [],
   finalPath: [],
-
-  algorithmSpeed: INITIAL_ALGORITHM_SPEED,
 };
 
 // TODO every array should be duplicated!
@@ -64,8 +59,7 @@ const graphReducerInternal = createReducer(
   on(finalizeSetEnd, (state) => ({ ...state })),
 
   on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint)),
-  on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] })),
-  on(setAlgorithmSpeed, (state, { speed }) => ({ ...state, algorithmSpeed: speed }))
+  on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] }))
 );
 
 export function graphReducer(state, action) {

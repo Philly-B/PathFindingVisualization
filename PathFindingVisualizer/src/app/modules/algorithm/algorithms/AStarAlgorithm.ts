@@ -1,23 +1,20 @@
-import { PriorityQueue } from '../utils/PriorityQueue';
-import { StartNotDefinedError } from '../errors/AlgorithmErrors';
+import { AlgorithmOptions } from './AlgorithmOptions';
+import { AbstractAlgorithm } from './AbstractAlgorithm';
+import { RowColumnPair } from 'src/app/model/RowColumnPair';
+import { PriorityQueue } from 'src/app/modules/algorithm/utils/PriorityQueue';
 import {
   END_FIELD_ID,
   IN_CONSIDERATION_FIELD_ID,
   START_FIELD_ID,
   VISITED_FIELD_ID,
   WALL_FIELD_ID,
-} from '../constants/AlgorithmConstants';
-import { RowColumnPair } from '../model/RowColumnPair';
-import { AlgorithmOptions } from './AlgorithmOptions';
-import { AbstractAlgorithm } from './AbstractAlgorithm';
+} from 'src/app/constants/AlgorithmConstants';
+import { StartNotDefinedError } from 'src/app/errors/AlgorithmErrors';
 
 export class AStarAlgorithm extends AbstractAlgorithm {
   private start: RowColumnPair;
   private end: RowColumnPair;
   private queue: PriorityQueue<PrioritizedGraphCell>;
-
-  finished = false;
-  result: RowColumnPair[] = [];
 
   constructor(
     graph: number[][],
@@ -26,8 +23,8 @@ export class AStarAlgorithm extends AbstractAlgorithm {
   ) {
     super(graph, options, graphIterationCallback);
 
-    this.start = this.getElementWithConstraint(START_FIELD_ID);
-    this.end = this.getElementWithConstraint(END_FIELD_ID);
+    this.start = super.getElementWithConstraint(START_FIELD_ID);
+    this.end = super.getElementWithConstraint(END_FIELD_ID);
     this.queue = new PriorityQueue<PrioritizedGraphCell>(this.prioritizedGraphCellComparator);
     this.queue.pushElement(
       new PrioritizedGraphCell(
@@ -122,17 +119,6 @@ export class AStarAlgorithm extends AbstractAlgorithm {
     const restOfPath = this.createReversePath(node.cameFrom);
     restOfPath.push(node.rowAndColumn);
     return restOfPath;
-  }
-
-  private getElementWithConstraint(constraint: number): RowColumnPair {
-    for (let row = 0; row < super.graph.length; row++) {
-      for (let col = 0; col < super.graph[row].length; col++) {
-        if (super.graph[row][col] === constraint) {
-          return new RowColumnPair(row, col);
-        }
-      }
-    }
-    throw new StartNotDefinedError();
   }
 
   private prioritizedGraphCellComparator(cell1: PrioritizedGraphCell, cell2: PrioritizedGraphCell): number {

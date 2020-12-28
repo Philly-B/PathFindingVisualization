@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { ActionsSubject, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -14,21 +14,25 @@ import { EndNotDefinedError, StartNotDefinedError } from 'src/app/errors/Algorit
 import { BaseError } from 'src/app/errors/BaseError';
 import { GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
-import { AlgorithmOptions } from 'src/app/PathFindingStrategies/AlgorithmOptions';
-import { AStarAlgorithm } from 'src/app/PathFindingStrategies/AStarAlgorithm';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
-import { resetAlgorithmData, updateGraphCell } from 'src/app/store/graph.actions';
-import { GraphState } from 'src/app/store/graph.reducer';
-import { selectFeatureAlgorithmSpeed } from 'src/app/store/graph.selectors';
+import { selectFeatureAlgorithmSpeed } from 'src/app/store/algorithm-store/algorithm.selectors';
+import { AppState } from 'src/app/store/app.reducer';
+import { resetAlgorithmData, updateGraphCell } from 'src/app/store/graph-store/graph.actions';
+import { GraphState } from 'src/app/store/graph-store/graph.reducer';
+import { AbstractAlgorithm } from '../../algorithms/AbstractAlgorithm';
+import { AlgorithmProviderService } from '../../algorithms/algorithm-provider.service';
+import { AlgorithmOptions } from '../../algorithms/AlgorithmOptions';
 
 @Component({
   selector: 'app-algorithm-controls',
   templateUrl: './algorithm-controls.component.html',
   styleUrls: ['./algorithm-controls.component.scss'],
 })
-export class AlgorithmControlsComponent implements OnInit, OnDestroy {
-  private astartAlgorithm: AStarAlgorithm;
-  private astartOptions: AlgorithmOptions;
+export class AlgorithmControlsComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() algorithm: string;
+
+  private algorithmImpl: AbstractAlgorithm;
+  private options: AlgorithmOptions;
 
   private subscriptions = new Subscription();
 
@@ -37,9 +41,10 @@ export class AlgorithmControlsComponent implements OnInit, OnDestroy {
   private done: boolean;
 
   constructor(
-    private store: Store<{ graph: GraphState }>,
+    private store: Store<AppState>,
     private actions: ActionsSubject,
-    private graphUtilService: GraphUtilService
+    private graphUtilService: GraphUtilService,
+    private algorithmProvider: AlgorithmProviderService
   ) {
     this.subscriptions.add(
       store.select(selectFeatureAlgorithmSpeed).subscribe((algorithmSpeed) => this.setAlgorithmSpeed(algorithmSpeed))
@@ -47,23 +52,30 @@ export class AlgorithmControlsComponent implements OnInit, OnDestroy {
   }
 
   private setAlgorithmSpeed = (algorithmSpeed: number): void => {
-    if (this.astartOptions === undefined) {
-      this.astartOptions = new AlgorithmOptions(algorithmSpeed);
+    if (this.options === undefined) {
+      this.options = new AlgorithmOptions(algorithmSpeed);
     } else {
-      this.astartOptions.algorithmSpeed = algorithmSpeed;
+      this.options.algorithmSpeed = algorithmSpeed;
     }
-    this.allDisabled = false;
+    this.updateAllDisabled();
   };
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['algorithm']) {
+      this.reset();
+    }
+    this.updateAllDisabled();
+  }
+
   ngOnInit(): void {}
 
   run = (): void => {
     this.stopped = false;
-    if (this.astartAlgorithm === undefined) {
+    if (this.algorithmImpl === undefined) {
       this.store.pipe(take(1)).subscribe((state) => this.initiateAlgorithm(state));
     } else {
       this.runAlgorithm();
@@ -73,32 +85,35 @@ export class AlgorithmControlsComponent implements OnInit, OnDestroy {
     this.stopped = true;
   }
   reset() {
-    this.astartAlgorithm = undefined;
+    this.algorithmImpl = undefined;
     this.stopped = false;
     this.done = false;
     this.store.dispatch(resetAlgorithmData());
   }
 
+  private updateAllDisabled() {
+    this.allDisabled = this.options === undefined || this.algorithm === undefined;
+  }
   private async runAlgorithm() {
     while (!this.done && !this.stopped) {
       this.runOneIterationOfAlgorithm();
-      await new Promise((resolve) => setTimeout(resolve, this.astartOptions.algorithmSpeed));
+      await new Promise((resolve) => setTimeout(resolve, this.options.algorithmSpeed));
     }
   }
 
   private runOneIterationOfAlgorithm = () => {
-    if (this.astartAlgorithm && !this.done && this.astartAlgorithm.finished) {
+    if (this.algorithmImpl && !this.done && this.algorithmImpl.finished) {
       this.stopped = true;
       this.done = true;
-      for (const resultCell of this.astartAlgorithm.result) {
+      for (const resultCell of this.algorithmImpl.result) {
         this.dispatchGraphState(resultCell, FINAL_PATH_FIELD_ID);
       }
-    } else if (this.astartAlgorithm && !this.done && !this.astartAlgorithm.finished) {
-      this.astartAlgorithm.continueAlgorithm();
+    } else if (this.algorithmImpl && !this.done && !this.algorithmImpl.finished) {
+      this.algorithmImpl.continueAlgorithm();
     }
   };
 
-  private initiateAlgorithm = (state: { graph: GraphState }): void => {
+  private initiateAlgorithm = (state: AppState): void => {
     const graphState = state.graph;
     this.assertContainsStartAndEnd(graphState);
 
@@ -106,7 +121,12 @@ export class AlgorithmControlsComponent implements OnInit, OnDestroy {
     this.initGraphFromState(graph, graphState);
 
     this.stopped = false;
-    this.astartAlgorithm = new AStarAlgorithm(graph, this.astartOptions, this.dispatchGraphState);
+    this.algorithmImpl = this.algorithmProvider.createNewInstance(
+      this.algorithm,
+      graph,
+      this.options,
+      this.dispatchGraphState
+    );
     this.runAlgorithm();
   };
 

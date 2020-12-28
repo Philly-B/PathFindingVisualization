@@ -1,10 +1,7 @@
 "use strict";
 exports.__esModule = true;
-exports.getColorForHexagon = exports.hexagonInsideEnd = exports.hexagonInsideStart = exports.hexagonInsideWall = exports.hexagonInsideVisited = exports.hexagonInsideInConsideration = exports.hexagonInsideFinalPath = exports.hexagonInsidePassable = exports.hexagonBorder = exports.background = void 0;
+exports.getColorForHexagon = exports.hexagonInsideEnd = exports.hexagonInsideStart = exports.hexagonInsideWall = exports.hexagonInsideVisited = exports.hexagonInsideInConsideration = exports.hexagonInsideFinalPath = exports.hexagonInsidePassable = exports.hexagonBorder = void 0;
 var GraphCell_1 = require("../model/GraphCell");
-// GENERAL
-var background = [219, 237, 255];
-exports.background = background;
 // HEXAGON
 var hexagonBorder = 255;
 exports.hexagonBorder = hexagonBorder;

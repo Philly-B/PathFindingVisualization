@@ -1,0 +1,8 @@
+<mat-form-field appearance="fill">
+    <mat-label>Choose an algorithm</mat-label>
+    <mat-select (selectionChange)="selectedOption($event)">
+        <mat-option *ngFor="let algorithm of algorithms" [value]="algorithm">
+            {{algorithm}}
+        </mat-option>
+    </mat-select>
+</mat-form-field>

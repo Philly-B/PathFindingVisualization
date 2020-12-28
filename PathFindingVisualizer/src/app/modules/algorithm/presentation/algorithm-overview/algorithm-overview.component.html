@@ -1,5 +1,6 @@
 <div class="a-start-controls">
-    <app-algorithm-info></app-algorithm-info>
+    <app-algorithm-selection></app-algorithm-selection>
+    <app-algorithm-info [algorithm]="algorithm"></app-algorithm-info>
     <app-algorithm-speed></app-algorithm-speed>
-    <app-algorithm-controls></app-algorithm-controls>
+    <app-algorithm-controls [algorithm]="algorithm"></app-algorithm-controls>
 </div>

@@ -1,4 +1,4 @@
-import { PriorityQueue } from '../utils/PriorityQueue';
+import { PriorityQueue } from './PriorityQueue';
 
 describe('PriorityQueue', () => {
   let priorityQueue: PriorityQueue<TestObject>;

@@ -1,4 +1,4 @@
-import { P5Vector } from '../p5Additionals/models/P5Vector';
+import { P5Vector } from '../p5-additionals/models/P5Vector';
 
 export class GraphCell {
   center: P5Vector;

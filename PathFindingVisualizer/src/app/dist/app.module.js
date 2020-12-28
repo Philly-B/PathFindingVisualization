@@ -12,10 +12,11 @@ var core_1 = require("@angular/core");
 var store_1 = require("@ngrx/store");
 var app_component_1 = require("./app.component");
 var path_finder_module_1 = require("src/app/modules/path-finder/path-finder.module");
-var graph_reducer_1 = require("./store/graph.reducer");
 var effects_1 = require("@ngrx/effects");
-var graph_effects_1 = require("./store/graph.effects");
+var graph_effects_1 = require("./store/graph-store/graph.effects");
 var algorithm_module_1 = require("./modules/algorithm/algorithm.module");
+var animations_1 = require("@angular/platform-browser/animations");
+var app_reducer_1 = require("./store/app.reducer");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
@@ -26,9 +27,10 @@ var AppModule = /** @class */ (function () {
                 platform_browser_1.BrowserModule,
                 path_finder_module_1.PathFinderModule,
                 algorithm_module_1.AlgorithmModule,
-                store_1.StoreModule.forRoot({ graph: graph_reducer_1.graphReducer }),
+                store_1.StoreModule.forRoot(app_reducer_1.AppReducers),
                 effects_1.EffectsModule.forRoot([]),
                 effects_1.EffectsModule.forFeature([graph_effects_1.GraphEffects]),
+                animations_1.BrowserAnimationsModule,
             ],
             providers: [],
             bootstrap: [app_component_1.AppComponent]

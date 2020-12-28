@@ -3,8 +3,8 @@ import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import * as p5 from 'p5';
 import { Subscription } from 'rxjs';
-import { P5Settings } from 'src/app/p5Additionals/models/P5Settings';
-import { P5UtilService } from 'src/app/p5Additionals/utils/p5-util.service';
+import { P5Settings } from 'src/app/p5-additionals/models/P5Settings';
+import { P5UtilService } from 'src/app/p5-additionals/utils/p5-util.service';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
 import {
   FINALIZE_SET_END,
@@ -21,12 +21,13 @@ import {
   setStart,
   setWall,
   UPDATE_GRAPH_CELL,
-} from 'src/app/store/graph.actions';
-import { GraphState } from 'src/app/store/graph.reducer';
+} from 'src/app/store/graph-store/graph.actions';
+import { GraphState } from 'src/app/store/graph-store/graph.reducer';
 import { MOUSE_DRAG_WALL_TIMEOUT_MS } from 'src/app/constants/GeneralConstants';
 import { Graph } from 'src/app/model/Graph';
 import { GraphCell, GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
+import { AppState } from 'src/app/store/app.reducer';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
@@ -50,7 +51,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     private el: ElementRef,
     private p5UtilService: P5UtilService,
     private graphUtilService: GraphUtilService,
-    private store: Store<{ graph: GraphState }>,
+    private store: Store<AppState>,
     private actions: Actions<GraphActionsTypes>
   ) {
     this.p5Settings = {

@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { concatAll, map, mergeMap, switchMap, tap, toArray, withLatestFrom } from 'rxjs/operators';
-import { GraphUtilService } from '../services/graph-util.service';
+import { GraphUtilService } from '../../services/graph-util.service';
+import { AppState } from '../app.reducer';
 import {
   finalizeModifyWalls,
   finalizeSetEnd,
@@ -19,7 +20,7 @@ import {
   SET_END,
   SET_START,
 } from './graph.actions';
-import { AppState, selectGraphFeature, selectFeatureWalls } from './graph.selectors';
+import { selectGraphFeature } from './graph.selectors';
 
 @Injectable()
 export class GraphEffects {

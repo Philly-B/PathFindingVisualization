@@ -4,4 +4,8 @@ div.a-start-controls {
     flex-wrap: nowrap;
     display: flex;
     align-items: center;
+
+    div {
+        padding-top: 5vh;
+    }
 }

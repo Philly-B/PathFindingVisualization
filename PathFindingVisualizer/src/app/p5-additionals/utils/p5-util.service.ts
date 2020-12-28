@@ -24,7 +24,6 @@ export class P5UtilService {
       picture.angleMode(picture.RADIANS);
     };
     picture.draw = () => {
-      picture.background(ColorMapping.background);
       this.drawHexagons(picture, graph.grid, pictureShift, settings);
     };
 

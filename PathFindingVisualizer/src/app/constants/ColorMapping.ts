@@ -1,8 +1,4 @@
 import { GraphCell, GraphCellConstraint } from '../model/GraphCell';
-
-// GENERAL
-const background = [219, 237, 255];
-
 // HEXAGON
 const hexagonBorder = 255;
 const hexagonInsidePassable = [173, 219, 151];
@@ -16,7 +12,6 @@ const hexagonInsideStart = [16, 179, 59];
 const hexagonInsideEnd = [230, 100, 64];
 
 export {
-  background,
   hexagonBorder,
   hexagonInsidePassable,
   hexagonInsideFinalPath,

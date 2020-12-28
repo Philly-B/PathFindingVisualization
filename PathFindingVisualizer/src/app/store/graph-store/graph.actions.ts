@@ -1,7 +1,7 @@
 import { createAction, props, union } from '@ngrx/store';
-import { Graph } from '../model/Graph';
-import { GraphCellConstraint } from '../model/GraphCell';
-import { RowColumnPair } from '../model/RowColumnPair';
+import { Graph } from '../../model/Graph';
+import { GraphCellConstraint } from '../../model/GraphCell';
+import { RowColumnPair } from '../../model/RowColumnPair';
 
 export const INIT_SET_START = '[Graph Component] initiate set start';
 export const initiateSetStart = createAction(INIT_SET_START);
@@ -41,9 +41,6 @@ export const updateGraphCell = createAction(
 export const RESET_ALGORITHM_DATA = '[Graph Component] reset algorithm data';
 export const resetAlgorithmData = createAction(RESET_ALGORITHM_DATA);
 
-export const SET_ALGORITHM_SPEED = '[Graph Component] set algorithm speed';
-export const setAlgorithmSpeed = createAction(SET_ALGORITHM_SPEED, props<{ speed: number }>());
-
 const all = union({
   initiateSetStart,
   setStart,
@@ -58,7 +55,6 @@ const all = union({
   updateGraphCell,
   resetAlgorithmData,
   removeAllWalls,
-  setAlgorithmSpeed,
 });
 
 export type GraphActionsTypes = typeof all;
