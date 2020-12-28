@@ -21,11 +21,11 @@ import { GraphState } from 'src/app/store/graph.reducer';
 import { selectFeatureAlgorithmSpeed } from 'src/app/store/graph.selectors';
 
 @Component({
-  selector: 'app-astar-controls',
-  templateUrl: './astar-controls.component.html',
-  styleUrls: ['./astar-controls.component.scss'],
+  selector: 'app-algorithm-controls',
+  templateUrl: './algorithm-controls.component.html',
+  styleUrls: ['./algorithm-controls.component.scss'],
 })
-export class AstarControlsComponent implements OnInit, OnDestroy {
+export class AlgorithmControlsComponent implements OnInit, OnDestroy {
   private astartAlgorithm: AStarAlgorithm;
   private astartOptions: AStarAlgorithmOptions;
 

@@ -6,11 +6,10 @@ import { GraphState } from 'src/app/store/graph.reducer';
 import { selectFeatureAlgorithmSpeed } from 'src/app/store/graph.selectors';
 
 @Component({
-  selector: 'app-astar-speed',
-  templateUrl: './astar-speed.component.html',
-  styleUrls: ['./astar-speed.component.scss'],
+  selector: 'app-algorithm-speed',
+  templateUrl: './algorithm-speed.component.html',
 })
-export class AstarSpeedComponent implements OnInit {
+export class AlgorithmSpeedComponent implements OnInit {
   initialSpeed: number;
   min = 0;
   max = 500;

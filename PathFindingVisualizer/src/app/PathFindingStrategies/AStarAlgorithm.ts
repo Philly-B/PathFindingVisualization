@@ -135,7 +135,7 @@ export class AStarAlgorithm {
     return cell1.priority - cell2.priority;
   }
   private calculateDistanceOfTwoCells(currentRow: number, currentCol: number, cell2: RowColumnPair) {
-    return Math.abs(currentRow - cell2.row) + Math.abs(currentCol - cell2.column);
+    return Math.sqrt(Math.pow(currentRow - cell2.row, 2) + Math.pow(currentCol - cell2.column, 2));
   }
 }
 

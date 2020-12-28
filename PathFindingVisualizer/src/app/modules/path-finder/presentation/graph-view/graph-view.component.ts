@@ -23,10 +23,10 @@ import {
   UPDATE_GRAPH_CELL,
 } from 'src/app/store/graph.actions';
 import { GraphState } from 'src/app/store/graph.reducer';
-import { RowColumnPair } from '../../../model/RowColumnPair';
 import { MOUSE_DRAG_WALL_TIMEOUT_MS } from 'src/app/constants/GeneralConstants';
 import { Graph } from 'src/app/model/Graph';
 import { GraphCell, GraphCellConstraint } from 'src/app/model/GraphCell';
+import { RowColumnPair } from 'src/app/model/RowColumnPair';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
