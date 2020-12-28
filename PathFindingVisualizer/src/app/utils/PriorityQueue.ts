@@ -17,7 +17,7 @@ export class PriorityQueue<T> {
     const last = this.elements.pop();
     if (this.elements.length > 0) {
       this.elements[0] = last;
-      this.moveElementDown(0);
+      this.moveFirstElementDown();
     }
     return first;
   }
@@ -26,17 +26,16 @@ export class PriorityQueue<T> {
     return this.elements.length === 0;
   }
 
-  private moveElementDown(index: number): void {
+  private moveFirstElementDown(): void {
     const lastIndex = this.elements.length - 1;
-    let currentIndex = index;
-    let minIndex = -1;
-    while (minIndex !== currentIndex) {
+    let currentIndex = 0;
+    while (true) {
       // tslint:disable-next-line: no-bitwise
       const leftChildIndex = (currentIndex << 1) + 1;
       const rightChildIndex = leftChildIndex + 1;
-      minIndex = currentIndex;
+      let minIndex = currentIndex;
       if (leftChildIndex <= lastIndex && this.comparator(this.elements[leftChildIndex], this.elements[minIndex]) < 0) {
-        minIndex = currentIndex;
+        minIndex = leftChildIndex;
       }
       if (
         rightChildIndex <= lastIndex &&
@@ -47,6 +46,8 @@ export class PriorityQueue<T> {
       if (minIndex !== currentIndex) {
         this.swap(minIndex, currentIndex);
         currentIndex = minIndex;
+      } else {
+        break;
       }
     }
   }
