@@ -29,7 +29,6 @@ export class AlgorithmSpeedComponent implements OnInit {
 
   valueChanged = (event: MatSliderChange) => {
     const speed = this.getActualValue(event.value);
-    console.log(speed);
     this.store.dispatch(setAlgorithmSpeed({ speed }));
   };
 
@@ -38,9 +37,9 @@ export class AlgorithmSpeedComponent implements OnInit {
 
     switch (speed) {
       case 0:
-        return 'Instant';
+        return 'ZACK';
       case 100:
-        return 'Super Fast';
+        return 'Faaast';
       case 200:
         return 'Fast';
       case 300:
@@ -48,7 +47,7 @@ export class AlgorithmSpeedComponent implements OnInit {
       case 400:
         return 'Slow';
       case 500:
-        return 'Super Slow';
+        return 'Slooow';
       default:
         return '';
     }

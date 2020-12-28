@@ -15,8 +15,14 @@ var path_finder_module_1 = require("src/app/modules/path-finder/path-finder.modu
 var effects_1 = require("@ngrx/effects");
 var graph_effects_1 = require("./store/graph-store/graph.effects");
 var algorithm_module_1 = require("./modules/algorithm/algorithm.module");
-var animations_1 = require("@angular/platform-browser/animations");
 var app_reducer_1 = require("./store/app.reducer");
+var animations_1 = require("@angular/platform-browser/animations");
+var toolbar_1 = require("@angular/material/toolbar");
+var slide_toggle_1 = require("@angular/material/slide-toggle");
+var forms_1 = require("@angular/forms");
+var icon_1 = require("@angular/material/icon");
+var form_field_1 = require("@angular/material/form-field");
+var input_1 = require("@angular/material/input");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
@@ -27,6 +33,12 @@ var AppModule = /** @class */ (function () {
                 platform_browser_1.BrowserModule,
                 path_finder_module_1.PathFinderModule,
                 algorithm_module_1.AlgorithmModule,
+                icon_1.MatIconModule,
+                toolbar_1.MatToolbarModule,
+                slide_toggle_1.MatSlideToggleModule,
+                form_field_1.MatFormFieldModule,
+                forms_1.ReactiveFormsModule,
+                input_1.MatInputModule,
                 store_1.StoreModule.forRoot(app_reducer_1.AppReducers),
                 effects_1.EffectsModule.forRoot([]),
                 effects_1.EffectsModule.forFeature([graph_effects_1.GraphEffects]),
