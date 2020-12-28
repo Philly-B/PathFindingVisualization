@@ -17,7 +17,7 @@ import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { AlgorithmOptions } from 'src/app/PathFindingStrategies/AlgorithmOptions';
 import { AStarAlgorithm } from 'src/app/PathFindingStrategies/AStarAlgorithm';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
-import { resetAlgorithmData, setAlgorithmSpeed, updateGraphCell } from 'src/app/store/graph.actions';
+import { resetAlgorithmData, updateGraphCell } from 'src/app/store/graph.actions';
 import { GraphState } from 'src/app/store/graph.reducer';
 import { selectFeatureAlgorithmSpeed } from 'src/app/store/graph.selectors';
 
