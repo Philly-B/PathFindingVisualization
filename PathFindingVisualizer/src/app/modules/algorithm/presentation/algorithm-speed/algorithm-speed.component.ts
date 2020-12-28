@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatSliderChange } from '@angular/material/slider';
 import { Store } from '@ngrx/store';
 import { take } from 'rxjs/operators';
 import { setAlgorithmSpeed } from 'src/app/store/algorithm-store/algorithm.actions';
@@ -8,12 +9,13 @@ import { AppState } from 'src/app/store/app.reducer';
 @Component({
   selector: 'app-algorithm-speed',
   templateUrl: './algorithm-speed.component.html',
+  styleUrls: ['./algorithm-speed.component.scss'],
 })
 export class AlgorithmSpeedComponent implements OnInit {
   initialSpeed: number;
   min = 0;
   max = 500;
-  stepSize = 50;
+  stepSize = 100;
 
   constructor(private store: Store<AppState>) {
     this.initialSpeed = -1;
@@ -25,8 +27,34 @@ export class AlgorithmSpeedComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  valueChanged = (event) => {
-    const speed = this.max - event.target.value;
+  valueChanged = (event: MatSliderChange) => {
+    const speed = this.getActualValue(event.value);
+    console.log(speed);
     this.store.dispatch(setAlgorithmSpeed({ speed }));
   };
+
+  formatLabel = (value: number): string => {
+    const speed = this.getActualValue(value);
+
+    switch (speed) {
+      case 0:
+        return 'Instant';
+      case 100:
+        return 'Super Fast';
+      case 200:
+        return 'Fast';
+      case 300:
+        return 'Normal';
+      case 400:
+        return 'Slow';
+      case 500:
+        return 'Super Slow';
+      default:
+        return '';
+    }
+  };
+
+  private getActualValue(value: number): number {
+    return this.max - value;
+  }
 }

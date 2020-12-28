@@ -1,5 +1,6 @@
 <div *ngIf="initialSpeed !== -1" class="form-group">
-  <label for="formControlRange">Speed</label>
-  <input type="range" class="form-control-range" min="{{min}}" max="{{max}}" step="{{stepSize}}"
-    value="{{initialSpeed}}" (change)="valueChanged($event)" id="formControlRange">
+  <mat-slider thumbLabel [displayWith]="formatLabel" [value]="initialSpeed" [step]="stepSize" [min]="min" [max]="max"
+    (change)="valueChanged($event)">
+  </mat-slider>
+  <span>Execution Speed</span>
 </div>

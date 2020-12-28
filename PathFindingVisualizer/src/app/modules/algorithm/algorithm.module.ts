@@ -9,6 +9,7 @@ import { AlgorithmSelectionComponent } from './presentation/algorithm-selection/
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSliderModule } from '@angular/material/slider';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,7 @@ import { MatInputModule } from '@angular/material/input';
     AlgorithmOverviewComponent,
     AlgorithmSelectionComponent,
   ],
-  imports: [CommonModule, MatInputModule, MatSelectModule, MatFormFieldModule],
+  imports: [CommonModule, MatInputModule, MatSelectModule, MatFormFieldModule, MatSliderModule],
   exports: [AlgorithmOverviewComponent],
 })
 export class AlgorithmModule {}
