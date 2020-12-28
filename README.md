@@ -14,9 +14,7 @@ The concept
 
 ## Todos
 
-- fix start/end/walls are set randomly when clicked on button
-- implement algorithm
-- let algorithm run
-- visualize the algorithm
+- allow to set the speed of the algorithm
 - styling of page
+- Dockerfile/maven build
 - allow different algorithms
