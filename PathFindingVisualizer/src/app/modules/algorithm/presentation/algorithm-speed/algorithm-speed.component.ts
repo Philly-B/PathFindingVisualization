@@ -17,6 +17,8 @@ export class AlgorithmSpeedComponent implements OnInit {
   max = 500;
   stepSize = 100;
 
+  labels = ['Like Instant', 'Super Fast', 'Fast', 'Normal', 'Slow', 'Super Slow'];
+
   constructor(private store: Store<AppState>) {
     this.initialSpeed = -1;
     store
@@ -27,30 +29,10 @@ export class AlgorithmSpeedComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  valueChanged = (event: MatSliderChange) => {
-    const speed = this.getActualValue(event.value);
+  valueChanged = (event) => {
+    const speed = this.getActualValue(event.target.value);
+    console.log(speed);
     this.store.dispatch(setAlgorithmSpeed({ speed }));
-  };
-
-  formatLabel = (value: number): string => {
-    const speed = this.getActualValue(value);
-
-    switch (speed) {
-      case 0:
-        return 'ZACK';
-      case 100:
-        return 'Faaast';
-      case 200:
-        return 'Fast';
-      case 300:
-        return 'Normal';
-      case 400:
-        return 'Slow';
-      case 500:
-        return 'Slooow';
-      default:
-        return '';
-    }
   };
 
   private getActualValue(value: number): number {

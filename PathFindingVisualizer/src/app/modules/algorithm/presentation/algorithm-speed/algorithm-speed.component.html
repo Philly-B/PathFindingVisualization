@@ -1,8 +1,14 @@
 <div *ngIf="initialSpeed !== -1" class="form-group">
   <div class="row">
-    <mat-slider thumbLabel [displayWith]="formatLabel" vertical="true" [value]="initialSpeed" [step]="stepSize"
-      [min]="min" [max]="max" (change)="valueChanged($event)">
-    </mat-slider>
+    <div class="slider-wrapper">
+      <input type="range" min="{{min}}" max="{{max}}" step="{{stepSize}}" value="{{initialSpeed}}" list="mapsettings"
+        (change)="valueChanged($event)" />
+      <ul>
+        <ng-container *ngFor="let label of labels">
+          <li><span>- {{label}}</span></li>
+        </ng-container>
+      </ul>
+    </div>
   </div>
   <div class="row">
     <span>Execution Speed</span>

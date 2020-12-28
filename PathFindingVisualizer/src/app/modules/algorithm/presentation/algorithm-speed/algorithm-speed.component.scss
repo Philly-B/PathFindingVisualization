@@ -1,5 +1,35 @@
-::ng-deep {
-  mat-slider.mat-slider {
-    padding-bottom: 0px;
+.slider-wrapper {
+  display: flex;
+  flex-direction: row;
+
+  input {
+    margin: 0;
+    height: 20px;
+    width: 150px;
+    transform-origin: 75px 75px;
+    transform: rotate(-90deg);
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+
+    height: 170px;
+    padding: 0 0 0 5px;
+    margin-left: -130px;
+    margin-top: -10px;
+
+    li {
+      text-align: center;
+      display: table-row;
+      span {
+        display: table-cell;
+        vertical-align: middle;
+      }
+    }
   }
 }
