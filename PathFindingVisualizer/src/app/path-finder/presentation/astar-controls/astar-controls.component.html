@@ -1,5 +1,8 @@
 <div class="btn-group" role="group">
-    <button type="button" class="btn btn-success" [disabled]="allDisabled" (click)="run()">Run</button>
-    <button type="button" class="btn btn-danger" [disabled]="allDisabled" (click)="stop()">Stop</button>
-    <button type="button" class="btn btn-info" [disabled]="allDisabled" (click)="reset()">Reset</button>
+    <button type="button" class="btn btn-success small-margin-right" [disabled]="allDisabled"
+        (click)="run()">Run</button>
+    <button type="button" class="btn btn-danger small-margin-sides" [disabled]="allDisabled"
+        (click)="stop()">Stop</button>
+    <button type="button" class="btn btn-info small-margin-left" [disabled]="allDisabled"
+        (click)="reset()">Reset</button>
 </div>
