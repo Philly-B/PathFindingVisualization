@@ -23,7 +23,12 @@ import {
   UPDATE_GRAPH_CELL,
 } from 'src/app/store/graph-store/graph.actions';
 import { GraphState } from 'src/app/store/graph-store/graph.reducer';
-import { MOUSE_DRAG_WALL_TIMEOUT_MS } from 'src/app/constants/GeneralConstants';
+import {
+  CANVAS_SIZE_PX,
+  HEXAGON_SIZE_PX,
+  INITIAL_NUMBER_OF_HEX_PER_ROW,
+  MOUSE_DRAG_WALL_TIMEOUT_MS,
+} from 'src/app/constants/GeneralConstants';
 import { Graph } from 'src/app/model/Graph';
 import { GraphCell, GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
@@ -34,9 +39,6 @@ import { AppState } from 'src/app/store/app.reducer';
   styleUrls: ['./graph-view.component.scss'],
 })
 export class GraphViewComponent implements OnInit, OnDestroy {
-  private hexagonSizePx = 15;
-  private canvasSizePx = 450;
-
   private p5Settings: P5Settings;
   private graph: Graph;
   private p5Graph: p5;
@@ -55,9 +57,9 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     private actions: Actions<GraphActionsTypes>
   ) {
     this.p5Settings = {
-      N: 15,
-      canvasSizePx: this.canvasSizePx,
-      hexagonSizePx: this.hexagonSizePx,
+      N: INITIAL_NUMBER_OF_HEX_PER_ROW,
+      canvasSizePx: CANVAS_SIZE_PX,
+      hexagonSizePx: HEXAGON_SIZE_PX,
       hexagonLinesBetweenSizePx: 3,
     };
     this.graph = new Graph(graphUtilService.initGraph(this.p5Settings.N));

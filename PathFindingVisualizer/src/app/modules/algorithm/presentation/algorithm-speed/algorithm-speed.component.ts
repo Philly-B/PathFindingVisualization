@@ -24,7 +24,7 @@ export class AlgorithmSpeedComponent implements OnInit {
     store
       .select(selectFeatureAlgorithmSpeed)
       .pipe(take(1))
-      .subscribe((algorithmSpeed) => (this.initialSpeed = algorithmSpeed));
+      .subscribe((algorithmSpeed) => (this.initialSpeed = this.max - algorithmSpeed));
   }
 
   ngOnInit(): void {}
