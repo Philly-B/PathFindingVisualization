@@ -21,6 +21,7 @@ var ngx_toastr_1 = require("ngx-toastr");
 var GeneralConstants_1 = require("./constants/GeneralConstants");
 var modal_settings_component_1 = require("./modals/modal-settings/modal-settings.component");
 var material_wrapper_module_1 = require("./modules/materials-wrapper/material-wrapper.module");
+var color_picker_1 = require("@angular-material-components/color-picker");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
@@ -33,6 +34,7 @@ var AppModule = /** @class */ (function () {
                 algorithm_module_1.AlgorithmModule,
                 forms_1.ReactiveFormsModule,
                 material_wrapper_module_1.MaterialWrapperModule,
+                color_picker_1.NgxMatColorPickerModule,
                 ngx_toastr_1.ToastrModule.forRoot(GeneralConstants_1.NOTIFICATION_SETTINGS),
                 store_1.StoreModule.forRoot(app_reducer_1.AppReducers),
                 effects_1.EffectsModule.forRoot([]),

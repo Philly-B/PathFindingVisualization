@@ -3,10 +3,13 @@ import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { ModalSettingsComponent } from './modals/modal-settings/modal-settings.component';
+import { filter, map } from 'rxjs/operators';
+import { ModalSettingsComponent, ModifieableSettings } from './modals/modal-settings/modal-settings.component';
 import { loadFromLocalStorage as initAlgorithmStore } from './store/algorithm-store/algorithm.actions';
 import { AppState } from './store/app.reducer';
 import { loadFromLocalStorage as initGraphStore } from './store/graph-store/graph.actions';
+import { updateColorSettings } from './store/settings-store/settings.actions';
+import { selectSettingsState } from './store/settings-store/settings.selectors';
 
 @Component({
   selector: 'app-root',
@@ -38,13 +41,28 @@ export class AppComponent implements OnInit {
   }
 
   openSettingsModal = (): void => {
-    const dialogRef = this.dialog.open(ModalSettingsComponent, {
-      data: { name: 'hello', animal: 'as' },
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result.somethingChanged) {
-        // TODO persist settings
-      }
-    });
+    this.store
+      .select(selectSettingsState)
+      .pipe(
+        map((state) => state.colorSettings),
+        map((colorSettings) => new ModifieableSettings(colorSettings))
+      )
+      .subscribe(this.showModal);
+  };
+
+  private showModal = (modifieableSettings: ModifieableSettings): void => {
+    this.dialog
+      .open(ModalSettingsComponent, {
+        width: '400px',
+        height: '600px',
+        data: modifieableSettings,
+      })
+      .afterClosed()
+      .subscribe((result: ModifieableSettings) => {
+        console.log('modal result', result);
+        if (result) {
+          this.store.dispatch(updateColorSettings({ colorSettings: result.colorSettings }));
+        }
+      });
   };
 }

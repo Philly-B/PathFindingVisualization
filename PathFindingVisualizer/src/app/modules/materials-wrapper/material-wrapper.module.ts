@@ -39,6 +39,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { MAT_COLOR_FORMATS, NGX_MAT_COLOR_FORMATS } from '@angular-material-components/color-picker';
 
 @NgModule({
   exports: [
@@ -84,5 +85,6 @@ import { OverlayModule } from '@angular/cdk/overlay';
     MatToolbarModule,
     ScrollingModule,
   ],
+  providers: [{ provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS }],
 })
 export class MaterialWrapperModule {}

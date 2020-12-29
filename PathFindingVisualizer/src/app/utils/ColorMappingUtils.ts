@@ -19,3 +19,22 @@ export const getColorForHexagon = (graphCell: GraphCell, colorSettings: ColorSet
       return colorSettings.hexagonInsidePassable;
   }
 };
+
+export const getSettingLabelForField = (fieldName: string): string => {
+  switch (fieldName) {
+    case 'hexagonInsideStart':
+      return 'Start cell';
+    case 'hexagonInsideEnd':
+      return 'End cell';
+    case 'hexagonInsideWall':
+      return 'Wall cells';
+    case 'hexagonInsideInConsideration':
+      return 'Considered but not visited cells';
+    case 'hexagonInsideVisited':
+      return 'Visited cells';
+    case 'hexagonInsideFinalPath':
+      return 'Final path cells';
+    default:
+      return undefined;
+  }
+};
