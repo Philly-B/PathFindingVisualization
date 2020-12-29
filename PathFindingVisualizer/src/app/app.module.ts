@@ -19,6 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { ToastrModule } from 'ngx-toastr';
 import { NOTIFICATION_SETTINGS } from './constants/GeneralConstants';
+import { AlgorithmEffects } from './store/algorithm-store/algorithm.effects';
 
 @NgModule({
   declarations: [AppComponent],
@@ -35,7 +36,7 @@ import { NOTIFICATION_SETTINGS } from './constants/GeneralConstants';
     ToastrModule.forRoot(NOTIFICATION_SETTINGS),
     StoreModule.forRoot(AppReducers),
     EffectsModule.forRoot([]),
-    EffectsModule.forFeature([GraphEffects]),
+    EffectsModule.forFeature([GraphEffects, AlgorithmEffects]),
     BrowserAnimationsModule,
   ],
   providers: [],

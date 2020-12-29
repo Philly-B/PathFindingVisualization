@@ -25,6 +25,7 @@ var form_field_1 = require("@angular/material/form-field");
 var input_1 = require("@angular/material/input");
 var ngx_toastr_1 = require("ngx-toastr");
 var GeneralConstants_1 = require("./constants/GeneralConstants");
+var algorithm_effects_1 = require("./store/algorithm-store/algorithm.effects");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
@@ -44,7 +45,7 @@ var AppModule = /** @class */ (function () {
                 ngx_toastr_1.ToastrModule.forRoot(GeneralConstants_1.NOTIFICATION_SETTINGS),
                 store_1.StoreModule.forRoot(app_reducer_1.AppReducers),
                 effects_1.EffectsModule.forRoot([]),
-                effects_1.EffectsModule.forFeature([graph_effects_1.GraphEffects]),
+                effects_1.EffectsModule.forFeature([graph_effects_1.GraphEffects, algorithm_effects_1.AlgorithmEffects]),
                 animations_1.BrowserAnimationsModule,
             ],
             providers: [],

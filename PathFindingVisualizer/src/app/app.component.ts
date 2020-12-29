@@ -1,10 +1,10 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
+import { loadFromLocalStorage as initAlgorithmStore } from './store/algorithm-store/algorithm.actions';
 import { AppState } from './store/app.reducer';
-import { loadFromLocalStorage } from './store/graph-store/graph.actions';
+import { loadFromLocalStorage as initGraphStore } from './store/graph-store/graph.actions';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.store.dispatch(loadFromLocalStorage());
+    this.store.dispatch(initGraphStore());
+    this.store.dispatch(initAlgorithmStore());
   }
 }
