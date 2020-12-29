@@ -20,6 +20,6 @@ import { MatSliderModule } from '@angular/material/slider';
     AlgorithmSelectionComponent,
   ],
   imports: [CommonModule, MatInputModule, MatSelectModule, MatFormFieldModule, MatSliderModule],
-  exports: [AlgorithmOverviewComponent],
+  exports: [AlgorithmOverviewComponent, AlgorithmInfoComponent],
 })
 export class AlgorithmModule {}

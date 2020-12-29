@@ -8,7 +8,7 @@ import { AlgorithmProviderService } from '../../algorithms/algorithm-provider.se
 
 @Component({
   selector: 'app-algorithm-info',
-  template: '<span>{{description}}</span>',
+  template: '<div><span>{{description}}</span></div>',
   styleUrls: ['./algorithm-info.component.scss'],
 })
 export class AlgorithmInfoComponent implements OnDestroy {

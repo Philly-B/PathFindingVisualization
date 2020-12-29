@@ -1,11 +1,6 @@
-span {
-    display: block;
-
-    min-height: 10vh;
-    max-height: 10vh;
-    min-width: 15vw;
-    max-width: 15vw;
+div {
+    width: 25vw;
+    padding: 10px;
     overflow: auto;
-
-    margin: 5px;
+    margin-top: 90px;
 }
