@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AbstractAlgorithm } from './AbstractAlgorithm';
 import { AlgorithmWrapper } from './AlgorithmWrapper';
 import { AStarAlgorithm } from './AStarAlgorithm';
+import { RandomMovementAlgorithm } from './RandomMovementAlgorithm';
 import { RandomPathAlgorithm } from './RandomPathAlgorithm';
 
 @Injectable({
@@ -23,6 +24,13 @@ export class AlgorithmProviderService {
         'Random Path',
         RandomPathAlgorithm.description,
         (graph, options, callback) => new RandomPathAlgorithm(graph, options, callback)
+      )
+    );
+    this.algorithms.push(
+      new AlgorithmWrapper(
+        'Random Movement',
+        RandomMovementAlgorithm.description,
+        (graph, options, callback) => new RandomMovementAlgorithm(graph, options, callback)
       )
     );
   }

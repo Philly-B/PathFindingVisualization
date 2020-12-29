@@ -55,7 +55,27 @@ export abstract class AbstractAlgorithm {
     );
   }
 
+  protected getAllUnvisitedNeighbors(currElement: RowColumnPair) {
+    const allNeigh = this.getAllNeighborsWithSkipCondition(
+      currElement,
+      (row, col) => this.graph[row][col] === VISITED_FIELD_ID
+    );
+    allNeigh.forEach((neigh) => this.setValueToGraphCell(neigh, IN_CONSIDERATION_FIELD_ID));
+    return allNeigh;
+  }
+
   protected getAllUnvisitedNotConsideredNeighbors(currElement: RowColumnPair) {
+    const shouldSkiptCell = (row, col) =>
+      this.graph[row][col] === IN_CONSIDERATION_FIELD_ID || this.graph[row][col] === VISITED_FIELD_ID;
+    const allNeigh = this.getAllNeighborsWithSkipCondition(currElement, shouldSkiptCell);
+    allNeigh.forEach((neigh) => this.setValueToGraphCell(neigh, IN_CONSIDERATION_FIELD_ID));
+    return allNeigh;
+  }
+
+  private getAllNeighborsWithSkipCondition(
+    currElement: RowColumnPair,
+    skipConditon: (row, col) => boolean
+  ): RowColumnPair[] {
     const neighbors: RowColumnPair[] = [];
     const row = currElement.row;
     const col = currElement.column;
@@ -75,15 +95,10 @@ export abstract class AbstractAlgorithm {
         const colOfNeigh = col + colDelta;
 
         if (this.isValidCell(rowOfNeigh, colOfNeigh)) {
-          if (
-            this.graph[rowOfNeigh][colOfNeigh] === IN_CONSIDERATION_FIELD_ID ||
-            this.graph[rowOfNeigh][colOfNeigh] === VISITED_FIELD_ID
-          ) {
+          if (skipConditon(rowOfNeigh, colOfNeigh)) {
             continue;
           }
-          const newLocal = new RowColumnPair(rowOfNeigh, colOfNeigh);
-          neighbors.push(newLocal);
-          this.setValueToGraphCell(newLocal, IN_CONSIDERATION_FIELD_ID);
+          neighbors.push(new RowColumnPair(rowOfNeigh, colOfNeigh));
         }
       }
     }
@@ -102,6 +117,10 @@ export abstract class AbstractAlgorithm {
     const restOfPath = this.createReversePath(node.cameFrom);
     restOfPath.push(node.rowAndColumn);
     return restOfPath;
+  }
+
+  protected getRandomInt(max: number): number {
+    return Math.floor(Math.random() * max);
   }
 }
 
