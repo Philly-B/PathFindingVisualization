@@ -11,13 +11,14 @@ import {
   initiateSetStart,
   initiateSetEnd,
   initiateModifyWalls,
-  finalizeModifyWalls,
+  finalizeSetWalls,
   finalizeSetStart,
   finalizeSetEnd,
   setWall,
   removeWall,
   updateGraphCell,
   resetAlgorithmData,
+  setGraphState,
 } from './graph.actions';
 
 export class GraphState {
@@ -42,6 +43,8 @@ export const initialState: GraphState = {
   finalPath: [],
 };
 
+export const GRAPH_STATE_LOCAL_STORAGE_KEY = 'graph-state';
+
 // TODO every array should be duplicated!
 const graphReducerInternal = createReducer(
   initialState,
@@ -52,14 +55,16 @@ const graphReducerInternal = createReducer(
   on(initiateModifyWalls, (state) => ({ ...state })),
   on(setWall, (state, { wall }) => ({ ...state, walls: duplicateAndAddWall(state.walls, wall) })),
   on(removeWall, (state, { exWall }) => ({ ...state, walls: duplicateAndRemoveWall(state.walls, exWall) })),
-  on(finalizeModifyWalls, (state) => ({ ...state })),
+  on(finalizeSetWalls, (state) => ({ ...state })),
 
   on(initiateSetEnd, (state) => ({ ...state })),
   on(setEnd, (state, { endPosition }) => ({ ...state, endPosition })),
   on(finalizeSetEnd, (state) => ({ ...state })),
 
   on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint)),
-  on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] }))
+  on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] })),
+
+  on(setGraphState, (state, { newState }) => ({ ...newState }))
 );
 
 export function graphReducer(state, action) {

@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
-import { Actions, ofType } from '@ngrx/effects';
+import { act, Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import * as p5 from 'p5';
 import { Subscription } from 'rxjs';
@@ -14,6 +14,7 @@ import {
   INIT_MODIFY_WALLS,
   INIT_SET_END,
   INIT_SET_START,
+  RELOAD_GRAPH_STATE,
   removeWall,
   REMOVE_WALL,
   RESET_ALGORITHM_DATA,
@@ -33,6 +34,8 @@ import { Graph } from 'src/app/model/Graph';
 import { GraphCell, GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { AppState } from 'src/app/store/app.reducer';
+import { switchMapTo, take, tap } from 'rxjs/operators';
+import { selectGraphFeature } from 'src/app/store/graph-store/graph.selectors';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
@@ -66,43 +69,71 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     const graphDefinition = (picture) =>
       this.p5UtilService.graphDefinition(picture, this.graph, this.p5Settings, this.handleHexagonClickEvent);
     this.p5Graph = new p5(graphDefinition, this.el.nativeElement);
-
-    // TODO Do this in a useful way
-    this.subscriptions.add(
-      actions.pipe(ofType(INIT_SET_START)).subscribe((a) => (this.setNextClickedHexagonToStart = true))
-    );
-    this.subscriptions.add(
-      actions.pipe(ofType(FINALIZE_SET_START)).subscribe((a) => (this.setNextClickedHexagonToStart = false))
-    );
-    this.subscriptions.add(
-      actions.pipe(ofType(INIT_SET_END)).subscribe((a) => (this.setNextClickedHexagonToEnd = true))
-    );
-    this.subscriptions.add(
-      actions.pipe(ofType(FINALIZE_SET_END)).subscribe((a) => (this.setNextClickedHexagonToEnd = false))
-    );
-    this.subscriptions.add(
-      actions.pipe(ofType(INIT_MODIFY_WALLS)).subscribe((a) => (this.isModifyWallsEnabled = true))
-    );
-    this.subscriptions.add(
-      actions.pipe(ofType(FINALIZE_SET_WALLS)).subscribe((a) => (this.isModifyWallsEnabled = false))
-    );
-
-    this.subscriptions.add(
-      actions.pipe(ofType(UPDATE_GRAPH_CELL)).subscribe((a) => this.updateGraphCell(a.cell, a.newConstraint))
-    );
-
-    this.subscriptions.add(
-      actions.pipe(ofType(RESET_ALGORITHM_DATA)).subscribe((a) => this.resetAlgorithmDataInGraph())
-    );
-
-    this.subscriptions.add(actions.pipe(ofType(REMOVE_WALL)).subscribe((a) => this.removeWall(a.exWall)));
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // TODO Do this in a useful way
+    this.subscriptions.add(
+      this.actions.pipe(ofType(INIT_SET_START)).subscribe((a) => (this.setNextClickedHexagonToStart = true))
+    );
+    this.subscriptions.add(
+      this.actions.pipe(ofType(FINALIZE_SET_START)).subscribe((a) => (this.setNextClickedHexagonToStart = false))
+    );
+    this.subscriptions.add(
+      this.actions.pipe(ofType(INIT_SET_END)).subscribe((a) => (this.setNextClickedHexagonToEnd = true))
+    );
+    this.subscriptions.add(
+      this.actions.pipe(ofType(FINALIZE_SET_END)).subscribe((a) => (this.setNextClickedHexagonToEnd = false))
+    );
+    this.subscriptions.add(
+      this.actions.pipe(ofType(INIT_MODIFY_WALLS)).subscribe((a) => (this.isModifyWallsEnabled = true))
+    );
+    this.subscriptions.add(
+      this.actions.pipe(ofType(FINALIZE_SET_WALLS)).subscribe((a) => (this.isModifyWallsEnabled = false))
+    );
+
+    this.subscriptions.add(
+      this.actions.pipe(ofType(UPDATE_GRAPH_CELL)).subscribe((a) => this.updateGraphCell(a.cell, a.newConstraint))
+    );
+
+    this.subscriptions.add(
+      this.actions.pipe(ofType(RESET_ALGORITHM_DATA)).subscribe((a) => this.resetAlgorithmDataInGraph())
+    );
+
+    this.subscriptions.add(this.actions.pipe(ofType(REMOVE_WALL)).subscribe((a) => this.removeWall(a.exWall)));
+
+    this.subscriptions.add(
+      this.actions
+        .pipe(
+          ofType(RELOAD_GRAPH_STATE),
+          tap((a) => console.log('ok')),
+          switchMapTo(this.store.select(selectGraphFeature))
+        )
+        .subscribe((newGraphState) => this.reinitAll(newGraphState))
+    );
+
+    this.store
+      .select(selectGraphFeature)
+      .pipe(take(1))
+      .subscribe((initialState) => this.reinitAll(initialState));
+  }
+
+  private reinitAll = (newGraphState: GraphState): void => {
+    this.resetAlgorithmDataInGraph();
+
+    console.log('hey', newGraphState);
+
+    this.setExclusiveConstraint(newGraphState.startPosition, GraphCellConstraint.START);
+    this.setExclusiveConstraint(newGraphState.endPosition, GraphCellConstraint.START);
+    newGraphState.walls.forEach((wall) => this.updateGraphCell(wall, GraphCellConstraint.WALL));
+    newGraphState.visited.forEach((wall) => this.updateGraphCell(wall, GraphCellConstraint.VISITED));
+    newGraphState.inConsideration.forEach((wall) => this.updateGraphCell(wall, GraphCellConstraint.IN_CONSIDERATION));
+    newGraphState.finalPath.forEach((wall) => this.updateGraphCell(wall, GraphCellConstraint.FINAL_PATH));
+  };
 
   private resetAlgorithmDataInGraph = (): void => {
     for (const graphRow of this.graph.grid) {
@@ -131,20 +162,10 @@ export class GraphViewComponent implements OnInit, OnDestroy {
   private handleHexagonClickEvent = (hexagonClicked: GraphCell): void => {
     const referenceToGraphCell = new RowColumnPair(hexagonClicked.row, hexagonClicked.column);
     if (this.setNextClickedHexagonToStart) {
-      this.graphUtilService.setGraphConstraintOfGraphCell(
-        this.graph.grid,
-        GraphCellConstraint.START,
-        GraphCellConstraint.PASSABLE
-      );
-      hexagonClicked.graphCellConstraint = GraphCellConstraint.START;
+      this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.START);
       this.store.dispatch(setStart({ startPosition: referenceToGraphCell }));
     } else if (this.setNextClickedHexagonToEnd) {
-      this.graphUtilService.setGraphConstraintOfGraphCell(
-        this.graph.grid,
-        GraphCellConstraint.END,
-        GraphCellConstraint.PASSABLE
-      );
-      hexagonClicked.graphCellConstraint = GraphCellConstraint.END;
+      this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.END);
       this.store.dispatch(setEnd({ endPosition: referenceToGraphCell }));
     } else if (this.isModifyWallsEnabled) {
       if (Date.now() - hexagonClicked.lastChange < MOUSE_DRAG_WALL_TIMEOUT_MS) {
@@ -160,6 +181,15 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       }
     }
   };
+
+  private setExclusiveConstraint(cell: RowColumnPair, constraint: GraphCellConstraint): void {
+    if (cell === undefined) {
+      return;
+    }
+
+    this.graphUtilService.setGraphConstraintOfGraphCell(this.graph.grid, constraint, GraphCellConstraint.PASSABLE);
+    this.graph.grid[cell.row][cell.column].graphCellConstraint = constraint;
+  }
 
   private removeWall = (wallToRemove: RowColumnPair): void => {
     this.graph.grid[wallToRemove.row][wallToRemove.column].graphCellConstraint = GraphCellConstraint.PASSABLE;

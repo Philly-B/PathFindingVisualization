@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { concatAll, map, mergeMap, switchMap, tap, toArray, withLatestFrom } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { concatAll, map, mergeMap, switchMap, switchMapTo, tap, toArray, withLatestFrom } from 'rxjs/operators';
+import { LocalStorageService } from 'src/app/services/local-storage.service';
 import { GraphUtilService } from '../../services/graph-util.service';
 import { AppState } from '../app.reducer';
 import {
-  finalizeModifyWalls,
   finalizeSetEnd,
   finalizeSetStart,
   GraphActionsTypes,
@@ -15,11 +16,23 @@ import {
   INIT_MODIFY_WALLS,
   INIT_SET_END,
   INIT_SET_START,
+  LOAD_FROM_LOCAL_STORAGE,
   removeWall,
   REMOVE_ALL_WALLS,
+  saveToLocalStorageDone,
+  setGraphState,
+  SAVE_TO_LOCAL_STORAGE,
+  finalizeSetWalls,
   SET_END,
   SET_START,
+  FINALIZE_SET_END,
+  FINALIZE_SET_START,
+  FINALIZE_SET_WALLS,
+  REMOVE_WALL,
+  saveToLocalStorage,
+  reloadGraphState,
 } from './graph.actions';
+import { GraphState, GRAPH_STATE_LOCAL_STORAGE_KEY } from './graph.reducer';
 import { selectGraphFeature } from './graph.selectors';
 
 @Injectable()
@@ -27,8 +40,37 @@ export class GraphEffects {
   constructor(
     private actions$: Actions<GraphActionsTypes>,
     private store$: Store<AppState>,
-    private graphUtils: GraphUtilService
+    private localStorage: LocalStorageService
   ) {}
+
+  triggerSaveToLocalStorage$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(FINALIZE_SET_END, FINALIZE_SET_START, FINALIZE_SET_WALLS, REMOVE_WALL),
+      map((a) => saveToLocalStorage())
+    )
+  );
+
+  saveToLocalStorage$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(SAVE_TO_LOCAL_STORAGE),
+      withLatestFrom(this.store$.select(selectGraphFeature)),
+      map(([action, store]) => this.localStorage.persistState(GRAPH_STATE_LOCAL_STORAGE_KEY, store)),
+      map((a) => saveToLocalStorageDone())
+    )
+  );
+
+  loadFromLocalStorage$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(LOAD_FROM_LOCAL_STORAGE),
+      tap((a) => console.log('loadfromeffect')),
+      switchMap((action) => [
+        setGraphState({ newState: this.localStorage.getState<GraphState>(GRAPH_STATE_LOCAL_STORAGE_KEY) }),
+      ]),
+      tap((a) => console.log('loadfromeffect after set graph', a)),
+      switchMap((a) => [reloadGraphState()]),
+      tap((a) => console.log('loadfromeffect after reload', a))
+    )
+  );
 
   onlyOneControlEnabled$ = createEffect(() =>
     this.actions$.pipe(
@@ -63,9 +105,9 @@ export class GraphEffects {
 
   private finalizeOthers = (typeToRun: string): Action[] => {
     if (typeToRun === initiateSetStart.type) {
-      return [finalizeSetEnd(), finalizeModifyWalls()];
+      return [finalizeSetEnd(), finalizeSetWalls()];
     } else if (typeToRun === initiateSetEnd.type) {
-      return [finalizeSetStart(), finalizeModifyWalls()];
+      return [finalizeSetStart(), finalizeSetWalls()];
     } else if (typeToRun === initiateModifyWalls.type) {
       return [finalizeSetStart(), finalizeSetEnd()];
     }
