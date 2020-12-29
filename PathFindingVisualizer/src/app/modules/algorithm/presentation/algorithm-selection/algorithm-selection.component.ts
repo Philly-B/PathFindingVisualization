@@ -25,10 +25,7 @@ export class AlgorithmSelectionComponent implements OnInit {
   ngOnInit(): void {
     this.store
       .select(reloadAlgorithmState)
-      .pipe(
-        switchMap(() => this.store.select(selectFeatureAlgorithm)),
-        tap((a) => console.log(a))
-      )
+      .pipe(switchMap(() => this.store.select(selectFeatureAlgorithm)))
       .subscribe((a) => (this.currentValue = a));
   }
 
