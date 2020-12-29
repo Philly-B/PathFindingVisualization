@@ -1,9 +1,19 @@
-import { IN_CONSIDERATION_FIELD_ID, VISITED_FIELD_ID, WALL_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
-import { StartNotDefinedError } from 'src/app/errors/AlgorithmErrors';
+import {
+  END_FIELD_ID,
+  IN_CONSIDERATION_FIELD_ID,
+  START_FIELD_ID,
+  VISITED_FIELD_ID,
+  WALL_FIELD_ID,
+} from 'src/app/constants/AlgorithmConstants';
+import { EndNotDefinedError, StartNotDefinedError } from 'src/app/errors/AlgorithmErrors';
+import { BaseError } from 'src/app/errors/BaseError';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { AlgorithmOptions } from './AlgorithmOptions';
 
 export abstract class AbstractAlgorithm {
+  protected start: RowColumnPair;
+  protected end: RowColumnPair;
+
   finished = false;
   result: RowColumnPair[] = [];
 
@@ -13,9 +23,18 @@ export abstract class AbstractAlgorithm {
     protected graphIterationCallback: (cell: RowColumnPair, newState: number) => void
   ) {}
 
+  public initialize(): void {
+    this.start = this.getElementWithConstraint(START_FIELD_ID, () => new StartNotDefinedError());
+    this.end = this.getElementWithConstraint(END_FIELD_ID, () => new EndNotDefinedError());
+
+    this.initializeImpl();
+  }
+
+  abstract initializeImpl(): void;
+
   abstract continueAlgorithm(): void;
 
-  protected getElementWithConstraint(constraint: number): RowColumnPair {
+  protected getElementWithConstraint(constraint: number, errorSupplier: () => BaseError): RowColumnPair {
     for (let row = 0; row < this.graph.length; row++) {
       for (let col = 0; col < this.graph[row].length; col++) {
         if (this.graph[row][col] === constraint) {
@@ -23,7 +42,7 @@ export abstract class AbstractAlgorithm {
         }
       }
     }
-    throw new StartNotDefinedError();
+    throw errorSupplier();
   }
 
   protected isValidCell(row: number, col: number): boolean {

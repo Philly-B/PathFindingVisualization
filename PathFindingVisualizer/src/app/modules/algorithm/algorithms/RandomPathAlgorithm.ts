@@ -1,11 +1,9 @@
 import { AlgorithmOptions } from './AlgorithmOptions';
 import { AbstractAlgorithm, CurrentPathElement } from './AbstractAlgorithm';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
-import { END_FIELD_ID, START_FIELD_ID, VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
+import { VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
 
 export class RandomPathAlgorithm extends AbstractAlgorithm {
-  private start: RowColumnPair;
-  private end: RowColumnPair;
   private queue: CurrentPathElement[];
 
   finished = false;
@@ -17,9 +15,9 @@ export class RandomPathAlgorithm extends AbstractAlgorithm {
     graphIterationCallback: (cell: RowColumnPair, newState: number) => void
   ) {
     super(graph, options, graphIterationCallback);
+  }
 
-    this.start = super.getElementWithConstraint(START_FIELD_ID);
-    this.end = super.getElementWithConstraint(END_FIELD_ID);
+  public initializeImpl(): void {
     this.queue = [new CurrentPathElement(this.start)];
   }
 

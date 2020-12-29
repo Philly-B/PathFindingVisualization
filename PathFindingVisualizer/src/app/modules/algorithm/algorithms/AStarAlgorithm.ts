@@ -2,18 +2,10 @@ import { AlgorithmOptions } from './AlgorithmOptions';
 import { AbstractAlgorithm, CurrentPathElement } from './AbstractAlgorithm';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { PriorityQueue } from 'src/app/modules/algorithm/utils/PriorityQueue';
-import {
-  END_FIELD_ID,
-  IN_CONSIDERATION_FIELD_ID,
-  START_FIELD_ID,
-  VISITED_FIELD_ID,
-  WALL_FIELD_ID,
-} from 'src/app/constants/AlgorithmConstants';
+import { VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
 import { StartNotDefinedError } from 'src/app/errors/AlgorithmErrors';
 
 export class AStarAlgorithm extends AbstractAlgorithm {
-  private start: RowColumnPair;
-  private end: RowColumnPair;
   private queue: PriorityQueue<PrioritizedCurrentPathElement>;
 
   constructor(
@@ -22,9 +14,9 @@ export class AStarAlgorithm extends AbstractAlgorithm {
     graphIterationCallback: (cell: RowColumnPair, newState: number) => void
   ) {
     super(graph, options, graphIterationCallback);
+  }
 
-    this.start = super.getElementWithConstraint(START_FIELD_ID);
-    this.end = super.getElementWithConstraint(END_FIELD_ID);
+  public initializeImpl(): void {
     this.queue = new PriorityQueue<PrioritizedCurrentPathElement>(this.prioritizedGraphCellComparator);
     this.queue.pushElement(
       new PrioritizedCurrentPathElement(

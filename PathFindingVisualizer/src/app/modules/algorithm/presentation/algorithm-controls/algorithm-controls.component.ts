@@ -15,6 +15,7 @@ import { BaseError } from 'src/app/errors/BaseError';
 import { GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
+import { NotificationService } from 'src/app/services/notification.service';
 import { selectFeatureAlgorithm, selectFeatureAlgorithmSpeed } from 'src/app/store/algorithm-store/algorithm.selectors';
 import { AppState } from 'src/app/store/app.reducer';
 import { resetAlgorithmData, updateGraphCell } from 'src/app/store/graph-store/graph.actions';
@@ -43,7 +44,8 @@ export class AlgorithmControlsComponent implements OnDestroy {
     private store: Store<AppState>,
     private actions: ActionsSubject,
     private graphUtilService: GraphUtilService,
-    private algorithmProvider: AlgorithmProviderService
+    private algorithmProvider: AlgorithmProviderService,
+    private notificationService: NotificationService
   ) {
     this.subscriptions.add(
       store.select(selectFeatureAlgorithmSpeed).subscribe((algorithmSpeed) => this.setAlgorithmSpeed(algorithmSpeed))
@@ -107,6 +109,11 @@ export class AlgorithmControlsComponent implements OnDestroy {
       for (const resultCell of this.algorithmImpl.result) {
         this.dispatchGraphState(resultCell, FINAL_PATH_FIELD_ID);
       }
+      if (this.algorithmImpl.result.length === 0) {
+        this.notificationService.notifyWarning('The end is not reachable.');
+      } else {
+        this.notificationService.notifySuccess('The algorithm finished.');
+      }
     } else if (this.algorithmImpl && !this.done && !this.algorithmImpl.finished) {
       this.algorithmImpl.continueAlgorithm();
     }
@@ -114,8 +121,6 @@ export class AlgorithmControlsComponent implements OnDestroy {
 
   private initiateAlgorithm = (state: AppState): void => {
     const graphState = state.graph;
-    this.assertContainsStartAndEnd(graphState);
-
     const graph = this.graphUtilService.initGraphForAlgorithm(graphState.N);
     this.initGraphFromState(graph, graphState);
 
@@ -126,7 +131,15 @@ export class AlgorithmControlsComponent implements OnDestroy {
       this.options,
       this.dispatchGraphState
     );
-    this.runAlgorithm();
+    try {
+      this.algorithmImpl.initialize();
+      this.runAlgorithm();
+    } catch (error) {
+      this.algorithmImpl = undefined;
+      if (error instanceof BaseError) {
+        this.notificationService.notifyError(error.getMessage());
+      }
+    }
   };
 
   private dispatchGraphState = (cell: RowColumnPair, newState: number): boolean => {
@@ -146,23 +159,16 @@ export class AlgorithmControlsComponent implements OnDestroy {
       case FINAL_PATH_FIELD_ID:
         return GraphCellConstraint.FINAL_PATH;
     }
-    // TODO better error handling
-    throw new BaseError();
-  }
-
-  private assertContainsStartAndEnd(graphState: GraphState) {
-    if (graphState.startPosition === undefined) {
-      throw new StartNotDefinedError();
-    }
-    if (graphState.endPosition === undefined) {
-      throw new EndNotDefinedError();
-    }
-    // TODO handle this in a useful way
+    throw new Error();
   }
 
   private initGraphFromState(graph: number[][], graphState: GraphState) {
-    graph[graphState.startPosition.row][graphState.startPosition.column] = START_FIELD_ID;
-    graph[graphState.endPosition.row][graphState.endPosition.column] = END_FIELD_ID;
+    if (graphState.startPosition) {
+      graph[graphState.startPosition.row][graphState.startPosition.column] = START_FIELD_ID;
+    }
+    if (graphState.endPosition) {
+      graph[graphState.endPosition.row][graphState.endPosition.column] = END_FIELD_ID;
+    }
 
     for (const wall of graphState.walls) {
       graph[wall.row][wall.column] = WALL_FIELD_ID;

@@ -23,6 +23,7 @@ var forms_1 = require("@angular/forms");
 var icon_1 = require("@angular/material/icon");
 var form_field_1 = require("@angular/material/form-field");
 var input_1 = require("@angular/material/input");
+var ngx_toastr_1 = require("ngx-toastr");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
@@ -39,6 +40,7 @@ var AppModule = /** @class */ (function () {
                 form_field_1.MatFormFieldModule,
                 forms_1.ReactiveFormsModule,
                 input_1.MatInputModule,
+                ngx_toastr_1.ToastrModule.forRoot(),
                 store_1.StoreModule.forRoot(app_reducer_1.AppReducers),
                 effects_1.EffectsModule.forRoot([]),
                 effects_1.EffectsModule.forFeature([graph_effects_1.GraphEffects]),
