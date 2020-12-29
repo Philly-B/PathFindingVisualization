@@ -15,7 +15,6 @@ export class AlgorithmOverviewComponent implements OnInit, OnDestroy {
 
   constructor(private store: Store<AppState>) {
     this.subscription = store.select(selectFeatureAlgorithm).subscribe((algorithm) => {
-      console.log(algorithm);
       this.algorithm = algorithm;
     });
   }

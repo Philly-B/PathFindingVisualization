@@ -14,14 +14,14 @@ export class AlgorithmProviderService {
     this.algorithms.push(
       new AlgorithmWrapper(
         'A*',
-        'bla bla blub',
+        'The A* star algorithm',
         (graph, options, callback) => new AStarAlgorithm(graph, options, callback)
       )
     );
     this.algorithms.push(
       new AlgorithmWrapper(
         'Random Path',
-        'bibo bibu buba',
+        'Just selecting a random neighbor and so on...',
         (graph, options, callback) => new RandomPathAlgorithm(graph, options, callback)
       )
     );
