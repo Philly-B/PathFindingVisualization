@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { of } from 'rxjs';
-import { concatAll, map, mergeMap, switchMap, switchMapTo, tap, toArray, withLatestFrom } from 'rxjs/operators';
+import { concatAll, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { LocalStorageService } from 'src/app/services/local-storage.service';
-import { GraphUtilService } from '../../services/graph-util.service';
-import { AppState } from '../app.reducer';
+import { AppState, selectGraphState } from '../app.reducer';
 import {
   finalizeSetEnd,
   finalizeSetStart,
@@ -34,7 +32,6 @@ import {
   SET_WALL,
 } from './graph.actions';
 import { GraphState, GRAPH_STATE_LOCAL_STORAGE_KEY } from './graph.reducer';
-import { selectGraphFeature } from './graph.selectors';
 
 @Injectable()
 export class GraphEffects {
@@ -54,7 +51,7 @@ export class GraphEffects {
   saveToLocalStorage$ = createEffect(() =>
     this.actions$.pipe(
       ofType(SAVE_TO_LOCAL_STORAGE),
-      withLatestFrom(this.store$.select(selectGraphFeature)),
+      withLatestFrom(this.store$.select(selectGraphState)),
       map(([action, store]) => this.localStorage.persistState(GRAPH_STATE_LOCAL_STORAGE_KEY, store)),
       map((a) => saveToLocalStorageDone())
     )
@@ -94,7 +91,7 @@ export class GraphEffects {
   removeAllWalls$ = createEffect(() =>
     this.actions$.pipe(
       ofType(REMOVE_ALL_WALLS),
-      withLatestFrom(this.store$.select(selectGraphFeature)),
+      withLatestFrom(this.store$.select(selectGraphState)),
       map(([a, store]) => store.walls),
       concatAll(),
       map((exWall) => removeWall({ exWall }))

@@ -5,20 +5,11 @@ import { RowColumnPair } from '../../model/RowColumnPair';
 import {
   setEnd,
   setStart,
-  initiateSetStart,
-  initiateSetEnd,
-  initiateModifyWalls,
-  finalizeSetWalls,
-  finalizeSetStart,
-  finalizeSetEnd,
   setWall,
   removeWall,
   updateGraphCell,
   resetAlgorithmData,
   setGraphState,
-  loadFromLocalStorage,
-  saveToLocalStorage,
-  saveToLocalStorageDone,
 } from './graph.actions';
 
 export class GraphState {

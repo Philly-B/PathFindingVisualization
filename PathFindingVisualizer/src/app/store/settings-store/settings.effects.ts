@@ -3,31 +3,29 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { LocalStorageService } from 'src/app/services/local-storage.service';
-import { AppState, selectAlgorithmState } from '../app.reducer';
+import { AppState, selectSettingsState } from '../app.reducer';
 import {
-  SET_ALGORITHM,
-  SET_ALGORITHM_SPEED,
-  AlgorithmActionsTypes,
-  saveToLocalStorage,
-  saveToLocalStorageDone,
-  SAVE_TO_LOCAL_STORAGE,
   LOAD_FROM_LOCAL_STORAGE,
-  reloadAlgorithmState,
-  setAlgorithmState,
-} from './algorithm.actions';
-import { AlgorithmState, ALGORITHM_STATE_LOCAL_STORAGE_KEY } from './algorithm.reducer';
+  reloadSettingsState,
+  saveToLocalStorageDone,
+  saveToLocalStorage,
+  SAVE_TO_LOCAL_STORAGE,
+  setSettingsState,
+  SettingsActionsTypes,
+} from './settings.actions';
+import { SettingsState, SETTINGS_STATE_LOCAL_STORAGE_KEY } from './settings.reducer';
 
 @Injectable()
-export class AlgorithmEffects {
+export class GraphEffects {
   constructor(
-    private actions$: Actions<AlgorithmActionsTypes>,
+    private actions$: Actions<SettingsActionsTypes>,
     private store$: Store<AppState>,
     private localStorage: LocalStorageService
   ) {}
 
   triggerSaveToLocalStorage$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(SET_ALGORITHM, SET_ALGORITHM_SPEED),
+      ofType('bla'), // TODO when to trigger the persisting
       map((a) => saveToLocalStorage())
     )
   );
@@ -35,8 +33,8 @@ export class AlgorithmEffects {
   saveToLocalStorage$ = createEffect(() =>
     this.actions$.pipe(
       ofType(SAVE_TO_LOCAL_STORAGE),
-      withLatestFrom(this.store$.select(selectAlgorithmState)),
-      map(([action, store]) => this.localStorage.persistState(ALGORITHM_STATE_LOCAL_STORAGE_KEY, store)),
+      withLatestFrom(this.store$.select(selectSettingsState)),
+      map(([action, store]) => this.localStorage.persistState(SETTINGS_STATE_LOCAL_STORAGE_KEY, store)),
       map((a) => saveToLocalStorageDone())
     )
   );
@@ -45,8 +43,8 @@ export class AlgorithmEffects {
     this.actions$.pipe(
       ofType(LOAD_FROM_LOCAL_STORAGE),
       switchMap((a) => [
-        setAlgorithmState({ newState: this.localStorage.getState<AlgorithmState>(ALGORITHM_STATE_LOCAL_STORAGE_KEY) }),
-        reloadAlgorithmState(),
+        setSettingsState({ newState: this.localStorage.getState<SettingsState>(SETTINGS_STATE_LOCAL_STORAGE_KEY) }),
+        reloadSettingsState(),
       ])
     )
   );

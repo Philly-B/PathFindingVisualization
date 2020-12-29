@@ -37,6 +37,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { OverlayModule } from '@angular/cdk/overlay';
 
 @NgModule({
@@ -80,6 +81,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
     MatTableModule,
     OverlayModule,
     PortalModule,
+    MatToolbarModule,
     ScrollingModule,
   ],
 })

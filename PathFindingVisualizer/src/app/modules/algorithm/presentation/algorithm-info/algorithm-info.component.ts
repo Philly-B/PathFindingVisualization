@@ -1,8 +1,7 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
-import { algorithmReducer } from 'src/app/store/algorithm-store/algorithm.reducer';
-import { selectAlgorithmStore, selectFeatureAlgorithm } from 'src/app/store/algorithm-store/algorithm.selectors';
+import { selectFeatureAlgorithm } from 'src/app/store/algorithm-store/algorithm.selectors';
 import { AppState } from 'src/app/store/app.reducer';
 import { AlgorithmProviderService } from '../../algorithms/algorithm-provider.service';
 

@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
-import { act, Actions, ofType } from '@ngrx/effects';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import * as p5 from 'p5';
 import { Subscription } from 'rxjs';
@@ -33,9 +33,8 @@ import {
 import { Graph } from 'src/app/model/Graph';
 import { GraphCell, GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
-import { AppState } from 'src/app/store/app.reducer';
-import { switchMap, switchMapTo, take, tap } from 'rxjs/operators';
-import { selectGraphFeature } from 'src/app/store/graph-store/graph.selectors';
+import { AppState, selectGraphState } from 'src/app/store/app.reducer';
+import { switchMapTo, take } from 'rxjs/operators';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
@@ -108,13 +107,13 @@ export class GraphViewComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.actions
-        .pipe(ofType(RELOAD_GRAPH_STATE), switchMapTo(this.store.select(selectGraphFeature)))
+        .pipe(ofType(RELOAD_GRAPH_STATE), switchMapTo(this.store.select(selectGraphState)))
         .subscribe((newGraphState) => this.reinitAll(newGraphState))
     );
 
     this.subscriptions.add(
       this.store
-        .select(selectGraphFeature)
+        .select(selectGraphState)
         .pipe(take(1))
         .subscribe((initialState) => this.reinitAll(initialState))
     );

@@ -1,10 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatSliderChange } from '@angular/material/slider';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
 import { reloadAlgorithmState, setAlgorithmSpeed } from 'src/app/store/algorithm-store/algorithm.actions';
-import { selectAlgorithmStore, selectFeatureAlgorithmSpeed } from 'src/app/store/algorithm-store/algorithm.selectors';
+import { selectFeatureAlgorithmSpeed } from 'src/app/store/algorithm-store/algorithm.selectors';
 import { AppState } from 'src/app/store/app.reducer';
 
 @Component({

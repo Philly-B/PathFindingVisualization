@@ -1,12 +1,10 @@
 import { createSelector } from '@ngrx/store';
-import { AppState } from '../app.reducer';
+import { selectAlgorithmState } from '../app.reducer';
 import { AlgorithmState } from './algorithm.reducer';
 
-export const selectAlgorithmStore = (state: AppState) => state.algorithm;
-
 export const selectFeatureAlgorithmSpeed = createSelector(
-  selectAlgorithmStore,
+  selectAlgorithmState,
   (state: AlgorithmState) => state.algorithmSpeed
 );
 
-export const selectFeatureAlgorithm = createSelector(selectAlgorithmStore, (state: AlgorithmState) => state.algorithm);
+export const selectFeatureAlgorithm = createSelector(selectAlgorithmState, (state: AlgorithmState) => state.algorithm);
