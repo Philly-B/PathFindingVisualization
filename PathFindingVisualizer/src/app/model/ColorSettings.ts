@@ -1,4 +1,5 @@
 export class ColorSettings {
+  hexagonBorder: number[];
   hexagonInsidePassable: number[];
 
   hexagonInsideInConsideration: number[];
@@ -10,6 +11,7 @@ export class ColorSettings {
   hexagonInsideEnd: number[];
 
   static initialSettings: ColorSettings = {
+    hexagonBorder: [255, 255, 255],
     hexagonInsidePassable: [173, 219, 151],
 
     hexagonInsideInConsideration: [145, 179, 235],

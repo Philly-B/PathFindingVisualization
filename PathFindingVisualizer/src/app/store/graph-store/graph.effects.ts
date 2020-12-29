@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { concatAll, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { LocalStorageService } from 'src/app/services/local-storage.service';
-import { AppState, selectGraphState } from '../app.reducer';
+import { AppState } from '../app.reducer';
 import {
   finalizeSetEnd,
   finalizeSetStart,
@@ -32,6 +32,7 @@ import {
   SET_WALL,
 } from './graph.actions';
 import { GraphState, GRAPH_STATE_LOCAL_STORAGE_KEY } from './graph.reducer';
+import { selectGraphState } from './graph.selectors';
 
 @Injectable()
 export class GraphEffects {

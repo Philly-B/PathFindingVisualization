@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { LocalStorageService } from 'src/app/services/local-storage.service';
-import { AppState, selectAlgorithmState } from '../app.reducer';
+import { AppState } from '../app.reducer';
 import {
   SET_ALGORITHM,
   SET_ALGORITHM_SPEED,
@@ -16,6 +16,7 @@ import {
   setAlgorithmState,
 } from './algorithm.actions';
 import { AlgorithmState, ALGORITHM_STATE_LOCAL_STORAGE_KEY } from './algorithm.reducer';
+import { selectAlgorithmState } from './algorithm.selectors';
 
 @Injectable()
 export class AlgorithmEffects {

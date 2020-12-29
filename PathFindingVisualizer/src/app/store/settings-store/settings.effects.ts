@@ -12,6 +12,7 @@ import {
   SAVE_TO_LOCAL_STORAGE,
   setSettingsState,
   SettingsActionsTypes,
+  UPDATE_COLOR_SETTINGS,
 } from './settings.actions';
 import { SettingsState, SETTINGS_STATE_LOCAL_STORAGE_KEY } from './settings.reducer';
 
@@ -25,7 +26,7 @@ export class GraphEffects {
 
   triggerSaveToLocalStorage$ = createEffect(() =>
     this.actions$.pipe(
-      ofType('bla'), // TODO when to trigger the persisting
+      ofType(UPDATE_COLOR_SETTINGS),
       map((a) => saveToLocalStorage())
     )
   );

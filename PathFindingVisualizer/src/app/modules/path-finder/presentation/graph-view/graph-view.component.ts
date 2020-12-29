@@ -33,8 +33,12 @@ import {
 import { Graph } from 'src/app/model/Graph';
 import { GraphCell, GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
-import { AppState, selectGraphState } from 'src/app/store/app.reducer';
+import { AppState } from 'src/app/store/app.reducer';
 import { switchMapTo, take } from 'rxjs/operators';
+import { SettingsState } from 'src/app/store/settings-store/settings.reducer';
+import { UPDATE_COLOR_SETTINGS } from 'src/app/store/settings-store/settings.actions';
+import { selectSettingsState } from 'src/app/store/settings-store/settings.selectors';
+import { selectGraphState } from 'src/app/store/graph-store/graph.selectors';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
@@ -63,12 +67,22 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       canvasSizePx: CANVAS_SIZE_PX,
       hexagonSizePx: HEXAGON_SIZE_PX,
       hexagonLinesBetweenSizePx: 3,
+      colorSettings: undefined,
     };
-    this.graph = new Graph(graphUtilService.initGraph(this.p5Settings.N));
+
+    this.store
+      .select(selectSettingsState)
+      .pipe(take(1))
+      .subscribe((settings) => this.initP5(settings));
+  }
+
+  private initP5 = (settings: SettingsState): void => {
+    this.p5Settings.colorSettings = settings.colorSettings;
+    this.graph = new Graph(this.graphUtilService.initGraph(this.p5Settings.N));
     const graphDefinition = (picture) =>
       this.p5UtilService.graphDefinition(picture, this.graph, this.p5Settings, this.handleHexagonClickEvent);
     this.p5Graph = new p5(graphDefinition, this.el.nativeElement);
-  }
+  };
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
@@ -116,6 +130,12 @@ export class GraphViewComponent implements OnInit, OnDestroy {
         .select(selectGraphState)
         .pipe(take(1))
         .subscribe((initialState) => this.reinitAll(initialState))
+    );
+
+    this.subscriptions.add(
+      this.actions
+        .pipe(ofType(UPDATE_COLOR_SETTINGS))
+        .subscribe((newColorSettings) => (this.p5Settings.colorSettings = newColorSettings))
     );
   }
 

@@ -2,8 +2,8 @@ import { createAction, props, union } from '@ngrx/store';
 import { ColorSettings } from 'src/app/model/ColorSettings';
 import { SettingsState } from './settings.reducer';
 
-export const UPDATE_SETTING = '[Settings] update settings';
-export const updateSettings = createAction(UPDATE_SETTING, props<{ newSettings: ColorSettings }>());
+export const UPDATE_COLOR_SETTINGS = '[Settings] update color settings';
+export const updateColorSettings = createAction(UPDATE_COLOR_SETTINGS, props<{ colorSettings: ColorSettings }>());
 
 // PERSISTENCE
 export const SAVE_TO_LOCAL_STORAGE = '[Settings] save to local storage';
@@ -27,7 +27,7 @@ const all = union({
   loadFromLocalStorage,
   setSettingsState,
   saveToLocalStorageDone,
-  updateSettings,
+  updateColorSettings,
 });
 
 export type SettingsActionsTypes = typeof all;

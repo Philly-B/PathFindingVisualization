@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { P5Vector } from '../models/P5Vector';
 
-import * as ColorMapping from 'src/app/constants/ColorMapping';
 import { P5Settings } from '../models/P5Settings';
 import { Graph } from 'src/app/model/Graph';
 import { GraphCell } from 'src/app/model/GraphCell';
+import { getColorForHexagon } from 'src/app/utils/ColorMappingUtils';
 
 @Injectable({
   providedIn: 'root',
@@ -79,11 +79,11 @@ export class P5UtilService {
       points.push(this.hexCorner(picture, hexagon.center, i, settings));
     }
 
-    picture.stroke(ColorMapping.hexagonBorder);
+    picture.stroke(settings.colorSettings.hexagonBorder);
     picture.strokeWeight(settings.hexagonLinesBetweenSizePx);
     picture.beginShape();
     for (let i = 0; i <= points.length; i++) {
-      picture.fill(ColorMapping.getColorForHexagon(hexagon));
+      picture.fill(getColorForHexagon(hexagon, settings.colorSettings));
       picture.vertex(points[i % points.length].x, points[i % points.length].y);
     }
     picture.endShape();

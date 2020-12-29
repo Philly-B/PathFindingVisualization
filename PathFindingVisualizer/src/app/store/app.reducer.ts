@@ -10,9 +10,5 @@ export interface AppState {
   settings: SettingsState;
 }
 
-export const selectSettingsState = (state: AppState) => state.settings;
-export const selectGraphState = (state: AppState) => state.graph;
-export const selectAlgorithmState = (state: AppState) => state.algorithm;
-
 export const AppReducers = { graph: graphReducer, algorithm: algorithmReducer, settings: settingsReducer };
 export const AppEffects = [GraphEffects, AlgorithmEffects];
