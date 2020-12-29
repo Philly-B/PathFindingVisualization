@@ -4,10 +4,9 @@ import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
 
 export class RandomPathAlgorithm extends AbstractAlgorithm {
-  private queue: CurrentPathElement[];
+  static description = 'Just selecting a random neighbor and so on...';
 
-  finished = false;
-  result: RowColumnPair[] = [];
+  private queue: CurrentPathElement[];
 
   constructor(
     graph: number[][],

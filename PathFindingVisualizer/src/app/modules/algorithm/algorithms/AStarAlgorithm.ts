@@ -6,6 +6,8 @@ import { VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
 import { StartNotDefinedError } from 'src/app/errors/AlgorithmErrors';
 
 export class AStarAlgorithm extends AbstractAlgorithm {
+  static description = 'The A* star algorithm';
+
   private queue: PriorityQueue<PrioritizedCurrentPathElement>;
 
   constructor(
