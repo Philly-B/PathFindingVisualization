@@ -10,29 +10,22 @@ import { AlgorithmModule } from './modules/algorithm/algorithm.module';
 import { AppReducers } from './store/app.reducer';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 
 import { ToastrModule } from 'ngx-toastr';
 import { NOTIFICATION_SETTINGS } from './constants/GeneralConstants';
 import { AlgorithmEffects } from './store/algorithm-store/algorithm.effects';
+import { ModalSettingsComponent } from './modals/modal-settings/modal-settings.component';
+import { MaterialWrapperModule } from './modules/materials-wrapper/material-wrapper.module';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, ModalSettingsComponent],
   imports: [
     BrowserModule,
     PathFinderModule,
     AlgorithmModule,
-    MatIconModule,
-    MatToolbarModule,
-    MatSlideToggleModule,
-    MatFormFieldModule,
     ReactiveFormsModule,
-    MatInputModule,
+    MaterialWrapperModule,
     ToastrModule.forRoot(NOTIFICATION_SETTINGS),
     StoreModule.forRoot(AppReducers),
     EffectsModule.forRoot([]),

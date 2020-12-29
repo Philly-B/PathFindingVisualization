@@ -17,31 +17,24 @@ var graph_effects_1 = require("./store/graph-store/graph.effects");
 var algorithm_module_1 = require("./modules/algorithm/algorithm.module");
 var app_reducer_1 = require("./store/app.reducer");
 var animations_1 = require("@angular/platform-browser/animations");
-var toolbar_1 = require("@angular/material/toolbar");
-var slide_toggle_1 = require("@angular/material/slide-toggle");
 var forms_1 = require("@angular/forms");
-var icon_1 = require("@angular/material/icon");
-var form_field_1 = require("@angular/material/form-field");
-var input_1 = require("@angular/material/input");
 var ngx_toastr_1 = require("ngx-toastr");
 var GeneralConstants_1 = require("./constants/GeneralConstants");
 var algorithm_effects_1 = require("./store/algorithm-store/algorithm.effects");
+var modal_settings_component_1 = require("./modals/modal-settings/modal-settings.component");
+var material_wrapper_module_1 = require("./modules/materials-wrapper/material-wrapper.module");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
     AppModule = __decorate([
         core_1.NgModule({
-            declarations: [app_component_1.AppComponent],
+            declarations: [app_component_1.AppComponent, modal_settings_component_1.ModalSettingsComponent],
             imports: [
                 platform_browser_1.BrowserModule,
                 path_finder_module_1.PathFinderModule,
                 algorithm_module_1.AlgorithmModule,
-                icon_1.MatIconModule,
-                toolbar_1.MatToolbarModule,
-                slide_toggle_1.MatSlideToggleModule,
-                form_field_1.MatFormFieldModule,
                 forms_1.ReactiveFormsModule,
-                input_1.MatInputModule,
+                material_wrapper_module_1.MaterialWrapperModule,
                 ngx_toastr_1.ToastrModule.forRoot(GeneralConstants_1.NOTIFICATION_SETTINGS),
                 store_1.StoreModule.forRoot(app_reducer_1.AppReducers),
                 effects_1.EffectsModule.forRoot([]),

@@ -13,6 +13,14 @@ mat-toolbar {
     display: flex;
     min-height: 10vh;
     max-height: 10vh;
+
+    mat-icon {
+        margin: 0 10px 0 10px;
+    }
+    mat-slide-toggle {
+        margin-left: 5px;
+        margin-right: -5px;
+    }
 }
 
 .flex-stretch {
