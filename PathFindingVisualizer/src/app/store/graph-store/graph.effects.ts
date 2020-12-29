@@ -31,6 +31,7 @@ import {
   REMOVE_WALL,
   saveToLocalStorage,
   reloadGraphState,
+  SET_WALL,
 } from './graph.actions';
 import { GraphState, GRAPH_STATE_LOCAL_STORAGE_KEY } from './graph.reducer';
 import { selectGraphFeature } from './graph.selectors';
@@ -45,7 +46,7 @@ export class GraphEffects {
 
   triggerSaveToLocalStorage$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(FINALIZE_SET_END, FINALIZE_SET_START, FINALIZE_SET_WALLS, REMOVE_WALL),
+      ofType(FINALIZE_SET_END, FINALIZE_SET_START, FINALIZE_SET_WALLS, REMOVE_WALL, SET_WALL),
       map((a) => saveToLocalStorage())
     )
   );
@@ -62,13 +63,10 @@ export class GraphEffects {
   loadFromLocalStorage$ = createEffect(() =>
     this.actions$.pipe(
       ofType(LOAD_FROM_LOCAL_STORAGE),
-      tap((a) => console.log('loadfromeffect')),
-      switchMap((action) => [
+      switchMap((a) => [
         setGraphState({ newState: this.localStorage.getState<GraphState>(GRAPH_STATE_LOCAL_STORAGE_KEY) }),
-      ]),
-      tap((a) => console.log('loadfromeffect after set graph', a)),
-      switchMap((a) => [reloadGraphState()]),
-      tap((a) => console.log('loadfromeffect after reload', a))
+        reloadGraphState(),
+      ])
     )
   );
 

@@ -11,7 +11,9 @@ export class LocalStorageService {
     if (contentOfStore === null) {
       return {} as T;
     }
-    return JSON.parse(contentOfStore) as T;
+    const result: T = JSON.parse(contentOfStore) as T;
+    console.log('from local storage', result);
+    return result;
   }
 
   persistState<T>(localStorageKey: string, store: T): void {

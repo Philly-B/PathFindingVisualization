@@ -34,7 +34,7 @@ import { Graph } from 'src/app/model/Graph';
 import { GraphCell, GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { AppState } from 'src/app/store/app.reducer';
-import { switchMapTo, take, tap } from 'rxjs/operators';
+import { switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { selectGraphFeature } from 'src/app/store/graph-store/graph.selectors';
 @Component({
   selector: 'app-graph-view',
@@ -108,27 +108,23 @@ export class GraphViewComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.actions
-        .pipe(
-          ofType(RELOAD_GRAPH_STATE),
-          tap((a) => console.log('ok')),
-          switchMapTo(this.store.select(selectGraphFeature))
-        )
+        .pipe(ofType(RELOAD_GRAPH_STATE), switchMapTo(this.store.select(selectGraphFeature)))
         .subscribe((newGraphState) => this.reinitAll(newGraphState))
     );
 
-    this.store
-      .select(selectGraphFeature)
-      .pipe(take(1))
-      .subscribe((initialState) => this.reinitAll(initialState));
+    this.subscriptions.add(
+      this.store
+        .select(selectGraphFeature)
+        .pipe(take(1))
+        .subscribe((initialState) => this.reinitAll(initialState))
+    );
   }
 
   private reinitAll = (newGraphState: GraphState): void => {
     this.resetAlgorithmDataInGraph();
 
-    console.log('hey', newGraphState);
-
     this.setExclusiveConstraint(newGraphState.startPosition, GraphCellConstraint.START);
-    this.setExclusiveConstraint(newGraphState.endPosition, GraphCellConstraint.START);
+    this.setExclusiveConstraint(newGraphState.endPosition, GraphCellConstraint.END);
     newGraphState.walls.forEach((wall) => this.updateGraphCell(wall, GraphCellConstraint.WALL));
     newGraphState.visited.forEach((wall) => this.updateGraphCell(wall, GraphCellConstraint.VISITED));
     newGraphState.inConsideration.forEach((wall) => this.updateGraphCell(wall, GraphCellConstraint.IN_CONSIDERATION));

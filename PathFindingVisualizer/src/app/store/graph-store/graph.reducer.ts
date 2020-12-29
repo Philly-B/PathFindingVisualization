@@ -1,8 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import {
-  INITIAL_ALGORITHM_SPEED,
-  INITIAL_NUMBER_OF_HEX_PER_ROW as INITIAL_NUMBER_OF_CELLS_PER_ROW,
-} from '../../constants/GeneralConstants';
+import { INITIAL_NUMBER_OF_HEX_PER_ROW } from '../../constants/GeneralConstants';
 import { GraphCellConstraint } from '../../model/GraphCell';
 import { RowColumnPair } from '../../model/RowColumnPair';
 import {
@@ -19,6 +16,9 @@ import {
   updateGraphCell,
   resetAlgorithmData,
   setGraphState,
+  loadFromLocalStorage,
+  saveToLocalStorage,
+  saveToLocalStorageDone,
 } from './graph.actions';
 
 export class GraphState {
@@ -36,7 +36,7 @@ export const initialState: GraphState = {
   startPosition: undefined,
   endPosition: undefined,
   walls: [],
-  N: INITIAL_NUMBER_OF_CELLS_PER_ROW,
+  N: INITIAL_NUMBER_OF_HEX_PER_ROW,
 
   inConsideration: [],
   visited: [],
@@ -64,7 +64,10 @@ const graphReducerInternal = createReducer(
   on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint)),
   on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] })),
 
-  on(setGraphState, (state, { newState }) => ({ ...newState }))
+  on(setGraphState, (state, { newState }) => ({ ...state, ...newState })),
+  on(loadFromLocalStorage, (state) => ({ ...state })),
+  on(saveToLocalStorage, (state) => ({ ...state })),
+  on(saveToLocalStorageDone, (state) => ({ ...state }))
 );
 
 export function graphReducer(state, action) {

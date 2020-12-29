@@ -19,6 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { ToastrModule } from 'ngx-toastr';
 import { NOTIFICATION_SETTINGS } from './constants/GeneralConstants';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
