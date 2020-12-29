@@ -18,6 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { ToastrModule } from 'ngx-toastr';
+import { NOTIFICATION_SETTINGS } from './constants/GeneralConstants';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -30,7 +31,7 @@ import { ToastrModule } from 'ngx-toastr';
     MatFormFieldModule,
     ReactiveFormsModule,
     MatInputModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot(NOTIFICATION_SETTINGS),
     StoreModule.forRoot(AppReducers),
     EffectsModule.forRoot([]),
     EffectsModule.forFeature([GraphEffects]),

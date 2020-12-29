@@ -4,3 +4,7 @@ export const INITIAL_ALGORITHM_SPEED = 100;
 export const INITIAL_NUMBER_OF_HEX_PER_ROW = 20;
 export const HEXAGON_SIZE_PX = 12;
 export const CANVAS_SIZE_PX = 450;
+
+export const NOTIFICATION_SETTINGS = {
+  positionClass: 'toast-bottom-right',
+};
