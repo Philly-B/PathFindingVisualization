@@ -48,26 +48,17 @@ export const GRAPH_STATE_LOCAL_STORAGE_KEY = 'graph-state';
 // TODO every array should be duplicated!
 const graphReducerInternal = createReducer(
   initialState,
-  on(initiateSetStart, (state) => ({ ...state })),
   on(setStart, (state, { startPosition }) => ({ ...state, startPosition })),
-  on(finalizeSetStart, (state) => ({ ...state })),
 
-  on(initiateModifyWalls, (state) => ({ ...state })),
   on(setWall, (state, { wall }) => ({ ...state, walls: duplicateAndAddWall(state.walls, wall) })),
   on(removeWall, (state, { exWall }) => ({ ...state, walls: duplicateAndRemoveWall(state.walls, exWall) })),
-  on(finalizeSetWalls, (state) => ({ ...state })),
 
-  on(initiateSetEnd, (state) => ({ ...state })),
   on(setEnd, (state, { endPosition }) => ({ ...state, endPosition })),
-  on(finalizeSetEnd, (state) => ({ ...state })),
 
   on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint)),
   on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] })),
 
-  on(setGraphState, (state, { newState }) => ({ ...state, ...newState })),
-  on(loadFromLocalStorage, (state) => ({ ...state })),
-  on(saveToLocalStorage, (state) => ({ ...state })),
-  on(saveToLocalStorageDone, (state) => ({ ...state }))
+  on(setGraphState, (state, { newState }) => ({ ...state, ...newState }))
 );
 
 export function graphReducer(state, action) {
