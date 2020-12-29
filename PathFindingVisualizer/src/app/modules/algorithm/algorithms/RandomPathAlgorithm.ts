@@ -4,7 +4,11 @@ import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
 
 export class RandomPathAlgorithm extends AbstractAlgorithm {
-  static description = 'Just selecting a random neighbor and so on...';
+  static description =
+    'The random path algorithm acts similiarly to the A* algorithm' +
+    ' with the small difference of not choosing the currently closest cell to the end' +
+    ' but a random cell which has not been visited yet. Thus the result path might be' +
+    ' optimal but must not!';
 
   private queue: CurrentPathElement[];
 
