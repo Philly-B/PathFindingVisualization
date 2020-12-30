@@ -39,8 +39,13 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { OverlayModule } from '@angular/cdk/overlay';
-import { MAT_COLOR_FORMATS, NGX_MAT_COLOR_FORMATS } from '@angular-material-components/color-picker';
+import { MatColorFormats, MAT_COLOR_FORMATS, NGX_MAT_COLOR_FORMATS } from '@angular-material-components/color-picker';
 
+const CUSTOM_MAT_COLOR_FORMATS: MatColorFormats = {
+  display: {
+    colorInput: 'hex6',
+  },
+};
 @NgModule({
   exports: [
     A11yModule,
@@ -85,6 +90,6 @@ import { MAT_COLOR_FORMATS, NGX_MAT_COLOR_FORMATS } from '@angular-material-comp
     MatToolbarModule,
     ScrollingModule,
   ],
-  providers: [{ provide: MAT_COLOR_FORMATS, useValue: NGX_MAT_COLOR_FORMATS }],
+  providers: [{ provide: MAT_COLOR_FORMATS, useValue: CUSTOM_MAT_COLOR_FORMATS }],
 })
 export class MaterialWrapperModule {}

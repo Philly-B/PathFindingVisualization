@@ -1,15 +1,15 @@
-<h1 mat-dialog-title>Settings</h1>
-<h2 mat-dialog-content>Change colors of the graph</h2>
+<h1>Settings</h1>
+<h2>Change colors of the graph</h2>
 <ng-container *ngFor="let colorField of modiefieableColors">
-    <mat-form-field class="color-form-field" appearance="standard"
-        [color]="modifieableSettings.colorSettings[colorField]">
-        <mat-label>{{fieldNameToLabelMap[colorField]}}</mat-label>
-        <input matInput [ngxMatColorPicker]="picker" [formControl]="colorCtr">
+    <div class="input-group one-color-setting">
+        <label class="input-group-addon label label-info ">{{fieldNameToLabelMap[colorField]}}</label>
+        <input [name]="colorField" class="color-input-field form-control" [ngxMatColorPicker]="picker">
         <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
-        <ngx-mat-color-picker #picker [color]="color"></ngx-mat-color-picker>
-    </mat-form-field>
+        <ngx-mat-color-picker #picker [color]="modifieableSettings.colorSettings[colorField]">
+        </ngx-mat-color-picker>
+    </div>
 </ng-container>
-<div mat-dialog-actions>
-    <button class="btn btn-danger" [mat-dialog-close]="undefined">Close</button>
-    <button class="btn btn-success" [mat-dialog-close]="modifieableSettings" cdkFocusInitial>Save</button>
+<div class="buttons-end" mat-dialog-actions>
+    <button class="btn btn-danger" (click)="onNoClick()">Close</button>
+    <button class="btn btn-success" (click)="onYesClick()" cdkFocusInitial>Save</button>
 </div>

@@ -3,7 +3,7 @@ import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import { ModalSettingsComponent, ModifieableSettings } from './modals/modal-settings/modal-settings.component';
 import { loadFromLocalStorage as initAlgorithmStore } from './store/algorithm-store/algorithm.actions';
 import { AppState } from './store/app.reducer';
@@ -44,6 +44,7 @@ export class AppComponent implements OnInit {
     this.store
       .select(selectSettingsState)
       .pipe(
+        take(1),
         map((state) => state.colorSettings),
         map((colorSettings) => new ModifieableSettings(colorSettings))
       )
@@ -53,13 +54,12 @@ export class AppComponent implements OnInit {
   private showModal = (modifieableSettings: ModifieableSettings): void => {
     this.dialog
       .open(ModalSettingsComponent, {
-        width: '400px',
+        width: '500px',
         height: '600px',
         data: modifieableSettings,
       })
       .afterClosed()
       .subscribe((result: ModifieableSettings) => {
-        console.log('modal result', result);
         if (result) {
           this.store.dispatch(updateColorSettings({ colorSettings: result.colorSettings }));
         }

@@ -14,7 +14,10 @@ export const SETTINGS_STATE_LOCAL_STORAGE_KEY = 'settings-state';
 
 const settingsReducerInternal = createReducer(
   initialState,
-  on(updateColorSettings, (state, { colorSettings }) => ({ ...state, colorSettings })),
+  on(updateColorSettings, (state, { colorSettings }) => ({
+    ...state,
+    colorSettings: { ...state.colorSettings, ...colorSettings },
+  })),
   on(setSettingsState, (state, { newState }) => ({ ...state, ...newState }))
 );
 

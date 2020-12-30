@@ -2,13 +2,27 @@
     justify-content: flex-end;
 }
 
-.color-form-field {
-    width: 100%;
+h2 {
+    padding-bottom: 20px;
+}
+.one-color-setting {
+    label {
+        width: 250px;
+    }
+
+    .color-input-field {
+        width: 70px;
+    }
+
+    .color-box {
+        min-width: 20px;
+        max-width: 20px;
+        min-height: 20px;
+        max-height: 20px;
+        display: block;
+    }
 }
 
-.color-box {
-    min-width: 20px;
-    max-width: 20px;
-    display: block;
-    position: relative;
+.buttons-end {
+    margin-top: 20px;
 }

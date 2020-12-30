@@ -1,7 +1,7 @@
 import { ColorSettings } from '../model/ColorSettings';
 import { GraphCell, GraphCellConstraint } from '../model/GraphCell';
 
-export const getColorForHexagon = (graphCell: GraphCell, colorSettings: ColorSettings): number[] => {
+export const getColorForHexagon = (graphCell: GraphCell, colorSettings: ColorSettings): string => {
   switch (graphCell.graphCellConstraint) {
     case GraphCellConstraint.START:
       return colorSettings.hexagonInsideStart;
@@ -34,6 +34,8 @@ export const getSettingLabelForField = (fieldName: string): string => {
       return 'Visited cells';
     case 'hexagonInsideFinalPath':
       return 'Final path cells';
+    case 'hexagonInsidePassable':
+      return 'Passable cell';
     default:
       return undefined;
   }

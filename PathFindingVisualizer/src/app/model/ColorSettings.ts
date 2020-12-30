@@ -1,25 +1,25 @@
 export class ColorSettings {
-  hexagonBorder: number[];
-  hexagonInsidePassable: number[];
+  hexagonBorder: string;
+  hexagonInsidePassable: string;
 
-  hexagonInsideInConsideration: number[];
-  hexagonInsideVisited: number[];
-  hexagonInsideFinalPath: number[];
+  hexagonInsideInConsideration: string;
+  hexagonInsideVisited: string;
+  hexagonInsideFinalPath: string;
 
-  hexagonInsideWall: number[];
-  hexagonInsideStart: number[];
-  hexagonInsideEnd: number[];
+  hexagonInsideWall: string;
+  hexagonInsideStart: string;
+  hexagonInsideEnd: string;
 
   static initialSettings: ColorSettings = {
-    hexagonBorder: [255, 255, 255],
-    hexagonInsidePassable: [173, 219, 151],
+    hexagonBorder: '#ffffff',
+    hexagonInsidePassable: '#addb97',
 
-    hexagonInsideInConsideration: [145, 179, 235],
-    hexagonInsideVisited: [73, 134, 235],
-    hexagonInsideFinalPath: [0, 34, 89],
+    hexagonInsideInConsideration: '#91b3eb',
+    hexagonInsideVisited: '#4986eb',
+    hexagonInsideFinalPath: '#002259',
 
-    hexagonInsideWall: [43, 10, 191],
-    hexagonInsideStart: [16, 179, 59],
-    hexagonInsideEnd: [230, 100, 64],
+    hexagonInsideWall: '#2b0abf',
+    hexagonInsideStart: '#10b33b',
+    hexagonInsideEnd: '#e66440',
   };
 }

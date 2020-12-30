@@ -34,15 +34,16 @@ import { Graph } from 'src/app/model/Graph';
 import { GraphCell, GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { AppState } from 'src/app/store/app.reducer';
-import { switchMapTo, take } from 'rxjs/operators';
+import { switchMap, switchMapTo, take } from 'rxjs/operators';
 import { SettingsState } from 'src/app/store/settings-store/settings.reducer';
 import { UPDATE_COLOR_SETTINGS } from 'src/app/store/settings-store/settings.actions';
 import { selectSettingsState } from 'src/app/store/settings-store/settings.selectors';
 import { selectGraphState } from 'src/app/store/graph-store/graph.selectors';
+import { Color } from '@angular-material-components/color-picker';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
-  styleUrls: ['./graph-view.component.scss'],
+  styles: [''],
 })
 export class GraphViewComponent implements OnInit, OnDestroy {
   private p5Settings: P5Settings;
@@ -134,8 +135,13 @@ export class GraphViewComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.actions
-        .pipe(ofType(UPDATE_COLOR_SETTINGS))
-        .subscribe((newColorSettings) => (this.p5Settings.colorSettings = newColorSettings))
+        .pipe(
+          ofType(UPDATE_COLOR_SETTINGS),
+          switchMap(() => this.store.select(selectSettingsState))
+        )
+        .subscribe((settingsState) => {
+          this.p5Settings.colorSettings = settingsState.colorSettings;
+        })
     );
   }
 
