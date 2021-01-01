@@ -21,22 +21,19 @@ mat-toolbar {
         margin-left: 5px;
         margin-right: -5px;
     }
-}
-
-.flex-stretch {
-    flex: 1 0 auto;
+    .flex-stretch {
+        flex: 1 0 auto;
+    }
 }
 
 .content {
     padding: 16px;
     min-height: 90vh;
-    max-height: 90vh;
-}
 
-.container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: baseline;
-    width: 100%;
+    .overview-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
 }
