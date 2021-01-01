@@ -3,7 +3,6 @@ import { AbstractAlgorithm, CurrentPathElement } from './AbstractAlgorithm';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { PriorityQueue } from 'src/app/modules/algorithm/utils/PriorityQueue';
 import { VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
-import { StartNotDefinedError } from 'src/app/errors/AlgorithmErrors';
 
 export class AStarAlgorithm extends AbstractAlgorithm {
   static description =
@@ -16,6 +15,10 @@ export class AStarAlgorithm extends AbstractAlgorithm {
     'approaches; however, A* is still the best solution in many cases. (source: wikipedia)';
 
   private queue: PriorityQueue<PrioritizedCurrentPathElement>;
+  private currentWeights: number[][];
+  private currentBestOrigin: RowColumnPair[][];
+
+  private MAX = 1000000007;
 
   constructor(
     graph: number[][],
@@ -23,6 +26,16 @@ export class AStarAlgorithm extends AbstractAlgorithm {
     graphIterationCallback: (cell: RowColumnPair, newState: number) => void
   ) {
     super(graph, options, graphIterationCallback);
+
+    this.currentWeights = [];
+    this.currentBestOrigin = [];
+    for (let row = 0; row < graph.length; row++) {
+      const currRow = new Array(graph[row].length);
+      currRow.fill(this.MAX);
+      this.currentWeights.push(currRow);
+
+      this.currentBestOrigin.push(new Array(graph[row].length));
+    }
   }
 
   public initializeImpl(): void {
@@ -30,13 +43,15 @@ export class AStarAlgorithm extends AbstractAlgorithm {
     this.queue.pushElement(
       new PrioritizedCurrentPathElement(
         this.start,
-        this.calculateDistanceOfTwoCells(this.start.row, this.start.column, this.end)
+        this.calculateDistanceOfTwoCells(this.start.row, this.start.column, this.end),
+        null,
+        0
       )
     );
+    this.currentWeights[this.start.row][this.start.column] = 0;
   }
 
   public continueAlgorithm(): void {
-    // TODO there should be a difference / we want to know if there is no path!
     if (this.queue.isEmpty() || this.finished) {
       this.finished = true;
       return;
@@ -44,26 +59,49 @@ export class AStarAlgorithm extends AbstractAlgorithm {
 
     while (!this.queue.isEmpty()) {
       const currElement = this.queue.popElement();
+      const currentElementRow = currElement.rowAndColumn.row;
+      const currentElementColumn = currElement.rowAndColumn.column;
+
       if (RowColumnPair.equals(currElement.rowAndColumn, this.end)) {
         this.finished = true;
-        this.result = this.createReversePath(currElement);
+        this.result = this.createBestPath();
+        this.currentBestOrigin[currentElementRow][currentElementColumn] = currElement.cameFrom.rowAndColumn;
         return;
       }
-      if (this.graph[currElement.rowAndColumn.row][currElement.rowAndColumn.column] === VISITED_FIELD_ID) {
+      if (this.graph[currentElementRow][currentElementColumn] === VISITED_FIELD_ID) {
         continue;
       }
+
       this.setValueToGraphCell(currElement.rowAndColumn, VISITED_FIELD_ID);
-      this.getAllUnvisitedNotConsideredNeighbors(currElement.rowAndColumn).forEach((neight) =>
-        this.queue.pushElement(
-          new PrioritizedCurrentPathElement(
-            neight,
-            this.calculateDistanceOfTwoCells(neight.row, neight.column, this.end),
-            currElement
-          )
-        )
-      );
+      this.getAllUnvisitedNotConsideredNeighbors(currElement.rowAndColumn)
+        .filter((neigh) => this.currentWeights[neigh.row][neigh.column] > currElement.selfWeight + 1)
+        .forEach((neigh) => {
+          this.currentWeights[neigh.row][neigh.column] = currElement.selfWeight + 1;
+          this.currentBestOrigin[neigh.row][neigh.column] = currElement.rowAndColumn;
+
+          this.queue.pushElement(
+            new PrioritizedCurrentPathElement(
+              neigh,
+              currElement.selfWeight +
+                1 +
+                this.calculateDistanceOfTwoCells(currentElementRow, currentElementColumn, this.end),
+              currElement,
+              currElement.selfWeight + 1
+            )
+          );
+        });
       break;
     }
+  }
+
+  private createBestPath(): RowColumnPair[] {
+    const path = [];
+    let currentNode = this.currentBestOrigin[this.end.row][this.end.column];
+    while (currentNode !== this.start) {
+      path.push(currentNode);
+      currentNode = this.currentBestOrigin[currentNode.row][currentNode.column];
+    }
+    return path;
   }
 
   private prioritizedGraphCellComparator(
@@ -81,7 +119,8 @@ class PrioritizedCurrentPathElement extends CurrentPathElement {
   constructor(
     public rowAndColumn: RowColumnPair,
     public priority: number,
-    public cameFrom?: PrioritizedCurrentPathElement
+    public cameFrom?: PrioritizedCurrentPathElement,
+    public selfWeight?: number
   ) {
     super(rowAndColumn, cameFrom);
   }
