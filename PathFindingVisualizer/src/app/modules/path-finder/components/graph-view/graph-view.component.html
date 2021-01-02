@@ -1,0 +1,4 @@
+<ng-container *ngIf="graph && p5Settings">
+  <app-graph-grid-view [graph]="graph" [p5Settings]="p5Settings" (hexagonClicked)="handleHexagonClickEvent($event)">
+  </app-graph-grid-view>
+</ng-container>

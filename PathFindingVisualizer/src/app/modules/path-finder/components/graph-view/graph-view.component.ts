@@ -1,10 +1,8 @@
-import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import * as p5 from 'p5';
 import { Subscription } from 'rxjs';
 import { P5Settings } from 'src/app/p5-additionals/models/P5Settings';
-import { P5UtilService } from 'src/app/p5-additionals/utils/p5-util.service';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
 import {
   FINALIZE_SET_END,
@@ -39,16 +37,14 @@ import { SettingsState } from 'src/app/store/settings-store/settings.reducer';
 import { UPDATE_COLOR_SETTINGS } from 'src/app/store/settings-store/settings.actions';
 import { selectSettingsState } from 'src/app/store/settings-store/settings.selectors';
 import { selectGraphState } from 'src/app/store/graph-store/graph.selectors';
-import { Color } from '@angular-material-components/color-picker';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
   styles: [''],
 })
 export class GraphViewComponent implements OnInit, OnDestroy {
-  private p5Settings: P5Settings;
-  private graph: Graph;
-  private p5Graph: p5;
+  p5Settings: P5Settings;
+  graph: Graph;
 
   private subscriptions = new Subscription();
 
@@ -57,20 +53,10 @@ export class GraphViewComponent implements OnInit, OnDestroy {
   private isModifyWallsEnabled = false;
 
   constructor(
-    private el: ElementRef,
-    private p5UtilService: P5UtilService,
     private graphUtilService: GraphUtilService,
     private store: Store<AppState>,
     private actions: Actions<GraphActionsTypes>
   ) {
-    this.p5Settings = {
-      N: INITIAL_NUMBER_OF_HEX_PER_ROW,
-      canvasSizePx: CANVAS_SIZE_PX,
-      hexagonSizePx: HEXAGON_SIZE_PX,
-      hexagonLinesBetweenSizePx: 3,
-      colorSettings: undefined,
-    };
-
     this.store
       .select(selectSettingsState)
       .pipe(take(1))
@@ -78,11 +64,15 @@ export class GraphViewComponent implements OnInit, OnDestroy {
   }
 
   private initP5 = (settings: SettingsState): void => {
-    this.p5Settings.colorSettings = settings.colorSettings;
+    this.p5Settings = {
+      N: INITIAL_NUMBER_OF_HEX_PER_ROW,
+      canvasSizePx: CANVAS_SIZE_PX,
+      hexagonSizePx: HEXAGON_SIZE_PX,
+      hexagonLinesBetweenSizePx: 3,
+      colorSettings: settings.colorSettings,
+    };
     this.graph = new Graph(this.graphUtilService.initGraph(this.p5Settings.N));
-    const graphDefinition = (picture) =>
-      this.p5UtilService.graphDefinition(picture, this.graph, this.p5Settings, this.handleHexagonClickEvent);
-    this.p5Graph = new p5(graphDefinition, this.el.nativeElement);
+    console.log('init done');
   };
 
   ngOnDestroy(): void {
@@ -145,6 +135,20 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     );
   }
 
+  handleHexagonClickEvent = (hexagonClicked: GraphCell): void => {
+    const referenceToGraphCell = new RowColumnPair(hexagonClicked.row, hexagonClicked.column);
+    if (this.setNextClickedHexagonToStart) {
+      this.handleStart(hexagonClicked, referenceToGraphCell);
+    } else if (this.setNextClickedHexagonToEnd) {
+      this.handleEnd(hexagonClicked, referenceToGraphCell);
+    } else if (this.isModifyWallsEnabled) {
+      if (Date.now() - hexagonClicked.lastChange < MOUSE_DRAG_WALL_TIMEOUT_MS) {
+        return;
+      }
+      this.handleWall(hexagonClicked, referenceToGraphCell);
+    }
+  };
+
   private reinitAll = (newGraphState: GraphState): void => {
     this.resetAlgorithmDataInGraph();
 
@@ -180,20 +184,6 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     }
   };
 
-  private handleHexagonClickEvent = (hexagonClicked: GraphCell): void => {
-    const referenceToGraphCell = new RowColumnPair(hexagonClicked.row, hexagonClicked.column);
-    if (this.setNextClickedHexagonToStart) {
-      this.handleStart(hexagonClicked, referenceToGraphCell);
-    } else if (this.setNextClickedHexagonToEnd) {
-      this.handleEnd(hexagonClicked, referenceToGraphCell);
-    } else if (this.isModifyWallsEnabled) {
-      if (Date.now() - hexagonClicked.lastChange < MOUSE_DRAG_WALL_TIMEOUT_MS) {
-        return;
-      }
-      this.handleWall(hexagonClicked, referenceToGraphCell);
-    }
-  };
-
   private handleWall(hexagonClicked: GraphCell, referenceToGraphCell: RowColumnPair) {
     hexagonClicked.lastChange = Date.now();
     if (hexagonClicked.graphCellConstraint === GraphCellConstraint.WALL) {
@@ -210,7 +200,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       this.graph.grid[hexagonClicked.row][hexagonClicked.column].graphCellConstraint = GraphCellConstraint.PASSABLE;
       this.store.dispatch(setEnd({ endPosition: undefined }));
     } else {
-      this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.START);
+      this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.END);
       this.store.dispatch(setEnd({ endPosition: referenceToGraphCell }));
     }
   }
