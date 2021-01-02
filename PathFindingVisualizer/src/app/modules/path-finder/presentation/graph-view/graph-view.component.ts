@@ -183,25 +183,47 @@ export class GraphViewComponent implements OnInit, OnDestroy {
   private handleHexagonClickEvent = (hexagonClicked: GraphCell): void => {
     const referenceToGraphCell = new RowColumnPair(hexagonClicked.row, hexagonClicked.column);
     if (this.setNextClickedHexagonToStart) {
-      this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.START);
-      this.store.dispatch(setStart({ startPosition: referenceToGraphCell }));
+      this.handleStart(hexagonClicked, referenceToGraphCell);
     } else if (this.setNextClickedHexagonToEnd) {
-      this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.END);
-      this.store.dispatch(setEnd({ endPosition: referenceToGraphCell }));
+      this.handleEnd(hexagonClicked, referenceToGraphCell);
     } else if (this.isModifyWallsEnabled) {
       if (Date.now() - hexagonClicked.lastChange < MOUSE_DRAG_WALL_TIMEOUT_MS) {
         return;
       }
-      hexagonClicked.lastChange = Date.now();
-      if (hexagonClicked.graphCellConstraint === GraphCellConstraint.WALL) {
-        hexagonClicked.graphCellConstraint = GraphCellConstraint.PASSABLE;
-        this.store.dispatch(removeWall({ exWall: referenceToGraphCell }));
-      } else {
-        hexagonClicked.graphCellConstraint = GraphCellConstraint.WALL;
-        this.store.dispatch(setWall({ wall: referenceToGraphCell }));
-      }
+      this.handleWall(hexagonClicked, referenceToGraphCell);
     }
   };
+
+  private handleWall(hexagonClicked: GraphCell, referenceToGraphCell: RowColumnPair) {
+    hexagonClicked.lastChange = Date.now();
+    if (hexagonClicked.graphCellConstraint === GraphCellConstraint.WALL) {
+      hexagonClicked.graphCellConstraint = GraphCellConstraint.PASSABLE;
+      this.store.dispatch(removeWall({ exWall: referenceToGraphCell }));
+    } else {
+      hexagonClicked.graphCellConstraint = GraphCellConstraint.WALL;
+      this.store.dispatch(setWall({ wall: referenceToGraphCell }));
+    }
+  }
+
+  private handleEnd(hexagonClicked: GraphCell, referenceToGraphCell: RowColumnPair) {
+    if (hexagonClicked.graphCellConstraint === GraphCellConstraint.END) {
+      this.graph.grid[hexagonClicked.row][hexagonClicked.column].graphCellConstraint = GraphCellConstraint.PASSABLE;
+      this.store.dispatch(setEnd({ endPosition: undefined }));
+    } else {
+      this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.START);
+      this.store.dispatch(setEnd({ endPosition: referenceToGraphCell }));
+    }
+  }
+
+  private handleStart(hexagonClicked: GraphCell, referenceToGraphCell: RowColumnPair) {
+    if (hexagonClicked.graphCellConstraint === GraphCellConstraint.START) {
+      this.graph.grid[hexagonClicked.row][hexagonClicked.column].graphCellConstraint = GraphCellConstraint.PASSABLE;
+      this.store.dispatch(setStart({ startPosition: undefined }));
+    } else {
+      this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.START);
+      this.store.dispatch(setStart({ startPosition: referenceToGraphCell }));
+    }
+  }
 
   private setExclusiveConstraint(cell: RowColumnPair, constraint: GraphCellConstraint): void {
     if (cell === undefined) {
