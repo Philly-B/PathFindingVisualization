@@ -1,5 +1,5 @@
 import { Color, NgxMatColorPickerInput } from '@angular-material-components/color-picker';
-import { AfterViewInit, Component, Inject, NgZone, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, Inject, QueryList, ViewChildren } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ColorSettings } from 'src/app/model/ColorSettings';
 import { getSettingLabelForField } from 'src/app/utils/ColorMappingUtils';

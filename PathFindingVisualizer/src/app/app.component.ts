@@ -3,7 +3,7 @@ import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
-import { filter, map, take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { ModalSettingsComponent, ModifieableSettings } from './modals/modal-settings/modal-settings.component';
 import { loadFromLocalStorage as initAlgorithmStore } from './store/algorithm-store/algorithm.actions';
 import { AppState } from './store/app.reducer';

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { PASSABLE_FIELD_ID } from '../constants/AlgorithmConstants';
 import { GraphCell, GraphCellConstraint } from '../model/GraphCell';
-import { RowColumnPair } from '../model/RowColumnPair';
 
 @Injectable({
   providedIn: 'root',

@@ -4,8 +4,8 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import {
   END_FIELD_ID,
-  IN_CONSIDERATION_FIELD_ID,
   FINAL_PATH_FIELD_ID,
+  IN_CONSIDERATION_FIELD_ID,
   START_FIELD_ID,
   VISITED_FIELD_ID,
   WALL_FIELD_ID,

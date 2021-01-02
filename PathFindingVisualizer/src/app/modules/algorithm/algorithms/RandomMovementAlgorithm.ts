@@ -1,5 +1,5 @@
 import { AlgorithmOptions } from './AlgorithmOptions';
-import { AbstractAlgorithm, CurrentPathElement } from './AbstractAlgorithm';
+import { AbstractAlgorithm } from './AbstractAlgorithm';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
 
