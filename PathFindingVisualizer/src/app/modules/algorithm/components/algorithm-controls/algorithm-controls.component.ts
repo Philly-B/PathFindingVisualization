@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActionsSubject, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -10,7 +10,6 @@ import {
   VISITED_FIELD_ID,
   WALL_FIELD_ID,
 } from 'src/app/constants/AlgorithmConstants';
-import { EndNotDefinedError, StartNotDefinedError } from 'src/app/errors/AlgorithmErrors';
 import { BaseError } from 'src/app/errors/BaseError';
 import { GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
