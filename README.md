@@ -13,6 +13,8 @@
 
 ## Documentation
 
+The documentation can be accessed [here](documentation/overview.md).
+
 ## Links
 
 ## Todos
