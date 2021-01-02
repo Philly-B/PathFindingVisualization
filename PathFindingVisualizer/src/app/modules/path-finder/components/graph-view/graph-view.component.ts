@@ -72,7 +72,6 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       colorSettings: settings.colorSettings,
     };
     this.graph = new Graph(this.graphUtilService.initGraph(this.p5Settings.N));
-    console.log('init done');
   };
 
   ngOnDestroy(): void {
