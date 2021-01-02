@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
 import { Store } from '@ngrx/store';
-import { of } from 'rxjs';
-import { map, switchMap, switchMapTo, tap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 import { reloadAlgorithmState, setAlgorithm } from 'src/app/store/algorithm-store/algorithm.actions';
 import { selectFeatureAlgorithm } from 'src/app/store/algorithm-store/algorithm.selectors';
 import { AppState } from 'src/app/store/app.reducer';
@@ -19,7 +18,7 @@ export class AlgorithmSelectionComponent implements OnInit {
   currentValue: string;
 
   constructor(private algorithmProvider: AlgorithmProviderService, private store: Store<AppState>) {
-    this.algorithms = algorithmProvider.getPossibleAlgorithms();
+    this.algorithms = this.algorithmProvider.getPossibleAlgorithms();
   }
 
   ngOnInit(): void {

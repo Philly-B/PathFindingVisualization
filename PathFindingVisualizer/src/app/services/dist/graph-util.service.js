@@ -10,7 +10,6 @@ exports.GraphUtilService = void 0;
 var core_1 = require("@angular/core");
 var AlgorithmConstants_1 = require("../constants/AlgorithmConstants");
 var GraphCell_1 = require("../model/GraphCell");
-var RowColumnPair_1 = require("../model/RowColumnPair");
 var GraphUtilService = /** @class */ (function () {
     function GraphUtilService() {
         var _this = this;
@@ -37,11 +36,6 @@ var GraphUtilService = /** @class */ (function () {
                 graph.push(currRow);
             }
             return graph;
-        };
-        this.getAllWalls = function (graph) {
-            var walls = [];
-            _this.doSomethingForEveryHex(graph, function (hexagon) { return walls.push(new RowColumnPair_1.RowColumnPair(hexagon.row, hexagon.column)); }, function (hexagon) { return hexagon.graphCellConstraint === GraphCell_1.GraphCellConstraint.WALL; });
-            return walls;
         };
         this.setGraphConstraintOfGraphCell = function (graph, oldValue, newValue) {
             _this.doSomethingForEveryHex(graph, function (hexagon) { return (hexagon.graphCellConstraint = newValue); }, function (hexagon) { return hexagon.graphCellConstraint === oldValue; });

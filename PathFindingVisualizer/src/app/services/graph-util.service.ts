@@ -35,18 +35,6 @@ export class GraphUtilService {
     return graph;
   };
 
-  getAllWalls = (graph: GraphCell[][]): RowColumnPair[] => {
-    const walls = [];
-
-    this.doSomethingForEveryHex(
-      graph,
-      (hexagon) => walls.push(new RowColumnPair(hexagon.row, hexagon.column)),
-      (hexagon) => hexagon.graphCellConstraint === GraphCellConstraint.WALL
-    );
-
-    return walls;
-  };
-
   setGraphConstraintOfGraphCell = (
     graph: GraphCell[][],
     oldValue: GraphCellConstraint,

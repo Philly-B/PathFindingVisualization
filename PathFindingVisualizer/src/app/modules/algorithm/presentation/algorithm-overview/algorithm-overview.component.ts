@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { selectFeatureAlgorithm } from 'src/app/store/algorithm-store/algorithm.selectors';
@@ -9,7 +9,7 @@ import { AppState } from 'src/app/store/app.reducer';
   templateUrl: './algorithm-overview.component.html',
   styleUrls: ['./algorithm-overview.component.scss'],
 })
-export class AlgorithmOverviewComponent implements OnInit, OnDestroy {
+export class AlgorithmOverviewComponent implements OnDestroy {
   algorithm: string;
   private subscription: Subscription;
 
@@ -22,6 +22,4 @@ export class AlgorithmOverviewComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
-
-  ngOnInit(): void {}
 }
