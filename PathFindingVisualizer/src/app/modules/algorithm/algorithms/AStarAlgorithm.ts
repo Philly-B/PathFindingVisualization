@@ -29,12 +29,12 @@ export class AStarAlgorithm extends AbstractAlgorithm {
 
     this.currentWeights = [];
     this.currentBestOrigin = [];
-    for (let row = 0; row < graph.length; row++) {
-      const currRow = new Array(graph[row].length);
+    for (const graphRow of graph) {
+      const currRow = new Array(graph[graphRow.length].length);
       currRow.fill(this.MAX);
       this.currentWeights.push(currRow);
 
-      this.currentBestOrigin.push(new Array(graph[row].length));
+      this.currentBestOrigin.push(new Array(graph[graphRow.length].length));
     }
   }
 

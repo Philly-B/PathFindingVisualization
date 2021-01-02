@@ -1,15 +1,4 @@
 export class ColorSettings {
-  hexagonBorder: string;
-  hexagonInsidePassable: string;
-
-  hexagonInsideInConsideration: string;
-  hexagonInsideVisited: string;
-  hexagonInsideFinalPath: string;
-
-  hexagonInsideWall: string;
-  hexagonInsideStart: string;
-  hexagonInsideEnd: string;
-
   static initialSettings: ColorSettings = {
     hexagonBorder: '#ffffff',
     hexagonInsidePassable: '#addb97',
@@ -22,4 +11,15 @@ export class ColorSettings {
     hexagonInsideStart: '#10b33b',
     hexagonInsideEnd: '#e66440',
   };
+
+  hexagonBorder: string;
+  hexagonInsidePassable: string;
+
+  hexagonInsideInConsideration: string;
+  hexagonInsideVisited: string;
+  hexagonInsideFinalPath: string;
+
+  hexagonInsideWall: string;
+  hexagonInsideStart: string;
+  hexagonInsideEnd: string;
 }
