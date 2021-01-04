@@ -4,9 +4,10 @@ import { GraphControlsComponent } from './presentation/graph-controls/graph-cont
 import { GraphViewComponent } from './components/graph-view/graph-view.component';
 import { GraphOverviewComponent } from './presentation/graph-overview/graph-overview.component';
 import { GraphGridViewComponent } from './presentation/graph-grid-view/graph-grid-view.component';
+import { GraphGridSizeComponent } from './presentation/graph-grid-size/graph-grid-size.component';
 
 @NgModule({
-  declarations: [GraphControlsComponent, GraphViewComponent, GraphGridViewComponent, GraphOverviewComponent],
+  declarations: [GraphControlsComponent, GraphViewComponent, GraphGridViewComponent, GraphOverviewComponent, GraphGridSizeComponent],
   imports: [CommonModule],
   exports: [GraphOverviewComponent],
 })

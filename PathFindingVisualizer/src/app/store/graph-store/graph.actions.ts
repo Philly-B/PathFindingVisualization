@@ -31,6 +31,9 @@ export const removeAllWalls = createAction(REMOVE_ALL_WALLS);
 export const FINALIZE_SET_WALLS = '[Graph Component] finalize modify walls';
 export const finalizeSetWalls = createAction(FINALIZE_SET_WALLS);
 
+export const SET_GRID_SIZE = '[Graph Component] set grid size';
+export const setGridSize = createAction(SET_GRID_SIZE, props<{ gridSize: number }>());
+
 // PERSISTENCE
 export const SAVE_TO_LOCAL_STORAGE = '[Graph Component] save to local storage';
 export const saveToLocalStorage = createAction(SAVE_TO_LOCAL_STORAGE);
@@ -68,9 +71,10 @@ const all = union({
   initiateModifyWalls,
   setWall,
   removeWall,
-  finalizeModifyWalls: finalizeSetWalls,
+  finalizeModifyWalls: finalizeSetWalls, // TODO fix this
   updateGraphCell,
   resetAlgorithmData,
+  setGridSize,
   removeAllWalls,
   saveToLocalStorage,
   loadFromLocalStorage,

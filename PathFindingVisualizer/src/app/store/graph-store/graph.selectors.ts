@@ -4,3 +4,5 @@ import { GraphState } from './graph.reducer';
 
 export const selectGraphState = (state: AppState) => state.graph;
 export const selectFeatureWalls = createSelector(selectGraphState, (state: GraphState) => state.walls);
+
+export const selectGridSize = createSelector(selectGraphState, (state: GraphState) => state.gridSize);

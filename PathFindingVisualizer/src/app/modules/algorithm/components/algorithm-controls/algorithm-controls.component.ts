@@ -119,8 +119,8 @@ export class AlgorithmControlsComponent implements OnDestroy {
   };
 
   private initiateAlgorithm = (state: AppState): void => {
-    const graphState = state.graph;
-    const graph = this.graphUtilService.initGraphForAlgorithm(graphState.N);
+    const graphState: GraphState = state.graph;
+    const graph = this.graphUtilService.initGraphForAlgorithm(graphState.gridSize);
     this.initGraphFromState(graph, graphState);
 
     this.stopped = false;

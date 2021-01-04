@@ -10,10 +10,11 @@ import {
   updateGraphCell,
   resetAlgorithmData,
   setGraphState,
+  setGridSize,
 } from './graph.actions';
 
 export class GraphState {
-  N: number;
+  gridSize: number;
   startPosition: RowColumnPair;
   endPosition: RowColumnPair;
   walls: RowColumnPair[];
@@ -27,7 +28,7 @@ export const initialState: GraphState = {
   startPosition: undefined,
   endPosition: undefined,
   walls: [],
-  N: INITIAL_NUMBER_OF_HEX_PER_ROW,
+  gridSize: INITIAL_NUMBER_OF_HEX_PER_ROW,
 
   inConsideration: [],
   visited: [],
@@ -49,11 +50,34 @@ const graphReducerInternal = createReducer(
   on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint)),
   on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] })),
 
-  on(setGraphState, (state, { newState }) => ({ ...state, ...newState }))
+  on(setGraphState, (state, { newState }) => ({ ...state, ...newState })),
+  on(setGridSize, (state, { gridSize }) => createStateWithNewGridSize(state, gridSize))
 );
 
 export function graphReducer(state, action) {
   return graphReducerInternal(state, action);
+}
+
+const createStateWithNewGridSize = (state: GraphState, gridSize: number): GraphState => {
+  const newGraphState = { ...state, gridSize };
+
+  if (isOutOfBounds(gridSize, newGraphState.startPosition)) {
+    newGraphState.startPosition = undefined;
+  }
+  if (isOutOfBounds(gridSize, newGraphState.endPosition)) {
+    newGraphState.endPosition = undefined;
+  }
+  var i = newGraphState.walls.length;
+  while (i--) {
+    if (isOutOfBounds(gridSize, newGraphState.walls[i])) {
+      newGraphState.walls.splice(i, 1);
+    }
+  }
+  return newGraphState;
+}
+
+const isOutOfBounds = (gridSize: number, cell: RowColumnPair): boolean => {
+  return cell.column >= gridSize || cell.row >= gridSize;
 }
 
 const addChangeCellToCorrectList = (
