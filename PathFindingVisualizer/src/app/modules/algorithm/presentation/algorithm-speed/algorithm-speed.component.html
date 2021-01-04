@@ -1,7 +1,7 @@
 <div *ngIf="initialSpeed !== -1" class="form-group">
   <div class="row">
     <div class="slider-wrapper">
-      <input type="range" min="{{min}}" max="{{max}}" step="{{stepSize}}" value="{{initialSpeed}}" list="mapsettings"
+      <input type="range" min="{{min}}" max="{{max}}" step="{{stepSize}}" value="{{initialSpeed}}"
         (change)="valueChanged($event)" />
       <ul>
         <ng-container *ngFor="let label of labels">
