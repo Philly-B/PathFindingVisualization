@@ -2,7 +2,7 @@ import { AlgorithmOptions } from './AlgorithmOptions';
 import { AbstractAlgorithm, CurrentPathElement } from './AbstractAlgorithm';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { PriorityQueue } from 'src/app/modules/algorithm/utils/PriorityQueue';
-import { IN_CONSIDERATION_FIELD_ID, VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
+import { VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
 
 export class AStarAlgorithm extends AbstractAlgorithm {
   static description =
