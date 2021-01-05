@@ -141,12 +141,9 @@ export class AlgorithmControlsComponent implements OnDestroy {
     }
   };
 
-  private dispatchGraphState = (cell: RowColumnPair, newState: number): boolean => {
+  private dispatchGraphState = (cell: RowColumnPair, newState: number): void => {
     const newConstraint: GraphCellConstraint = this.mapAlgorithmNumberToGraphConstraint(newState);
-
     this.store.dispatch(updateGraphCell({ cell, newConstraint }));
-
-    return true;
   };
 
   private mapAlgorithmNumberToGraphConstraint(newState: number): GraphCellConstraint {

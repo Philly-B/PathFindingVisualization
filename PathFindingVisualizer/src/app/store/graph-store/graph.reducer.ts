@@ -43,7 +43,7 @@ const graphReducerInternal = createReducer(
   on(setStart, (state, { startPosition }) => ({ ...state, startPosition })),
 
   on(setWall, (state, { wall }) => ({ ...state, walls: duplicateAndAddWall(state.walls, wall) })),
-  on(removeWall, (state, { exWall }) => ({ ...state, walls: duplicateAndRemoveWall(state.walls, exWall) })),
+  on(removeWall, (state, { exWall }) => ({ ...state, walls: duplicateAndRemove(state.walls, exWall) })),
 
   on(setEnd, (state, { endPosition }) => ({ ...state, endPosition })),
 
@@ -89,9 +89,9 @@ const addChangeCellToCorrectList = (
 ): GraphState => {
   const newState: GraphState = {
     ...state,
-    visited: duplicateArray(state.visited),
-    inConsideration: duplicateArray(state.inConsideration),
-    finalPath: duplicateArray(state.finalPath),
+    visited: duplicateAndRemove(state.visited, cell),
+    inConsideration: duplicateAndRemove(state.inConsideration, cell),
+    finalPath: duplicateAndRemove(state.finalPath, cell),
   };
 
   switch (newConstraint) {
@@ -108,7 +108,7 @@ const addChangeCellToCorrectList = (
   return newState;
 };
 
-const duplicateAndRemoveWall = (walls: RowColumnPair[], exWall: RowColumnPair): RowColumnPair[] => {
+const duplicateAndRemove = (walls: RowColumnPair[], exWall: RowColumnPair): RowColumnPair[] => {
   const nextWalls = duplicateArray(walls);
   for (let i = 0; i < nextWalls.length; i++) {
     if (RowColumnPair.equals(nextWalls[i], exWall)) {

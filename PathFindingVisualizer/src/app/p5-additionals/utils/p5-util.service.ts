@@ -69,7 +69,6 @@ export class P5UtilService {
 
   private drawHexagons = (picture, graph: GraphCell[][], pictureShift: P5Vector, settings: P5Settings): void => {
 
-    picture.background(255);
     for (let row = 0; row < graph.length; row++) {
       const colShift = row % 2 === 1 ? 1 : 0;
       for (let col = 0; col < graph[row].length; col++) {

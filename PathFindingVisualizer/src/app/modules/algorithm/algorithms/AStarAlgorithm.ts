@@ -2,7 +2,7 @@ import { AlgorithmOptions } from './AlgorithmOptions';
 import { AbstractAlgorithm, CurrentPathElement } from './AbstractAlgorithm';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { PriorityQueue } from 'src/app/modules/algorithm/utils/PriorityQueue';
-import { VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
+import { IN_CONSIDERATION_FIELD_ID, VISITED_FIELD_ID } from 'src/app/constants/AlgorithmConstants';
 
 export class AStarAlgorithm extends AbstractAlgorithm {
   static description =
@@ -44,7 +44,6 @@ export class AStarAlgorithm extends AbstractAlgorithm {
       new PrioritizedCurrentPathElement(
         this.start,
         this.calculateDistanceOfTwoCells(this.start.row, this.start.column, this.end),
-        null,
         0
       )
     );
@@ -82,10 +81,8 @@ export class AStarAlgorithm extends AbstractAlgorithm {
           this.queue.pushElement(
             new PrioritizedCurrentPathElement(
               neigh,
-              currElement.selfWeight +
-              1 +
-              this.calculateDistanceOfTwoCells(currentElementRow, currentElementColumn, this.end),
-              currElement,
+              currElement.selfWeight + 1 +
+              this.calculateDistanceOfTwoCells(neigh.row, neigh.column, this.end),
               currElement.selfWeight + 1
             )
           );
@@ -119,9 +116,8 @@ class PrioritizedCurrentPathElement extends CurrentPathElement {
   constructor(
     public rowAndColumn: RowColumnPair,
     public priority: number,
-    public cameFrom?: PrioritizedCurrentPathElement,
     public selfWeight?: number
   ) {
-    super(rowAndColumn, cameFrom);
+    super(rowAndColumn);
   }
 }

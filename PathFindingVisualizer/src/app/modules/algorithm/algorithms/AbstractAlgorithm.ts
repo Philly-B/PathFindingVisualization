@@ -21,7 +21,7 @@ export abstract class AbstractAlgorithm {
     protected graph: number[][],
     protected options: AlgorithmOptions,
     protected graphIterationCallback: (cell: RowColumnPair, newState: number) => void
-  ) {}
+  ) { }
 
   public initialize(): void {
     this.start = this.getElementWithConstraint(START_FIELD_ID, () => new StartNotDefinedError());
@@ -65,16 +65,16 @@ export abstract class AbstractAlgorithm {
   }
 
   protected getAllUnvisitedNotConsideredNeighbors(currElement: RowColumnPair) {
-    const shouldSkiptCell = (row, col) =>
+    const shouldSkipCell = (row: number, col: number): boolean =>
       this.graph[row][col] === IN_CONSIDERATION_FIELD_ID || this.graph[row][col] === VISITED_FIELD_ID;
-    const allNeigh = this.getAllNeighborsWithSkipCondition(currElement, shouldSkiptCell);
+    const allNeigh = this.getAllNeighborsWithSkipCondition(currElement, shouldSkipCell);
     allNeigh.forEach((neigh) => this.setValueToGraphCell(neigh, IN_CONSIDERATION_FIELD_ID));
     return allNeigh;
   }
 
   private getAllNeighborsWithSkipCondition(
     currElement: RowColumnPair,
-    skipConditon: (row, col) => boolean
+    skipConditon: (row: number, col: number) => boolean
   ): RowColumnPair[] {
     const neighbors: RowColumnPair[] = [];
     const row = currElement.row;
@@ -94,10 +94,7 @@ export abstract class AbstractAlgorithm {
         const rowOfNeigh = row + rowDelta;
         const colOfNeigh = col + colDelta;
 
-        if (this.isValidCell(rowOfNeigh, colOfNeigh)) {
-          if (skipConditon(rowOfNeigh, colOfNeigh)) {
-            continue;
-          }
+        if (this.isValidCell(rowOfNeigh, colOfNeigh) && !skipConditon(rowOfNeigh, colOfNeigh)) {
           neighbors.push(new RowColumnPair(rowOfNeigh, colOfNeigh));
         }
       }
@@ -125,5 +122,5 @@ export abstract class AbstractAlgorithm {
 }
 
 export class CurrentPathElement {
-  constructor(public rowAndColumn: RowColumnPair, public cameFrom?: CurrentPathElement) {}
+  constructor(public rowAndColumn: RowColumnPair, public cameFrom?: CurrentPathElement) { }
 }
