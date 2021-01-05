@@ -3,7 +3,7 @@
 The goal of this application is to improve know-how and gain more experience of frontend technologies especially ngrx and angular. This application developed naturally and dynamically to what it is now without a great plan at the beginning.
 
 ## Concept
-![Overview of the application](./documentation/screenshots/overviewAlgorithmSelected.png "Overview of the application")
+![Overview of the application](./documentation/screenshots/appPreview.png "Overview of the application")
 This application provides a visualization of path search algorithms (described in more detail in the documentation) on a grid. The screenshot above shows the initial page when accessing the application. The interaction is described more precisely in the [documentation](documentation/documentation.md#interaction). Nevertheless, a quick introduction follows:
 
 The grid symbolizes an empty space, which is all passable/accessible. A start and end cell can be selected by using the controls above the grid. The start cell is dark green in the screenshot above, whereas the end or goal is dark red. Since finding a path on an empty space is rather simple, walls can be added. These are marked by dark blue cells in the screenshot above.
