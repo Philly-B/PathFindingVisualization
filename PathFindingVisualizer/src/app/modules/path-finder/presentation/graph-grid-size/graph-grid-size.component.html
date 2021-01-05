@@ -1,9 +1,9 @@
-<div *ngIf="initialGridSize !== -1" class="form-group">
-    <div class="row">
+<div class="container">
+    <ng-container *ngIf="initialGridSize !== -1">
         <span class="description">Grid Size</span>
         <span class="left-label">small</span>
         <input type="range" min="{{min}}" max="{{max}}" step="{{stepSize}}" value="{{initialGridSize}}"
             (change)="valueChanged($event)" />
         <span class="right-label">BIG</span>
-    </div>
+    </ng-container>
 </div>

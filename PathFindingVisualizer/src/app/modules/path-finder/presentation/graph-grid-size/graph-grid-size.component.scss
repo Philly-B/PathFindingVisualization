@@ -1,12 +1,15 @@
-.description {
-    padding-right: 20px;
-}
+.container {
+    width: 100%;
+    .description {
+        padding-right: 20px;
+    }
 
-.left-label {
-    padding-left: 10px;
-    padding-right: 5px;
-}
-.right-label {
-    padding-right: 10px;
-    padding-left: 5px;
+    .left-label {
+        padding-left: 10px;
+        padding-right: 5px;
+    }
+    .right-label {
+        padding-right: 10px;
+        padding-left: 5px;
+    }
 }
