@@ -71,7 +71,7 @@ const all = union({
   initiateModifyWalls,
   setWall,
   removeWall,
-  finalizeModifyWalls: finalizeSetWalls, // TODO fix this
+  finalizeSetWalls,
   updateGraphCell,
   resetAlgorithmData,
   setGridSize,
