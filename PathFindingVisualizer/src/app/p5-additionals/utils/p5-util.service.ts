@@ -17,10 +17,7 @@ export class P5UtilService {
     picture,
     graph: Graph,
     settings: P5Settings,
-    hexagonClickedCallback: (hexagonClicked) => void,
-    redrawTrigger: Subject<void>,
-    enableRedraw: Subject<void>,
-    disableRedraw: Subject<void>) => {
+    hexagonClickedCallback: (hexagonClicked) => void) => {
     const pictureShift: P5Vector = {
       x: settings.hexagonSizePx * 1.8,
       y: settings.hexagonSizePx * 3,
@@ -30,10 +27,6 @@ export class P5UtilService {
     picture.setup = () => {
       const canvas = picture.createCanvas(settings.canvasSizePx, settings.canvasSizePx);
       picture.angleMode(picture.RADIANS);
-      redrawTrigger
-        .subscribe(() => picture.redraw(5));
-      enableRedraw.subscribe(() => picture.loop());
-      disableRedraw.subscribe(() => picture.noLoop());
     };
     picture.draw = () => {
       this.drawHexagons(picture, graph.grid, pictureShift, settings);

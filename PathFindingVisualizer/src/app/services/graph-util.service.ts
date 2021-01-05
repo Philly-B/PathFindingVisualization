@@ -23,7 +23,7 @@ export class GraphUtilService {
       const currRow = [];
       const sizeOfNForRow = row % 2 === 1 ? N - 1 : N;
       for (let col = 0; col < sizeOfNForRow; col++) {
-        currRow.push(arrayFiller.apply(row, col));
+        currRow.push(arrayFiller(row, col));
       }
       graph.push(currRow);
     }

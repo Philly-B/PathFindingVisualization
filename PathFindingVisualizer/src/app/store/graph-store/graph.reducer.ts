@@ -60,19 +60,21 @@ export function graphReducer(state, action) {
 
 const createStateWithNewGridSize = (state: GraphState, gridSize: number): GraphState => {
   const newGraphState = { ...state, gridSize };
+  const wallsCopy = duplicateArray(state.walls);
 
-  if (isOutOfBounds(gridSize, newGraphState.startPosition)) {
+  if (newGraphState.startPosition !== undefined && isOutOfBounds(gridSize, newGraphState.startPosition)) {
     newGraphState.startPosition = undefined;
   }
-  if (isOutOfBounds(gridSize, newGraphState.endPosition)) {
+  if (newGraphState.endPosition !== undefined && isOutOfBounds(gridSize, newGraphState.endPosition)) {
     newGraphState.endPosition = undefined;
   }
-  var i = newGraphState.walls.length;
+  var i = wallsCopy.length;
   while (i--) {
-    if (isOutOfBounds(gridSize, newGraphState.walls[i])) {
-      newGraphState.walls.splice(i, 1);
+    if (isOutOfBounds(gridSize, wallsCopy[i])) {
+      wallsCopy.splice(i, 1);
     }
   }
+  newGraphState.walls = wallsCopy;
   return newGraphState;
 }
 
