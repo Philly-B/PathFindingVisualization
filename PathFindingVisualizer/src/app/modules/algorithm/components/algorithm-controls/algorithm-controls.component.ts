@@ -67,13 +67,16 @@ export class AlgorithmControlsComponent implements OnDestroy {
   }
 
   isResetEnabled(): boolean {
-    return this.allDisabled || !this.stopped;
+    return this.allDisabled || this.running;
   }
 
   run = (): void => {
     this.stopped = false;
     if (this.algorithmImpl === undefined) {
-      this.store.select(selectGraphState).pipe(take(1)).subscribe((graphState) => this.initiateAlgorithm(graphState));
+      this.store
+        .select(selectGraphState)
+        .pipe(take(1))
+        .subscribe((graphState) => this.initiateAlgorithm(graphState));
     } else {
       this.runAlgorithm();
     }
