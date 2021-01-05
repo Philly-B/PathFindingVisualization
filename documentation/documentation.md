@@ -49,13 +49,27 @@ In contrast, the biggest possible grid is presented in the following screenshot.
 ![alt text](./screenshots/overviewGridSizeBig.png "Overview with a lot of grid cells")
 
 ## Algorithms
+A path finding algorithm can be selected on the right side of the page. The dropdown offers multiple different algorithms, which can be seen in the screenshot below. A brief description of every algorithm is provided on the right of the selection.
+![alt text](./screenshots/algorithmSelection.png "Algorithm selection dropdown") 
 
+##### A*
+The well-known A* algorithm which searches for a path efficiently by weighting the possible cells by their possible distance to the end and the cost of getting to that current cell. 
 
-![alt text](./screenshots/messageAlgorithmFinished.png "Success message")
+##### Random Path
+Random path does something similar to the A* algorithm, with the slight but major difference of not using a weighted queue of possible cells. Instead the next cell to visit is randomly selected out of all possible considered but not yet visited cells. 
+##### Random Movement
+
+The algorithm needs at least a start and an end cell to be started. Therefore an error message, like in the screenshot below, will be shown if one of those is not provided.
 ![alt text](./screenshots/messageEndNotDefined.png "Error message")
-![alt text](./screenshots/messageEndUnreachable.png "End not found message")
-![alt text](./screenshots/algorithmSelection.png "Algorithm selection dropdown")
+
+The algorithm control instruments are provided in the screenshot below. They provide the possibility to adjust the execution speed of the algorithm as well as control mechanisms which manipulate the execution.
 ![alt text](./screenshots/algorithmControls.png "Algorithm controls")
+
+Like the name suggests, 'run' starts algorithms path search. The grid on the left visualizes the process of the algorithm iteratively. The algorithm can be 'paused' and resumed without loosing any progress. The result of the algorithm shown in the grid can be removed by clicking on the 'reset' button.
+
+The algorithm execution might not be successful since it is possible that a wall does not allow to access the end cell starting from the start cell. Nevertheless, a notification on the bottom right corner will show the result of the process.
+
+![alt text](./screenshots/messageAlgorithmFinished.png "Success message")![alt text](./screenshots/messageEndUnreachable.png "End not found message")
 
 ## Settings
 ![alt text](./screenshots/settingsControl.png "Overview with a lot of grid cells")
