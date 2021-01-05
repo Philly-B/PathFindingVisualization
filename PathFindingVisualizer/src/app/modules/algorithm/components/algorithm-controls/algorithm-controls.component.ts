@@ -19,6 +19,7 @@ import { selectFeatureAlgorithm, selectFeatureAlgorithmSpeed } from 'src/app/sto
 import { AppState } from 'src/app/store/app.reducer';
 import { resetAlgorithmData, updateGraphCell } from 'src/app/store/graph-store/graph.actions';
 import { GraphState } from 'src/app/store/graph-store/graph.reducer';
+import { selectGraphState } from 'src/app/store/graph-store/graph.selectors';
 import { AbstractAlgorithm } from '../../algorithms/AbstractAlgorithm';
 import { AlgorithmProviderService } from '../../algorithms/algorithm-provider.service';
 import { AlgorithmOptions } from '../../algorithms/AlgorithmOptions';
@@ -59,7 +60,7 @@ export class AlgorithmControlsComponent implements OnDestroy {
   run = (): void => {
     this.stopped = false;
     if (this.algorithmImpl === undefined) {
-      this.store.pipe(take(1)).subscribe((state) => this.initiateAlgorithm(state));
+      this.store.select(selectGraphState).pipe(take(1)).subscribe((graphState) => this.initiateAlgorithm(graphState));
     } else {
       this.runAlgorithm();
     }
@@ -118,9 +119,8 @@ export class AlgorithmControlsComponent implements OnDestroy {
     }
   };
 
-  private initiateAlgorithm = (state: AppState): void => {
-    const graphState = state.graph;
-    const graph = this.graphUtilService.initGraphForAlgorithm(graphState.N);
+  private initiateAlgorithm = (graphState: GraphState): void => {
+    const graph = this.graphUtilService.initGraphForAlgorithm(graphState.gridSize);
     this.initGraphFromState(graph, graphState);
 
     this.stopped = false;
@@ -141,12 +141,9 @@ export class AlgorithmControlsComponent implements OnDestroy {
     }
   };
 
-  private dispatchGraphState = (cell: RowColumnPair, newState: number): boolean => {
+  private dispatchGraphState = (cell: RowColumnPair, newState: number): void => {
     const newConstraint: GraphCellConstraint = this.mapAlgorithmNumberToGraphConstraint(newState);
-
     this.store.dispatch(updateGraphCell({ cell, newConstraint }));
-
-    return true;
   };
 
   private mapAlgorithmNumberToGraphConstraint(newState: number): GraphCellConstraint {

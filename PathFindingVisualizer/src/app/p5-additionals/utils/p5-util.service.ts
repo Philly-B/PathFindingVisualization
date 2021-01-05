@@ -5,14 +5,19 @@ import { P5Settings } from '../models/P5Settings';
 import { Graph } from 'src/app/model/Graph';
 import { GraphCell } from 'src/app/model/GraphCell';
 import { getColorForHexagon } from 'src/app/utils/ColorMappingUtils';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class P5UtilService {
-  constructor() {}
+  constructor() { }
 
-  graphDefinition = (picture, graph: Graph, settings: P5Settings, hexagonClickedCallback: (hexagonClicked) => void) => {
+  graphDefinition = (
+    picture,
+    graph: Graph,
+    settings: P5Settings,
+    hexagonClickedCallback: (hexagonClicked) => void) => {
     const pictureShift: P5Vector = {
       x: settings.hexagonSizePx * 1.8,
       y: settings.hexagonSizePx * 3,
@@ -38,6 +43,7 @@ export class P5UtilService {
   pixelToHex = (graph: GraphCell[][], picture, x: number, y: number, settings: P5Settings): GraphCell => {
     for (const hexRow of graph) {
       for (const currHex of hexRow) {
+        if (currHex.center === undefined) continue;
         const dist = picture.sqrt(picture.pow(x - currHex.center.x, 2) + picture.pow(y - currHex.center.y, 2));
         if (dist <= settings.hexagonSizePx) {
           return currHex;
@@ -56,13 +62,13 @@ export class P5UtilService {
   ) => {
     const hexagonClicked = this.pixelToHex(graph, picture, picture.mouseX, picture.mouseY, settings);
     if (hexagonClicked === undefined) {
-      return false;
+      return;
     }
     hexagonClickedCallback(hexagonClicked);
-    return false;
   };
 
   private drawHexagons = (picture, graph: GraphCell[][], pictureShift: P5Vector, settings: P5Settings): void => {
+
     for (let row = 0; row < graph.length; row++) {
       const colShift = row % 2 === 1 ? 1 : 0;
       for (let col = 0; col < graph[row].length; col++) {

@@ -10,10 +10,11 @@ import {
   updateGraphCell,
   resetAlgorithmData,
   setGraphState,
+  setGridSize,
 } from './graph.actions';
 
 export class GraphState {
-  N: number;
+  gridSize: number;
   startPosition: RowColumnPair;
   endPosition: RowColumnPair;
   walls: RowColumnPair[];
@@ -27,7 +28,7 @@ export const initialState: GraphState = {
   startPosition: undefined,
   endPosition: undefined,
   walls: [],
-  N: INITIAL_NUMBER_OF_HEX_PER_ROW,
+  gridSize: INITIAL_NUMBER_OF_HEX_PER_ROW,
 
   inConsideration: [],
   visited: [],
@@ -42,18 +43,43 @@ const graphReducerInternal = createReducer(
   on(setStart, (state, { startPosition }) => ({ ...state, startPosition })),
 
   on(setWall, (state, { wall }) => ({ ...state, walls: duplicateAndAddWall(state.walls, wall) })),
-  on(removeWall, (state, { exWall }) => ({ ...state, walls: duplicateAndRemoveWall(state.walls, exWall) })),
+  on(removeWall, (state, { exWall }) => ({ ...state, walls: duplicateAndRemove(state.walls, exWall) })),
 
   on(setEnd, (state, { endPosition }) => ({ ...state, endPosition })),
 
   on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint)),
   on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] })),
 
-  on(setGraphState, (state, { newState }) => ({ ...state, ...newState }))
+  on(setGraphState, (state, { newState }) => ({ ...state, ...newState })),
+  on(setGridSize, (state, { gridSize }) => createStateWithNewGridSize(state, gridSize))
 );
 
 export function graphReducer(state, action) {
   return graphReducerInternal(state, action);
+}
+
+const createStateWithNewGridSize = (state: GraphState, gridSize: number): GraphState => {
+  const newGraphState = { ...state, gridSize };
+  const wallsCopy = duplicateArray(state.walls);
+
+  if (newGraphState.startPosition !== undefined && isOutOfBounds(gridSize, newGraphState.startPosition)) {
+    newGraphState.startPosition = undefined;
+  }
+  if (newGraphState.endPosition !== undefined && isOutOfBounds(gridSize, newGraphState.endPosition)) {
+    newGraphState.endPosition = undefined;
+  }
+  var i = wallsCopy.length;
+  while (i--) {
+    if (isOutOfBounds(gridSize, wallsCopy[i])) {
+      wallsCopy.splice(i, 1);
+    }
+  }
+  newGraphState.walls = wallsCopy;
+  return newGraphState;
+}
+
+const isOutOfBounds = (gridSize: number, cell: RowColumnPair): boolean => {
+  return cell.column >= gridSize || cell.row >= gridSize;
 }
 
 const addChangeCellToCorrectList = (
@@ -63,9 +89,9 @@ const addChangeCellToCorrectList = (
 ): GraphState => {
   const newState: GraphState = {
     ...state,
-    visited: duplicateArray(state.visited),
-    inConsideration: duplicateArray(state.inConsideration),
-    finalPath: duplicateArray(state.finalPath),
+    visited: duplicateAndRemove(state.visited, cell),
+    inConsideration: duplicateAndRemove(state.inConsideration, cell),
+    finalPath: duplicateAndRemove(state.finalPath, cell),
   };
 
   switch (newConstraint) {
@@ -82,7 +108,7 @@ const addChangeCellToCorrectList = (
   return newState;
 };
 
-const duplicateAndRemoveWall = (walls: RowColumnPair[], exWall: RowColumnPair): RowColumnPair[] => {
+const duplicateAndRemove = (walls: RowColumnPair[], exWall: RowColumnPair): RowColumnPair[] => {
   const nextWalls = duplicateArray(walls);
   for (let i = 0; i < nextWalls.length; i++) {
     if (RowColumnPair.equals(nextWalls[i], exWall)) {

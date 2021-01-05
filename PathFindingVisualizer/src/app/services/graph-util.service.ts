@@ -6,33 +6,29 @@ import { GraphCell, GraphCellConstraint } from '../model/GraphCell';
   providedIn: 'root',
 })
 export class GraphUtilService {
-  constructor() {}
+  constructor() { }
 
   initGraph = (N: number): GraphCell[][] => {
-    const graph: GraphCell[][] = [];
-    for (let row = 0; row < N; row++) {
-      const currRow = [];
-      const sizeOfNForRow = row % 2 === 1 ? N - 1 : N;
-      for (let col = 0; col < sizeOfNForRow; col++) {
-        currRow.push(new GraphCell(row, col));
-      }
-      graph.push(currRow);
-    }
-    return graph;
+    return this.create2dArray(N, (row, col) => new GraphCell(row, col));
   };
 
   initGraphForAlgorithm = (N: number): number[][] => {
-    const graph: number[][] = [];
+    return this.create2dArray(N, (row, col) => PASSABLE_FIELD_ID);
+  };
+
+  private create2dArray<T>(N: number, arrayFiller: (row: number, col: number) => T): T[][] {
+
+    const graph: T[][] = [];
     for (let row = 0; row < N; row++) {
       const currRow = [];
       const sizeOfNForRow = row % 2 === 1 ? N - 1 : N;
       for (let col = 0; col < sizeOfNForRow; col++) {
-        currRow.push(PASSABLE_FIELD_ID);
+        currRow.push(arrayFiller(row, col));
       }
       graph.push(currRow);
     }
     return graph;
-  };
+  }
 
   setGraphConstraintOfGraphCell = (
     graph: GraphCell[][],

@@ -30,6 +30,7 @@ import {
   saveToLocalStorage,
   reloadGraphState,
   SET_WALL,
+  SET_GRID_SIZE,
 } from './graph.actions';
 import { GraphState, GRAPH_STATE_LOCAL_STORAGE_KEY } from './graph.reducer';
 import { selectGraphState } from './graph.selectors';
@@ -40,11 +41,11 @@ export class GraphEffects {
     private actions$: Actions<GraphActionsTypes>,
     private store$: Store<AppState>,
     private localStorage: LocalStorageService
-  ) {}
+  ) { }
 
   triggerSaveToLocalStorage$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(FINALIZE_SET_END, FINALIZE_SET_START, FINALIZE_SET_WALLS, REMOVE_WALL, SET_WALL),
+      ofType(FINALIZE_SET_END, FINALIZE_SET_START, FINALIZE_SET_WALLS, REMOVE_WALL, SET_WALL, SET_GRID_SIZE),
       map((a) => saveToLocalStorage())
     )
   );
