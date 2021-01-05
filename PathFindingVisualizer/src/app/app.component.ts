@@ -8,6 +8,7 @@ import { ModalSettingsComponent, ModifieableSettings } from './modals/modal-sett
 import { loadFromLocalStorage as initAlgorithmStore } from './store/algorithm-store/algorithm.actions';
 import { AppState } from './store/app.reducer';
 import { loadFromLocalStorage as initGraphStore } from './store/graph-store/graph.actions';
+import { loadFromLocalStorage as initSettingsStore } from './store/settings-store/settings.actions';
 import { updateColorSettings } from './store/settings-store/settings.actions';
 import { selectSettingsState } from './store/settings-store/settings.selectors';
 
@@ -23,7 +24,7 @@ export class AppComponent implements OnInit {
 
   toggleControl = new FormControl(false);
 
-  constructor(private overlay: OverlayContainer, private store: Store<AppState>, private dialog: MatDialog) {}
+  constructor(private overlay: OverlayContainer, private store: Store<AppState>, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.toggleControl.valueChanges.subscribe((darkMode) => {
@@ -38,6 +39,7 @@ export class AppComponent implements OnInit {
 
     this.store.dispatch(initGraphStore());
     this.store.dispatch(initAlgorithmStore());
+    this.store.dispatch(initSettingsStore());
   }
 
   openSettingsModal = (): void => {
