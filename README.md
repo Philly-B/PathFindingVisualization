@@ -20,3 +20,5 @@ The documentation can be accessed [here](documentation/overview.md).
 ## Todos
 
 - move stores to modules + allow communication via root store?!
+
+- grid should not be redrawn without a reason
