@@ -30,11 +30,11 @@ export class AStarAlgorithm extends AbstractAlgorithm {
     this.currentWeights = [];
     this.currentBestOrigin = [];
     for (const graphRow of graph) {
-      const currRow = new Array(graph[graphRow.length].length);
+      const currRow = new Array(graphRow.length);
       currRow.fill(this.MAX);
       this.currentWeights.push(currRow);
 
-      this.currentBestOrigin.push(new Array(graph[graphRow.length].length));
+      this.currentBestOrigin.push(new Array(graphRow.length));
     }
   }
 
@@ -83,8 +83,8 @@ export class AStarAlgorithm extends AbstractAlgorithm {
             new PrioritizedCurrentPathElement(
               neigh,
               currElement.selfWeight +
-                1 +
-                this.calculateDistanceOfTwoCells(currentElementRow, currentElementColumn, this.end),
+              1 +
+              this.calculateDistanceOfTwoCells(currentElementRow, currentElementColumn, this.end),
               currElement,
               currElement.selfWeight + 1
             )
