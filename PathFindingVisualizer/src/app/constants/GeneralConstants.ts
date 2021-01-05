@@ -10,7 +10,7 @@ export const NOTIFICATION_SETTINGS = {
 
 export const mapGridSizeToHexagonSize = (gridSize: number): number => {
   if (gridSize <= 5) {
-    return 12;
+    return 40;
   } else if (gridSize <= 15) {
     return 12;
   } else if (gridSize <= 25) {
