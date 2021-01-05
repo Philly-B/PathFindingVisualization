@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
+import { distinct, switchMap, take } from 'rxjs/operators';
 import { AppState } from 'src/app/store/app.reducer';
 import { reloadGraphState, setGridSize } from 'src/app/store/graph-store/graph.actions';
 import { selectGridSize } from 'src/app/store/graph-store/graph.selectors';
@@ -15,7 +15,7 @@ export class GraphGridSizeComponent implements OnInit, OnDestroy {
 
   initialGridSize: number;
   min = 5;
-  max = 50;
+  max = 40;
   stepSize = 5;
 
   private subscription: Subscription;
@@ -36,7 +36,9 @@ export class GraphGridSizeComponent implements OnInit, OnDestroy {
 
     this.subscription = this.store
       .select(reloadGraphState)
-      .pipe(switchMap(() => this.store.select(selectGridSize)))
+      .pipe(
+        switchMap(() => this.store.select(selectGridSize)),
+        distinct())
       .subscribe((gridSize) => (this.initialGridSize = gridSize));
   }
 

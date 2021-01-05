@@ -24,7 +24,6 @@ import {
 import { GraphState } from 'src/app/store/graph-store/graph.reducer';
 import {
   CANVAS_SIZE_PX,
-  INITIAL_NUMBER_OF_HEX_PER_ROW,
   mapGridSizeToHexagonSize,
   MOUSE_DRAG_WALL_TIMEOUT_MS,
 } from 'src/app/constants/GeneralConstants';
@@ -32,7 +31,7 @@ import { Graph } from 'src/app/model/Graph';
 import { GraphCell, GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { AppState } from 'src/app/store/app.reducer';
-import { distinct, filter, switchMap, switchMapTo, take, tap, withLatestFrom } from 'rxjs/operators';
+import { distinct, map, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { SettingsState } from 'src/app/store/settings-store/settings.reducer';
 import { UPDATE_COLOR_SETTINGS } from 'src/app/store/settings-store/settings.actions';
 import { selectSettingsState } from 'src/app/store/settings-store/settings.selectors';
@@ -102,8 +101,10 @@ export class GraphViewComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.actions
-        .pipe(ofType(RELOAD_GRAPH_STATE),
-          switchMapTo(this.store.select(selectGraphState)))
+        .pipe(
+          ofType(RELOAD_GRAPH_STATE),
+          switchMapTo(this.store.select(selectGraphState)),
+          distinct())
         .subscribe((newGraphState) => this.reinitAll(newGraphState))
     );
 
@@ -124,8 +125,10 @@ export class GraphViewComponent implements OnInit, OnDestroy {
         distinct(),
         tap((gridSize) => this.gridSize = gridSize),
         tap((gridSize) => this.graph = undefined),
-        switchMap(() => this.store.select(selectGraphState)))
-      .subscribe((graphState) => setTimeout(() => this.reinitAll(graphState))));
+        switchMap(() => this.store.select(selectGraphState).pipe(take(1))))
+      .subscribe((graphState) => {
+        setTimeout(() => this.reinitAll(graphState))
+      }));
 
     this.subscriptions.add(this.store.select(selectSettingsState).subscribe(settings => this.initP5Settings(settings)))
   }
@@ -156,6 +159,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
   private reinitAll = (newGraphState: GraphState): void => {
 
     if (this.graph === undefined) {
+      this.p5Settings.hexagonSizePx = mapGridSizeToHexagonSize(this.gridSize);
       this.graph = new Graph(this.graphUtilService.initGraph(this.gridSize));
     }
 
