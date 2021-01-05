@@ -1,6 +1,6 @@
-version: '3.9' # optional since v1.27.0
+version: '3.5'
 services:
   path-finder:
     build: .
     ports:
-      - '5000:5000'
+      - '127.0.0.1:8080:80'

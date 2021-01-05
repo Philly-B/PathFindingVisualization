@@ -20,5 +20,3 @@ The documentation can be accessed [here](documentation/overview.md).
 ## Todos
 
 - move stores to modules + allow communication via root store?!
-- variable size of grid and size of hexagons
-- Dockerfile/maven build (check whether its working)
