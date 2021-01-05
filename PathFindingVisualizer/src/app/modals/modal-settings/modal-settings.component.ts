@@ -10,29 +10,29 @@ import { getSettingLabelForField } from 'src/app/utils/ColorMappingUtils';
   styleUrls: ['./modal-settings.component.scss'],
 })
 export class ModalSettingsComponent implements AfterViewInit {
-  modiefieableColors: string[] = [];
+  modifiableColors: string[] = [];
   fieldNameToLabelMap = {};
-  modifieableSettings: ModifieableSettings;
+  modifiableSettings: ModifiableSettings;
 
   @ViewChildren(NgxMatColorPickerInput) pickerInputs: QueryList<NgxMatColorPickerInput>;
 
   constructor(
     public dialogRef: MatDialogRef<ModalSettingsComponent>,
-    @Inject(MAT_DIALOG_DATA) modifieableSettings: ModifieableSettings
+    @Inject(MAT_DIALOG_DATA) modifiableSettings: ModifiableSettings
   ) {
-    this.modifieableSettings = JSON.parse(JSON.stringify(modifieableSettings));
+    this.modifiableSettings = JSON.parse(JSON.stringify(modifiableSettings));
 
-    for (const colorField in modifieableSettings.colorSettings) {
-      if (Object.prototype.hasOwnProperty.call(modifieableSettings.colorSettings, colorField)) {
+    for (const colorField in modifiableSettings.colorSettings) {
+      if (Object.prototype.hasOwnProperty.call(modifiableSettings.colorSettings, colorField)) {
         const labelText = getSettingLabelForField(colorField);
         if (labelText) {
           this.fieldNameToLabelMap[colorField] = labelText;
-          this.modiefieableColors.push(colorField);
+          this.modifiableColors.push(colorField);
         }
       }
     }
 
-    this.modiefieableColors.sort();
+    this.modifiableColors.sort();
   }
 
   onNoClick(): void {
@@ -43,16 +43,34 @@ export class ModalSettingsComponent implements AfterViewInit {
     for (const ngxColorPicker of this.pickerInputs) {
       const fieldOfInput = ngxColorPicker.getConnectedOverlayOrigin().nativeElement.name;
       const finalColor = ngxColorPicker.value.toHexString();
-      this.modifieableSettings.colorSettings[fieldOfInput] = finalColor;
+      this.modifiableSettings.colorSettings[fieldOfInput] = finalColor;
     }
-    this.dialogRef.close(this.modifieableSettings);
+    this.dialogRef.close(this.modifiableSettings);
+  }
+
+  resetColor(colorFieldToReset: string): void {
+    for (const ngxColorPicker of this.pickerInputs) {
+      const fieldOfInput = ngxColorPicker.getConnectedOverlayOrigin().nativeElement.name;
+      if (fieldOfInput !== colorFieldToReset) continue;
+      const currentColor = this.hexToRgb(ColorSettings.initialSettings[fieldOfInput]);
+      ngxColorPicker.value = new Color(currentColor.r, currentColor.g, currentColor.b);
+      break;
+    }
+  }
+
+  resetAllColors(): void {
+    for (const ngxColorPicker of this.pickerInputs) {
+      const fieldOfInput = ngxColorPicker.getConnectedOverlayOrigin().nativeElement.name;
+      const currentColor = this.hexToRgb(ColorSettings.initialSettings[fieldOfInput]);
+      ngxColorPicker.value = new Color(currentColor.r, currentColor.g, currentColor.b);
+    }
   }
 
   ngAfterViewInit(): void {
     setTimeout(() => {
       for (const ngxColorPicker of this.pickerInputs) {
         const fieldOfInput = ngxColorPicker.getConnectedOverlayOrigin().nativeElement.name;
-        const currentColor = this.hexToRgb(this.modifieableSettings.colorSettings[fieldOfInput]);
+        const currentColor = this.hexToRgb(this.modifiableSettings.colorSettings[fieldOfInput]);
         ngxColorPicker.value = new Color(currentColor.r, currentColor.g, currentColor.b);
       }
     });
@@ -66,14 +84,14 @@ export class ModalSettingsComponent implements AfterViewInit {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result
       ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16),
-        }
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
       : null;
   }
 }
 
-export class ModifieableSettings implements ModifieableSettings {
-  constructor(public colorSettings: ColorSettings) {}
+export class ModifiableSettings implements ModifiableSettings {
+  constructor(public colorSettings: ColorSettings) { }
 }

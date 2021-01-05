@@ -29,6 +29,7 @@ export class P5UtilService {
       picture.angleMode(picture.RADIANS);
     };
     picture.draw = () => {
+      console.log("drawing", settings.colorSettings.hexagonInsidePassable);
       this.drawHexagons(picture, graph.grid, pictureShift, settings);
     };
 

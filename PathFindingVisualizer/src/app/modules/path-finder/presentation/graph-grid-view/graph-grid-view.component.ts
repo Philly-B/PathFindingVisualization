@@ -1,6 +1,5 @@
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as p5 from 'p5';
-import { Subject } from 'rxjs';
 import { Graph } from 'src/app/model/Graph';
 import { GraphCell } from 'src/app/model/GraphCell';
 import { P5Settings } from 'src/app/p5-additionals/models/P5Settings';
