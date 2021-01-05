@@ -5,7 +5,7 @@ The goal of this application is to improve know-how and gain more experience of 
 
 
 ## Concept
-![Overview of the application](./documentation/screenshots/appPreview.png "Overview of the application")
+![alt text](./documentation/screenshots/appPreview.png "Overview of the application")
 
 This application provides a visualization of path search algorithms (described in more detail in the documentation) on a grid. The screenshot above shows the initial page when accessing the application. The interaction is described more precisely in the [documentation](documentation/documentation.md#interaction).
 
