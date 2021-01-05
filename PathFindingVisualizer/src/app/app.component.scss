@@ -33,7 +33,7 @@ mat-toolbar {
 
 .content {
     padding: 16px;
-    min-height: 90vh;
+    min-height: calc(100vh - 80px);
 
     .overview-container {
         display: flex;
