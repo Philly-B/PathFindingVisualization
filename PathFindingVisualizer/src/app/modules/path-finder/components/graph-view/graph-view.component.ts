@@ -31,10 +31,9 @@ import { Graph } from 'src/app/model/Graph';
 import { GraphCell, GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { AppState } from 'src/app/store/app.reducer';
-import { distinct, map, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
+import { distinct, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { SettingsState } from 'src/app/store/settings-store/settings.reducer';
-import { UPDATE_COLOR_SETTINGS } from 'src/app/store/settings-store/settings.actions';
-import { selectColorSettings, selectSettingsState } from 'src/app/store/settings-store/settings.selectors';
+import { selectSettingsState } from 'src/app/store/settings-store/settings.selectors';
 import { selectGraphState, selectGridSize } from 'src/app/store/graph-store/graph.selectors';
 import { GraphGridViewComponent } from 'src/app/modules/path-finder/presentation/graph-grid-view/graph-grid-view.component';
 @Component({
@@ -76,19 +75,28 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       this.actions.pipe(ofType(INIT_SET_START)).subscribe((a) => (this.setNextClickedHexagonToStart = true))
     );
     this.subscriptions.add(
-      this.actions.pipe(ofType(FINALIZE_SET_START)).subscribe((a) => (this.setNextClickedHexagonToStart = false))
+      this.actions.pipe(ofType(FINALIZE_SET_START)).subscribe((a) => {
+        this.setNextClickedHexagonToStart = false;
+        this.resetAlgorithmDataInGraph();
+      })
     );
     this.subscriptions.add(
       this.actions.pipe(ofType(INIT_SET_END)).subscribe((a) => (this.setNextClickedHexagonToEnd = true))
     );
     this.subscriptions.add(
-      this.actions.pipe(ofType(FINALIZE_SET_END)).subscribe((a) => (this.setNextClickedHexagonToEnd = false))
+      this.actions.pipe(ofType(FINALIZE_SET_END)).subscribe((a) => {
+        this.setNextClickedHexagonToEnd = false;
+        this.resetAlgorithmDataInGraph();
+      })
     );
     this.subscriptions.add(
       this.actions.pipe(ofType(INIT_MODIFY_WALLS)).subscribe((a) => (this.isModifyWallsEnabled = true))
     );
     this.subscriptions.add(
-      this.actions.pipe(ofType(FINALIZE_SET_WALLS)).subscribe((a) => (this.isModifyWallsEnabled = false))
+      this.actions.pipe(ofType(FINALIZE_SET_WALLS)).subscribe((a) => {
+        this.isModifyWallsEnabled = false;
+        this.resetAlgorithmDataInGraph();
+      })
     );
 
     this.subscriptions.add(
@@ -103,25 +111,27 @@ export class GraphViewComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.actions
-        .pipe(
-          ofType(RELOAD_GRAPH_STATE),
-          switchMapTo(this.store.select(selectGraphState)),
-          distinct())
+        .pipe(ofType(RELOAD_GRAPH_STATE), switchMapTo(this.store.select(selectGraphState)), distinct())
         .subscribe((newGraphState) => this.reInitAll(newGraphState))
     );
 
-    this.subscriptions.add(this.store
-      .select(selectGridSize)
-      .pipe(
-        distinct(),
-        tap((gridSize) => this.gridSize = gridSize),
-        tap((gridSize) => this.graph = undefined),
-        switchMap(() => this.store.select(selectGraphState).pipe(take(1))))
-      .subscribe((graphState) => {
-        setTimeout(() => this.reInitAll(graphState))
-      }));
+    this.subscriptions.add(
+      this.store
+        .select(selectGridSize)
+        .pipe(
+          distinct(),
+          tap((gridSize) => (this.gridSize = gridSize)),
+          tap((gridSize) => (this.graph = undefined)),
+          switchMap(() => this.store.select(selectGraphState).pipe(take(1)))
+        )
+        .subscribe((graphState) => {
+          setTimeout(() => this.reInitAll(graphState));
+        })
+    );
 
-    this.subscriptions.add(this.store.select(selectSettingsState).subscribe(settings => this.updateP5Settings(settings)))
+    this.subscriptions.add(
+      this.store.select(selectSettingsState).subscribe((settings) => this.updateP5Settings(settings))
+    );
   }
 
   handleHexagonClickEvent = (hexagonClicked: GraphCell): void => {
@@ -144,7 +154,6 @@ export class GraphViewComponent implements OnInit, OnDestroy {
   };
 
   private reInitAll = (newGraphState: GraphState): void => {
-
     if (this.graph === undefined) {
       this.p5Settings.hexagonSizePx = mapGridSizeToHexagonSize(this.gridSize);
       this.graph = new Graph(this.graphUtilService.initGraph(this.gridSize));
@@ -158,7 +167,6 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     newGraphState.visited.forEach((wall) => this.updateGraphCell(wall, GraphCellConstraint.VISITED));
     newGraphState.inConsideration.forEach((wall) => this.updateGraphCell(wall, GraphCellConstraint.IN_CONSIDERATION));
     newGraphState.finalPath.forEach((wall) => this.updateGraphCell(wall, GraphCellConstraint.FINAL_PATH));
-
   };
 
   private resetAlgorithmDataInGraph = (): void => {
