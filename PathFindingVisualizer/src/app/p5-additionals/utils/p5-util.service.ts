@@ -11,13 +11,9 @@ import { Subject } from 'rxjs';
   providedIn: 'root',
 })
 export class P5UtilService {
-  constructor() { }
+  constructor() {}
 
-  graphDefinition = (
-    picture,
-    graph: Graph,
-    settings: P5Settings,
-    hexagonClickedCallback: (hexagonClicked) => void) => {
+  graphDefinition = (picture, graph: Graph, settings: P5Settings, hexagonClickedCallback: (hexagonClicked) => void) => {
     const pictureShift: P5Vector = {
       x: settings.hexagonSizePx * 1.8,
       y: settings.hexagonSizePx * 3,
@@ -29,7 +25,6 @@ export class P5UtilService {
       picture.angleMode(picture.RADIANS);
     };
     picture.draw = () => {
-      console.log("drawing", settings.colorSettings.hexagonInsidePassable);
       this.drawHexagons(picture, graph.grid, pictureShift, settings);
     };
 
@@ -69,7 +64,6 @@ export class P5UtilService {
   };
 
   private drawHexagons = (picture, graph: GraphCell[][], pictureShift: P5Vector, settings: P5Settings): void => {
-
     for (let row = 0; row < graph.length; row++) {
       const colShift = row % 2 === 1 ? 1 : 0;
       for (let col = 0; col < graph[row].length; col++) {
