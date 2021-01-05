@@ -36,9 +36,10 @@ export class AlgorithmControlsComponent implements OnDestroy {
 
   private subscriptions = new Subscription();
 
-  allDisabled = true;
-  private stopped: boolean;
-  private done: boolean;
+  private allDisabled = true;
+  stopped = false;
+  done = false;
+  private running = false;
 
   constructor(
     private store: Store<AppState>,
@@ -55,6 +56,18 @@ export class AlgorithmControlsComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  isRunEnabled(): boolean {
+    return this.allDisabled || this.algorithm === undefined || this.running || this.done;
+  }
+
+  isStopEnabled(): boolean {
+    return this.allDisabled || this.stopped || this.done || !this.running;
+  }
+
+  isResetEnabled(): boolean {
+    return this.allDisabled || !this.stopped;
   }
 
   run = (): void => {
@@ -97,9 +110,11 @@ export class AlgorithmControlsComponent implements OnDestroy {
   }
   private async runAlgorithm() {
     while (!this.done && !this.stopped) {
+      this.running = true;
       this.runOneIterationOfAlgorithm();
       await new Promise((resolve) => setTimeout(resolve, this.options.algorithmSpeed));
     }
+    this.running = false;
   }
 
   private runOneIterationOfAlgorithm = () => {
