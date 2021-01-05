@@ -4,7 +4,7 @@ import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { map, take } from 'rxjs/operators';
-import { ModalSettingsComponent, ModifieableSettings } from './modals/modal-settings/modal-settings.component';
+import { ModalSettingsComponent, ModifiableSettings } from './modals/modal-settings/modal-settings.component';
 import { loadFromLocalStorage as initAlgorithmStore } from './store/algorithm-store/algorithm.actions';
 import { AppState } from './store/app.reducer';
 import { loadFromLocalStorage as initGraphStore } from './store/graph-store/graph.actions';
@@ -48,20 +48,18 @@ export class AppComponent implements OnInit {
       .pipe(
         take(1),
         map((state) => state.colorSettings),
-        map((colorSettings) => new ModifieableSettings(colorSettings))
+        map((colorSettings) => new ModifiableSettings(colorSettings))
       )
       .subscribe(this.showModal);
   };
 
-  private showModal = (modifieableSettings: ModifieableSettings): void => {
+  private showModal = (modifiableSettings: ModifiableSettings): void => {
     this.dialog
       .open(ModalSettingsComponent, {
-        width: '500px',
-        height: '600px',
-        data: modifieableSettings,
+        data: modifiableSettings,
       })
       .afterClosed()
-      .subscribe((result: ModifieableSettings) => {
+      .subscribe((result: ModifiableSettings) => {
         if (result) {
           this.store.dispatch(updateColorSettings({ colorSettings: result.colorSettings }));
         }

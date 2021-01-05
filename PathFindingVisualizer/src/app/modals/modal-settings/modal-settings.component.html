@@ -1,15 +1,17 @@
 <h1>Settings</h1>
 <h2>Change colors of the graph</h2>
-<ng-container *ngFor="let colorField of modiefieableColors">
-    <div class="input-group one-color-setting">
-        <label class="input-group-addon label label-info ">{{fieldNameToLabelMap[colorField]}}</label>
+<ng-container *ngFor="let colorField of modifiableColors">
+    <div class="one-color-setting">
+        <label class="label label-info ">{{fieldNameToLabelMap[colorField]}}</label>
         <input [name]="colorField" class="color-input-field form-control" [ngxMatColorPicker]="picker">
         <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
-        <ngx-mat-color-picker #picker [color]="modifieableSettings.colorSettings[colorField]">
+        <ngx-mat-color-picker #picker [color]="modifiableSettings.colorSettings[colorField]">
         </ngx-mat-color-picker>
+        <button class="btn btn-info f" (click)="resetColor(colorField)">reset</button>
     </div>
 </ng-container>
-<div class="buttons-end" mat-dialog-actions>
+<div class="buttons-end float-right" mat-dialog-actions>
+    <button class="btn btn-info" (click)="resetAllColors()">Reset all colors</button>
     <button class="btn btn-danger" (click)="onNoClick()">Close</button>
     <button class="btn btn-success" (click)="onYesClick()" cdkFocusInitial>Save</button>
 </div>
