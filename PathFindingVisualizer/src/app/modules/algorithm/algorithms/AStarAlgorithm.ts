@@ -64,7 +64,6 @@ export class AStarAlgorithm extends AbstractAlgorithm {
       if (RowColumnPair.equals(currElement.rowAndColumn, this.end)) {
         this.finished = true;
         this.result = this.createBestPath();
-        this.currentBestOrigin[currentElementRow][currentElementColumn] = currElement.cameFrom.rowAndColumn;
         return;
       }
       if (this.graph[currentElementRow][currentElementColumn] === VISITED_FIELD_ID) {
