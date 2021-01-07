@@ -9,11 +9,11 @@ import {
   RELOAD_GRAPH_STATE,
   removeAllWalls,
   removeWall,
-  REMOVE_WALL,
   RESET_ALGORITHM_DATA,
   setEnd,
   setStart,
   setWall,
+  triggerRemoveAllWallsButton,
   UPDATE_GRAPH_CELL,
 } from 'src/app/store/graph-store/graph.actions';
 import { GraphState } from 'src/app/store/graph-store/graph.reducer';
@@ -29,13 +29,12 @@ import { AppState } from 'src/app/store/app.reducer';
 import { distinct, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { SettingsState } from 'src/app/store/settings-store/settings.reducer';
 import { selectSettingsState } from 'src/app/store/settings-store/settings.selectors';
-import { selectGraphState, selectGridSize } from 'src/app/store/graph-store/graph.selectors';
 import {
-  GraphControlMode,
-  GraphControlSettings,
-  GraphControlsEvent,
-  GraphInteractionService,
-} from '../../services/graph-interaction.service';
+  selectGraphState,
+  selectGridSize,
+  selectGraphControlSettings,
+} from 'src/app/store/graph-store/graph.selectors';
+import { GraphControlMode, GraphControlSettings } from 'src/app/model/GraphControlSettings';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
@@ -55,8 +54,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
   constructor(
     private graphUtilService: GraphUtilService,
     private store: Store<AppState>,
-    private actions: Actions<GraphActionsTypes>,
-    private graphInteractionService: GraphInteractionService
+    private actions: Actions<GraphActionsTypes>
   ) {
     this.graph = new Graph([]);
     this.p5Settings = new P5Settings();
@@ -70,7 +68,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.graphInteractionService.getGraphControlSettingsEventsObservable().subscribe(this.handleGraphControlsEvent)
+      this.store.select(selectGraphControlSettings).pipe(distinct()).subscribe(this.handleGraphControlsEvent)
     );
 
     // algorithm related events
@@ -133,8 +131,8 @@ export class GraphViewComponent implements OnInit, OnDestroy {
         GraphCellConstraint.WALL,
         GraphCellConstraint.PASSABLE
       );
+      this.store.dispatch(triggerRemoveAllWallsButton());
       this.store.dispatch(removeAllWalls());
-      this.graphInteractionService.addEventForStateHandled(GraphControlsEvent.REMOVE_ALL_WALLS);
     }
   };
 
@@ -202,7 +200,6 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.END);
       this.store.dispatch(setEnd({ endPosition: referenceToGraphCell }));
     }
-    this.graphInteractionService.addEventForStateHandled(GraphControlsEvent.SET_END);
   }
 
   private handleStart(hexagonClicked: GraphCell, referenceToGraphCell: RowColumnPair) {
@@ -213,7 +210,6 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.START);
       this.store.dispatch(setStart({ startPosition: referenceToGraphCell }));
     }
-    this.graphInteractionService.addEventForStateHandled(GraphControlsEvent.SET_START);
   }
 
   private setExclusiveConstraint(cell: RowColumnPair, constraint: GraphCellConstraint): void {

@@ -1,4 +1,10 @@
 import { createReducer, on } from '@ngrx/store';
+import {
+  createGraphControlSettingsCopy,
+  GraphControlMode,
+  GraphControlSettings,
+  initialGraphControlSettings,
+} from 'src/app/model/GraphControlSettings';
 import { INITIAL_NUMBER_OF_HEX_PER_ROW } from '../../constants/GeneralConstants';
 import { GraphCellConstraint } from '../../model/GraphCell';
 import { RowColumnPair } from '../../model/RowColumnPair';
@@ -12,6 +18,10 @@ import {
   setGraphState,
   setGridSize,
   removeAllWalls,
+  triggerStartButton,
+  triggerEndButton,
+  triggerModifyWallsButton,
+  triggerRemoveAllWallsButton,
 } from './graph.actions';
 
 export class GraphState {
@@ -23,6 +33,8 @@ export class GraphState {
   inConsideration: RowColumnPair[];
   visited: RowColumnPair[];
   finalPath: RowColumnPair[];
+
+  graphControlSettings: GraphControlSettings;
 }
 
 export const initialState: GraphState = {
@@ -34,6 +46,8 @@ export const initialState: GraphState = {
   inConsideration: [],
   visited: [],
   finalPath: [],
+
+  graphControlSettings: initialGraphControlSettings,
 };
 
 export const GRAPH_STATE_LOCAL_STORAGE_KEY = 'graph-state';
@@ -45,6 +59,23 @@ const graphReducerInternal = createReducer(
   on(removeWall, (state, { exWall }) => ({ ...createNewState(state), walls: duplicateAndRemove(state.walls, exWall) })),
   on(setEnd, (state, { endPosition }) => ({ ...createNewState(state), endPosition })),
   on(removeAllWalls, (state) => ({ ...createNewState(state), walls: [] })),
+
+  on(triggerStartButton, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: handleSetting(state.graphControlSettings, nameOf<GraphControlSettings>('setStart')),
+  })),
+  on(triggerEndButton, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: handleSetting(state.graphControlSettings, nameOf<GraphControlSettings>('setEnd')),
+  })),
+  on(triggerModifyWallsButton, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: handleSetting(state.graphControlSettings, nameOf<GraphControlSettings>('modifyWalls')),
+  })),
+  on(triggerRemoveAllWallsButton, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: handleSetting(state.graphControlSettings, nameOf<GraphControlSettings>('removeAllWalls')),
+  })),
 
   on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint)),
   on(resetAlgorithmData, (state) => ({ ...createNewState(state), visited: [], inConsideration: [], finalPath: [] })),
@@ -145,6 +176,27 @@ const createNewState = (oldState: GraphState): GraphState => {
     inConsideration: duplicateArray(oldState.inConsideration),
     visited: duplicateArray(oldState.visited),
     finalPath: duplicateArray(oldState.finalPath),
+    graphControlSettings: createGraphControlSettingsCopy(oldState.graphControlSettings),
   };
   return newState;
 };
+
+const handleSetting = (graphControlSettings: GraphControlSettings, setting: string): GraphControlSettings => {
+  const newGraphControlSettings = createGraphControlSettingsCopy(graphControlSettings);
+  if (newGraphControlSettings[setting] === GraphControlMode.ENABLED) {
+    setAllStatesTo(newGraphControlSettings, GraphControlMode.NONE);
+  } else {
+    setAllStatesTo(newGraphControlSettings, GraphControlMode.DISABLED);
+    newGraphControlSettings[setting] = GraphControlMode.ENABLED;
+  }
+  return newGraphControlSettings;
+};
+
+const setAllStatesTo = (graphControlSettings: GraphControlSettings, newState: GraphControlMode): void => {
+  graphControlSettings.setStart = newState;
+  graphControlSettings.setEnd = newState;
+  graphControlSettings.modifyWalls = newState;
+  graphControlSettings.removeAllWalls = newState;
+};
+
+const nameOf = <T>(name: keyof T) => name;

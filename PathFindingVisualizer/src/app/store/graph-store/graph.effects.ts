@@ -19,6 +19,12 @@ import {
   SET_WALL,
   SET_GRID_SIZE,
   RESET_ALGORITHM_DATA,
+  TRIGGER_END_BUTTON,
+  TRIGGER_REMOVE_ALL_WALLS_BUTTON,
+  TRIGGER_MODIFY_WALLS_BUTTON,
+  TRIGGER_START_BUTTON,
+  triggerStartButton,
+  triggerEndButton,
 } from './graph.actions';
 import { GraphState, GRAPH_STATE_LOCAL_STORAGE_KEY } from './graph.reducer';
 import { selectGraphState } from './graph.selectors';
@@ -31,9 +37,35 @@ export class GraphEffects {
     private localStorage: LocalStorageService
   ) {}
 
+  setStart$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(SET_START),
+      map((a) => triggerStartButton())
+    )
+  );
+
+  setEnd$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(SET_END),
+      map((a) => triggerEndButton())
+    )
+  );
+
   triggerSaveToLocalStorage$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(SET_START, SET_END, REMOVE_ALL_WALLS, REMOVE_WALL, SET_WALL, SET_GRID_SIZE, RESET_ALGORITHM_DATA),
+      ofType(
+        SET_START,
+        SET_END,
+        REMOVE_ALL_WALLS,
+        REMOVE_WALL,
+        SET_WALL,
+        SET_GRID_SIZE,
+        RESET_ALGORITHM_DATA,
+        TRIGGER_END_BUTTON,
+        TRIGGER_REMOVE_ALL_WALLS_BUTTON,
+        TRIGGER_MODIFY_WALLS_BUTTON,
+        TRIGGER_START_BUTTON
+      ),
       map((a) => saveToLocalStorage())
     )
   );

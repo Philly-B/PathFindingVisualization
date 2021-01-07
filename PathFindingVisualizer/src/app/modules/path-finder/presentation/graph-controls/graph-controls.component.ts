@@ -1,11 +1,16 @@
 import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
+import { distinct } from 'rxjs/operators';
+import { GraphControlMode, GraphControlSettings } from 'src/app/model/GraphControlSettings';
+import { AppState } from 'src/app/store/app.reducer';
 import {
-  GraphControlMode,
-  GraphControlSettings,
-  GraphControlsEvent,
-  GraphInteractionService,
-} from '../../services/graph-interaction.service';
+  triggerEndButton,
+  triggerModifyWallsButton,
+  triggerRemoveAllWallsButton,
+  triggerStartButton,
+} from 'src/app/store/graph-store/graph.actions';
+import { selectGraphControlSettings } from 'src/app/store/graph-store/graph.selectors';
 
 @Component({
   selector: 'app-graph-controls',
@@ -20,10 +25,8 @@ export class GraphControlsComponent implements OnDestroy {
   modifyWallsDisabled = false;
   removeAllWallsDisabled = false;
 
-  constructor(private graphInteractionService: GraphInteractionService) {
-    this.subscriptions.add(
-      graphInteractionService.getGraphControlSettingsEventsObservable().subscribe(this.setButtonStates)
-    );
+  constructor(private store: Store<AppState>) {
+    this.subscriptions.add(store.select(selectGraphControlSettings).pipe(distinct()).subscribe(this.setButtonStates));
   }
 
   ngOnDestroy(): void {
@@ -31,19 +34,19 @@ export class GraphControlsComponent implements OnDestroy {
   }
 
   setStart = () => {
-    this.graphInteractionService.addEventForClickOnControlButton(GraphControlsEvent.SET_START);
+    this.store.dispatch(triggerStartButton());
   };
 
   removeAllWalls = () => {
-    this.graphInteractionService.addEventForClickOnControlButton(GraphControlsEvent.REMOVE_ALL_WALLS);
+    this.store.dispatch(triggerRemoveAllWallsButton());
   };
 
   modifyWalls = () => {
-    this.graphInteractionService.addEventForClickOnControlButton(GraphControlsEvent.MODIFY_WALLS);
+    this.store.dispatch(triggerModifyWallsButton());
   };
 
   setEnd = () => {
-    this.graphInteractionService.addEventForClickOnControlButton(GraphControlsEvent.SET_END);
+    this.store.dispatch(triggerEndButton());
   };
 
   private setButtonStates = (graphControlSettings: GraphControlSettings): void => {
