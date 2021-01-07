@@ -5,14 +5,9 @@ import { Subscription } from 'rxjs';
 import { P5Settings } from 'src/app/p5-additionals/models/P5Settings';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
 import {
-  FINALIZE_SET_END,
-  FINALIZE_SET_START,
-  FINALIZE_SET_WALLS,
   GraphActionsTypes,
-  INIT_MODIFY_WALLS,
-  INIT_SET_END,
-  INIT_SET_START,
   RELOAD_GRAPH_STATE,
+  removeAllWalls,
   removeWall,
   REMOVE_WALL,
   RESET_ALGORITHM_DATA,
@@ -35,7 +30,7 @@ import { distinct, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { SettingsState } from 'src/app/store/settings-store/settings.reducer';
 import { selectSettingsState } from 'src/app/store/settings-store/settings.selectors';
 import { selectGraphState, selectGridSize } from 'src/app/store/graph-store/graph.selectors';
-import { GraphGridViewComponent } from 'src/app/modules/path-finder/presentation/graph-grid-view/graph-grid-view.component';
+import { GraphControlsEvent, GraphInteractionService } from '../../services/graph-interaction.service';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
@@ -44,8 +39,6 @@ import { GraphGridViewComponent } from 'src/app/modules/path-finder/presentation
 export class GraphViewComponent implements OnInit, OnDestroy {
   p5Settings: P5Settings;
   graph: Graph;
-
-  @ViewChild(GraphGridViewComponent) gridViewComponent: GraphGridViewComponent;
 
   private subscriptions = new Subscription();
   private gridSize: number;
@@ -57,7 +50,8 @@ export class GraphViewComponent implements OnInit, OnDestroy {
   constructor(
     private graphUtilService: GraphUtilService,
     private store: Store<AppState>,
-    private actions: Actions<GraphActionsTypes>
+    private actions: Actions<GraphActionsTypes>,
+    private graphInteractionService: GraphInteractionService
   ) {
     this.graph = new Graph([]);
     this.p5Settings = new P5Settings();
@@ -70,45 +64,19 @@ export class GraphViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // TODO Do this in a useful way
     this.subscriptions.add(
-      this.actions.pipe(ofType(INIT_SET_START)).subscribe((a) => (this.setNextClickedHexagonToStart = true))
-    );
-    this.subscriptions.add(
-      this.actions.pipe(ofType(FINALIZE_SET_START)).subscribe((a) => {
-        this.setNextClickedHexagonToStart = false;
-        this.resetAlgorithmDataInGraph();
-      })
-    );
-    this.subscriptions.add(
-      this.actions.pipe(ofType(INIT_SET_END)).subscribe((a) => (this.setNextClickedHexagonToEnd = true))
-    );
-    this.subscriptions.add(
-      this.actions.pipe(ofType(FINALIZE_SET_END)).subscribe((a) => {
-        this.setNextClickedHexagonToEnd = false;
-        this.resetAlgorithmDataInGraph();
-      })
-    );
-    this.subscriptions.add(
-      this.actions.pipe(ofType(INIT_MODIFY_WALLS)).subscribe((a) => (this.isModifyWallsEnabled = true))
-    );
-    this.subscriptions.add(
-      this.actions.pipe(ofType(FINALIZE_SET_WALLS)).subscribe((a) => {
-        this.isModifyWallsEnabled = false;
-        this.resetAlgorithmDataInGraph();
-      })
+      this.graphInteractionService.getGraphControlEventsObservable().subscribe(this.handleGraphControlsEvent)
     );
 
+    // algorithm related events
     this.subscriptions.add(
       this.actions.pipe(ofType(UPDATE_GRAPH_CELL)).subscribe((a) => this.updateGraphCell(a.cell, a.newConstraint))
     );
-
     this.subscriptions.add(
       this.actions.pipe(ofType(RESET_ALGORITHM_DATA)).subscribe((a) => this.resetAlgorithmDataInGraph())
     );
 
-    this.subscriptions.add(this.actions.pipe(ofType(REMOVE_WALL)).subscribe((a) => this.removeWall(a.exWall)));
-
+    // initialize
     this.subscriptions.add(
       this.actions
         .pipe(ofType(RELOAD_GRAPH_STATE), switchMapTo(this.store.select(selectGraphState)), distinct())
@@ -129,6 +97,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
         })
     );
 
+    // settings
     this.subscriptions.add(
       this.store.select(selectSettingsState).subscribe((settings) => this.updateP5Settings(settings))
     );
@@ -145,6 +114,31 @@ export class GraphViewComponent implements OnInit, OnDestroy {
         return;
       }
       this.handleWall(hexagonClicked, referenceToGraphCell);
+    }
+  };
+
+  private handleGraphControlsEvent = (event: GraphControlsEvent): void => {
+    this.setNextClickedHexagonToStart = false;
+    this.setNextClickedHexagonToEnd = false;
+    this.isModifyWallsEnabled = false;
+    switch (event) {
+      case GraphControlsEvent.SET_START:
+        this.setNextClickedHexagonToStart = true;
+        break;
+      case GraphControlsEvent.SET_END:
+        this.setNextClickedHexagonToEnd = true;
+        break;
+      case GraphControlsEvent.SET_WALLS:
+        this.isModifyWallsEnabled = true;
+        break;
+      case GraphControlsEvent.REMOVE_ALL_WALLS:
+        this.graphUtilService.setGraphConstraintOfGraphCell(
+          this.graph.grid,
+          GraphCellConstraint.WALL,
+          GraphCellConstraint.PASSABLE
+        );
+        this.store.dispatch(removeAllWalls());
+        break;
     }
   };
 
@@ -232,8 +226,4 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     this.graphUtilService.setGraphConstraintOfGraphCell(this.graph.grid, constraint, GraphCellConstraint.PASSABLE);
     this.graph.grid[cell.row][cell.column].graphCellConstraint = constraint;
   }
-
-  private removeWall = (wallToRemove: RowColumnPair): void => {
-    this.graph.grid[wallToRemove.row][wallToRemove.column].graphCellConstraint = GraphCellConstraint.PASSABLE;
-  };
 }

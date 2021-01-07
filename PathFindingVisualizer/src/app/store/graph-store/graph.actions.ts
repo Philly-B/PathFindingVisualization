@@ -61,17 +61,11 @@ export const RESET_ALGORITHM_DATA = '[Graph Component] reset algorithm data';
 export const resetAlgorithmData = createAction(RESET_ALGORITHM_DATA);
 
 const all = union({
-  initiateSetStart,
   reloadGraphState,
   setStart,
-  finalizeSetStart,
-  initiateSetEnd,
   setEnd,
-  finalizeSetEnd,
-  initiateModifyWalls,
   setWall,
   removeWall,
-  finalizeSetWalls,
   updateGraphCell,
   resetAlgorithmData,
   setGridSize,
