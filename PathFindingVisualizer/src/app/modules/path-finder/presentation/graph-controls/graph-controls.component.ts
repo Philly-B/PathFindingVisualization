@@ -1,17 +1,16 @@
-import { Component, OnDestroy } from '@angular/core';
-import { ofType } from '@ngrx/effects';
-import { ActionsSubject, Store } from '@ngrx/store';
+import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
+import { distinct } from 'rxjs/operators';
+import { GraphControlMode, GraphControlSettings } from 'src/app/model/GraphControlSettings';
 import { AppState } from 'src/app/store/app.reducer';
 import {
-  FINALIZE_SET_END,
-  FINALIZE_SET_START,
-  FINALIZE_SET_WALLS,
-  initiateModifyWalls,
-  initiateSetEnd,
-  initiateSetStart,
-  removeAllWalls,
+  triggerEndButton,
+  triggerModifyWallsButton,
+  triggerRemoveAllWallsButton,
+  triggerStartButton,
 } from 'src/app/store/graph-store/graph.actions';
+import { selectGraphControlSettings } from 'src/app/store/graph-store/graph.selectors';
 
 @Component({
   selector: 'app-graph-controls',
@@ -19,18 +18,15 @@ import {
   styleUrls: ['./graph-controls.component.scss'],
 })
 export class GraphControlsComponent implements OnDestroy {
-  startIsActivated = false;
-  modifyWallsActivated = false;
-  setEndActivated = false;
-
   private subscriptions = new Subscription();
 
-  constructor(private store: Store<AppState>, private actions: ActionsSubject) {
-    this.subscriptions.add(actions.pipe(ofType(FINALIZE_SET_START)).subscribe((a) => (this.startIsActivated = false)));
-    this.subscriptions.add(actions.pipe(ofType(FINALIZE_SET_END)).subscribe((a) => (this.setEndActivated = false)));
-    this.subscriptions.add(
-      actions.pipe(ofType(FINALIZE_SET_WALLS)).subscribe((a) => (this.modifyWallsActivated = false))
-    );
+  setStartDisabled = false;
+  setEndDisabled = false;
+  modifyWallsDisabled = false;
+  removeAllWallsDisabled = false;
+
+  constructor(private store: Store<AppState>) {
+    this.subscriptions.add(store.select(selectGraphControlSettings).pipe(distinct()).subscribe(this.setButtonStates));
   }
 
   ngOnDestroy(): void {
@@ -38,30 +34,25 @@ export class GraphControlsComponent implements OnDestroy {
   }
 
   setStart = () => {
-    if (this.startIsActivated) {
-      return;
-    }
-    this.startIsActivated = true;
-    this.store.dispatch(initiateSetStart());
+    this.store.dispatch(triggerStartButton());
   };
 
-  clearWalls = () => {
-    this.store.dispatch(removeAllWalls());
+  removeAllWalls = () => {
+    this.store.dispatch(triggerRemoveAllWallsButton());
   };
 
   modifyWalls = () => {
-    if (this.modifyWallsActivated) {
-      return;
-    }
-    this.modifyWallsActivated = true;
-    this.store.dispatch(initiateModifyWalls());
+    this.store.dispatch(triggerModifyWallsButton());
   };
 
   setEnd = () => {
-    if (this.setEndActivated) {
-      return;
-    }
-    this.setEndActivated = true;
-    this.store.dispatch(initiateSetEnd());
+    this.store.dispatch(triggerEndButton());
+  };
+
+  private setButtonStates = (graphControlSettings: GraphControlSettings): void => {
+    this.setStartDisabled = graphControlSettings.setStart === GraphControlMode.DISABLED;
+    this.setEndDisabled = graphControlSettings.setEnd === GraphControlMode.DISABLED;
+    this.modifyWallsDisabled = graphControlSettings.modifyWalls === GraphControlMode.DISABLED;
+    this.removeAllWallsDisabled = graphControlSettings.removeAllWalls === GraphControlMode.DISABLED;
   };
 }

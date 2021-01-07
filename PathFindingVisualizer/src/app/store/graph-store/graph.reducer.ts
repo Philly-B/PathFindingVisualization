@@ -1,4 +1,10 @@
 import { createReducer, on } from '@ngrx/store';
+import {
+  createGraphControlSettingsCopy,
+  GraphControlMode,
+  GraphControlSettings,
+  initialGraphControlSettings,
+} from 'src/app/model/GraphControlSettings';
 import { INITIAL_NUMBER_OF_HEX_PER_ROW } from '../../constants/GeneralConstants';
 import { GraphCellConstraint } from '../../model/GraphCell';
 import { RowColumnPair } from '../../model/RowColumnPair';
@@ -11,6 +17,13 @@ import {
   resetAlgorithmData,
   setGraphState,
   setGridSize,
+  removeAllWalls,
+  triggerStartButton,
+  triggerEndButton,
+  triggerModifyWallsButton,
+  triggerRemoveAllWallsButton,
+  enableGraphControls,
+  disableGraphControls,
 } from './graph.actions';
 
 export class GraphState {
@@ -22,35 +35,62 @@ export class GraphState {
   inConsideration: RowColumnPair[];
   visited: RowColumnPair[];
   finalPath: RowColumnPair[];
+
+  graphControlSettings: GraphControlSettings;
 }
 
 export const initialState: GraphState = {
   startPosition: undefined,
   endPosition: undefined,
-  walls: [],
   gridSize: INITIAL_NUMBER_OF_HEX_PER_ROW,
+  walls: [],
 
   inConsideration: [],
   visited: [],
   finalPath: [],
+
+  graphControlSettings: initialGraphControlSettings,
 };
 
 export const GRAPH_STATE_LOCAL_STORAGE_KEY = 'graph-state';
 
-// TODO every array should be duplicated!
 const graphReducerInternal = createReducer(
   initialState,
-  on(setStart, (state, { startPosition }) => ({ ...state, startPosition })),
+  on(setStart, (state, { startPosition }) => ({ ...createNewState(state), startPosition })),
+  on(setWall, (state, { wall }) => ({ ...createNewState(state), walls: duplicateAndAddWall(state.walls, wall) })),
+  on(removeWall, (state, { exWall }) => ({ ...createNewState(state), walls: duplicateAndRemove(state.walls, exWall) })),
+  on(setEnd, (state, { endPosition }) => ({ ...createNewState(state), endPosition })),
+  on(removeAllWalls, (state) => ({ ...createNewState(state), walls: [] })),
 
-  on(setWall, (state, { wall }) => ({ ...state, walls: duplicateAndAddWall(state.walls, wall) })),
-  on(removeWall, (state, { exWall }) => ({ ...state, walls: duplicateAndRemove(state.walls, exWall) })),
-
-  on(setEnd, (state, { endPosition }) => ({ ...state, endPosition })),
+  on(triggerStartButton, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: handleSetting(state.graphControlSettings, nameOf<GraphControlSettings>('setStart')),
+  })),
+  on(triggerEndButton, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: handleSetting(state.graphControlSettings, nameOf<GraphControlSettings>('setEnd')),
+  })),
+  on(triggerModifyWallsButton, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: handleSetting(state.graphControlSettings, nameOf<GraphControlSettings>('modifyWalls')),
+  })),
+  on(triggerRemoveAllWallsButton, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: handleSetting(state.graphControlSettings, nameOf<GraphControlSettings>('removeAllWalls')),
+  })),
 
   on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint)),
-  on(resetAlgorithmData, (state) => ({ ...state, visited: [], inConsideration: [], finalPath: [] })),
+  on(resetAlgorithmData, (state) => ({ ...createNewState(state), visited: [], inConsideration: [], finalPath: [] })),
+  on(enableGraphControls, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: setAllStatesTo(state.graphControlSettings, GraphControlMode.NONE),
+  })),
+  on(disableGraphControls, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: setAllStatesTo(state.graphControlSettings, GraphControlMode.DISABLED),
+  })),
 
-  on(setGraphState, (state, { newState }) => ({ ...state, ...newState })),
+  on(setGraphState, (state, { newState }) => ({ ...createNewState(state), ...newState })),
   on(setGridSize, (state, { gridSize }) => createStateWithNewGridSize(state, gridSize))
 );
 
@@ -59,7 +99,7 @@ export function graphReducer(state, action) {
 }
 
 const createStateWithNewGridSize = (state: GraphState, gridSize: number): GraphState => {
-  const newGraphState = { ...state, gridSize };
+  const newGraphState = { ...createNewState(state), gridSize };
   const wallsCopy = duplicateArray(state.walls);
 
   if (newGraphState.startPosition !== undefined && isOutOfBounds(gridSize, newGraphState.startPosition)) {
@@ -76,11 +116,11 @@ const createStateWithNewGridSize = (state: GraphState, gridSize: number): GraphS
   }
   newGraphState.walls = wallsCopy;
   return newGraphState;
-}
+};
 
 const isOutOfBounds = (gridSize: number, cell: RowColumnPair): boolean => {
   return cell.column >= gridSize || cell.row >= gridSize;
-}
+};
 
 const addChangeCellToCorrectList = (
   state: GraphState,
@@ -88,7 +128,7 @@ const addChangeCellToCorrectList = (
   newConstraint: GraphCellConstraint
 ): GraphState => {
   const newState: GraphState = {
-    ...state,
+    ...createNewState(state),
     visited: duplicateAndRemove(state.visited, cell),
     inConsideration: duplicateAndRemove(state.inConsideration, cell),
     finalPath: duplicateAndRemove(state.finalPath, cell),
@@ -108,14 +148,15 @@ const addChangeCellToCorrectList = (
   return newState;
 };
 
-const duplicateAndRemove = (walls: RowColumnPair[], exWall: RowColumnPair): RowColumnPair[] => {
-  const nextWalls = duplicateArray(walls);
-  for (let i = 0; i < nextWalls.length; i++) {
-    if (RowColumnPair.equals(nextWalls[i], exWall)) {
-      nextWalls.splice(i, 1);
+const duplicateAndRemove = (array: RowColumnPair[], exWall: RowColumnPair): RowColumnPair[] => {
+  const nextArray = duplicateArray(array);
+  for (let i = array.length - 1; i >= 0; i--) {
+    if (RowColumnPair.equals(nextArray[i], exWall)) {
+      nextArray.splice(i, 1);
+      break;
     }
   }
-  return nextWalls;
+  return nextArray;
 };
 const duplicateAndAddWall = (walls: RowColumnPair[], newWall: RowColumnPair): RowColumnPair[] => {
   const nextWalls = duplicateArray(walls);
@@ -135,3 +176,40 @@ const duplicateArray = (walls: RowColumnPair[]): RowColumnPair[] => {
   }
   return wallsCopy;
 };
+
+const createNewState = (oldState: GraphState): GraphState => {
+  const newState: GraphState = {
+    startPosition: RowColumnPair.copy(oldState.startPosition),
+    endPosition: RowColumnPair.copy(oldState.endPosition),
+    gridSize: oldState.gridSize,
+    walls: duplicateArray(oldState.walls),
+    inConsideration: duplicateArray(oldState.inConsideration),
+    visited: duplicateArray(oldState.visited),
+    finalPath: duplicateArray(oldState.finalPath),
+    graphControlSettings: createGraphControlSettingsCopy(oldState.graphControlSettings),
+  };
+  return newState;
+};
+
+const handleSetting = (graphControlSettings: GraphControlSettings, setting: string): GraphControlSettings => {
+  if (graphControlSettings[setting] === GraphControlMode.ENABLED) {
+    return setAllStatesTo(graphControlSettings, GraphControlMode.NONE);
+  }
+  const newGraphControlSettings = setAllStatesTo(graphControlSettings, GraphControlMode.DISABLED);
+  newGraphControlSettings[setting] = GraphControlMode.ENABLED;
+  return newGraphControlSettings;
+};
+
+const setAllStatesTo = (
+  graphControlSettings: GraphControlSettings,
+  newState: GraphControlMode
+): GraphControlSettings => {
+  const newGraphControlSettings = createGraphControlSettingsCopy(graphControlSettings);
+  newGraphControlSettings.setStart = newState;
+  newGraphControlSettings.setEnd = newState;
+  newGraphControlSettings.modifyWalls = newState;
+  newGraphControlSettings.removeAllWalls = newState;
+  return newGraphControlSettings;
+};
+
+const nameOf = <T>(name: keyof T) => name;

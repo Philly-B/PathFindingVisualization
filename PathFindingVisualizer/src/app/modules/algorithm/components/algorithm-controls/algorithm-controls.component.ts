@@ -17,7 +17,12 @@ import { GraphUtilService } from 'src/app/services/graph-util.service';
 import { NotificationService } from 'src/app/services/notification.service';
 import { selectFeatureAlgorithm, selectFeatureAlgorithmSpeed } from 'src/app/store/algorithm-store/algorithm.selectors';
 import { AppState } from 'src/app/store/app.reducer';
-import { resetAlgorithmData, updateGraphCell } from 'src/app/store/graph-store/graph.actions';
+import {
+  disableGraphControls,
+  enableGraphControls,
+  resetAlgorithmData,
+  updateGraphCell,
+} from 'src/app/store/graph-store/graph.actions';
 import { GraphState } from 'src/app/store/graph-store/graph.reducer';
 import { selectGraphState } from 'src/app/store/graph-store/graph.selectors';
 import { AbstractAlgorithm } from '../../algorithms/AbstractAlgorithm';
@@ -72,6 +77,7 @@ export class AlgorithmControlsComponent implements OnDestroy {
 
   run = (): void => {
     this.stopped = false;
+    this.store.dispatch(disableGraphControls());
     if (this.algorithmImpl === undefined) {
       this.store
         .select(selectGraphState)
@@ -89,6 +95,7 @@ export class AlgorithmControlsComponent implements OnDestroy {
     this.stopped = false;
     this.done = false;
     this.store.dispatch(resetAlgorithmData());
+    this.store.dispatch(enableGraphControls());
   }
 
   private setAlgorithmSpeed = (algorithmSpeed: number): void => {
