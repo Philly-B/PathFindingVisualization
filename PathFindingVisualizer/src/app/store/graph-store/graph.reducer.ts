@@ -22,6 +22,8 @@ import {
   triggerEndButton,
   triggerModifyWallsButton,
   triggerRemoveAllWallsButton,
+  enableGraphControls,
+  disableGraphControls,
 } from './graph.actions';
 
 export class GraphState {
@@ -79,6 +81,14 @@ const graphReducerInternal = createReducer(
 
   on(updateGraphCell, (state, { cell, newConstraint }) => addChangeCellToCorrectList(state, cell, newConstraint)),
   on(resetAlgorithmData, (state) => ({ ...createNewState(state), visited: [], inConsideration: [], finalPath: [] })),
+  on(enableGraphControls, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: setAllStatesTo(state.graphControlSettings, GraphControlMode.NONE),
+  })),
+  on(disableGraphControls, (state) => ({
+    ...createNewState(state),
+    graphControlSettings: setAllStatesTo(state.graphControlSettings, GraphControlMode.DISABLED),
+  })),
 
   on(setGraphState, (state, { newState }) => ({ ...createNewState(state), ...newState })),
   on(setGridSize, (state, { gridSize }) => createStateWithNewGridSize(state, gridSize))
@@ -182,21 +192,24 @@ const createNewState = (oldState: GraphState): GraphState => {
 };
 
 const handleSetting = (graphControlSettings: GraphControlSettings, setting: string): GraphControlSettings => {
-  const newGraphControlSettings = createGraphControlSettingsCopy(graphControlSettings);
-  if (newGraphControlSettings[setting] === GraphControlMode.ENABLED) {
-    setAllStatesTo(newGraphControlSettings, GraphControlMode.NONE);
-  } else {
-    setAllStatesTo(newGraphControlSettings, GraphControlMode.DISABLED);
-    newGraphControlSettings[setting] = GraphControlMode.ENABLED;
+  if (graphControlSettings[setting] === GraphControlMode.ENABLED) {
+    return setAllStatesTo(graphControlSettings, GraphControlMode.NONE);
   }
+  const newGraphControlSettings = setAllStatesTo(graphControlSettings, GraphControlMode.DISABLED);
+  newGraphControlSettings[setting] = GraphControlMode.ENABLED;
   return newGraphControlSettings;
 };
 
-const setAllStatesTo = (graphControlSettings: GraphControlSettings, newState: GraphControlMode): void => {
-  graphControlSettings.setStart = newState;
-  graphControlSettings.setEnd = newState;
-  graphControlSettings.modifyWalls = newState;
-  graphControlSettings.removeAllWalls = newState;
+const setAllStatesTo = (
+  graphControlSettings: GraphControlSettings,
+  newState: GraphControlMode
+): GraphControlSettings => {
+  const newGraphControlSettings = createGraphControlSettingsCopy(graphControlSettings);
+  newGraphControlSettings.setStart = newState;
+  newGraphControlSettings.setEnd = newState;
+  newGraphControlSettings.modifyWalls = newState;
+  newGraphControlSettings.removeAllWalls = newState;
+  return newGraphControlSettings;
 };
 
 const nameOf = <T>(name: keyof T) => name;

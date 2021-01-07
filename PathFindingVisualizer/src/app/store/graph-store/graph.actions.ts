@@ -49,6 +49,12 @@ export const RELOAD_GRAPH_STATE = '[Graph Component] reload graph state';
 export const reloadGraphState = createAction(RELOAD_GRAPH_STATE);
 
 // ALGORITHM RELATED
+export const DISABLE_GRAPH_CONTROLS = '[Graph Component] disable all graph controls';
+export const disableGraphControls = createAction(DISABLE_GRAPH_CONTROLS);
+
+export const ENABLE_GRAPH_CONTROLS = '[Graph Component] enable all graph controls';
+export const enableGraphControls = createAction(ENABLE_GRAPH_CONTROLS);
+
 export const UPDATE_GRAPH_CELL = '[Graph Component] algorithm update cell';
 export const updateGraphCell = createAction(
   UPDATE_GRAPH_CELL,
@@ -76,6 +82,8 @@ const all = union({
   // algorithm related
   updateGraphCell,
   resetAlgorithmData,
+  disableGraphControls,
+  enableGraphControls,
 
   // persistence
   reloadGraphState,
