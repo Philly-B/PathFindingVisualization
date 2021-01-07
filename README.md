@@ -51,11 +51,6 @@ A brief documentation can be accessed [here](documentation/documentation.md).
 
 
 ##### Todos
-###### Clean up the workflow of setting start/end/walls. 
-
-The current implementation is rather messy regarding the process of setting the start, end and wall cells. This should be cleaned up and handled more efficiently and clean.
-
-
 ###### Move states to modules
 
 The application state is already split up into multiple smaller states. These should be moved to the angular modules to allow a cleaner access/visibility model.
