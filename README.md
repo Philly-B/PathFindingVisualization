@@ -50,7 +50,11 @@ Although the local storage is not really a "technology" it shall still be listed
 A brief documentation can be accessed [here](documentation/documentation.md).
 
 
-##### Todos
+##### Todo
+
+###### Finalize the documentation
+
+The documentation has been written down without much of a prove reading, therefore check spelling, grammar and completeness.
 ###### Move states to modules
 
 The application state is already split up into multiple smaller states. These should be moved to the angular modules to allow a cleaner access/visibility model.
