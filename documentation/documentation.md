@@ -48,6 +48,8 @@ In contrast, the biggest possible grid is presented in the following screenshot.
 
 ![alt text](./screenshots/overviewGridSizeBig.png "Overview with a lot of grid cells")
 
+Resizing the grid into a smaller size removes all cell conditions which would refer to out of grid cells. Therefore, assume the end is set to the lower right corner. When resizing the grid to the next smaller representation, this constraint of being the end cell will be removed, so that a new end cell has to be defined. The same mechanic appears for walls and start cell constraints as well. 
+
 ## Algorithms
 A path finding algorithm can be selected on the right side of the page. The dropdown offers multiple different algorithms, which can be seen in the screenshot below. A brief description of every algorithm is provided on the right of the selection.
 ![alt text](./screenshots/algorithmSelection.png "Algorithm selection dropdown") 
