@@ -40,13 +40,12 @@ The possible interactions are manipulations of the status of a grid cell. The dy
 
 The start, end and walls can be assigned by clicking the regarding button above the grid. Additionally all walls can be removed by one click, since there might be a few.
 
-Furthermore, it is possible to change the size of the grid, which refers to the number of cells in every row and column. A grid with fewer cells is presented in the following screenshot.
+Furthermore, it is possible to change the size of the grid, which refers to the number of cells in every row and column.
 
 ![alt text](./screenshots/overviewGridSizeSmall.png "Overview with fewer grid cells")
-
-In contrast, the biggest possible grid is presented in the following screenshot.
-
 ![alt text](./screenshots/overviewGridSizeBig.png "Overview with a lot of grid cells")
+
+ The two screenshots above show the contrast of the biggest and the smallest possible grid.
 
 Resizing the grid into a smaller size removes all cell conditions which would refer to out of grid cells. Therefore, assume the end is set to the lower right corner. When resizing the grid to the next smaller representation, this constraint of being the end cell will be removed, so that a new end cell has to be defined. The same mechanic appears for walls and start cell constraints as well. 
 
