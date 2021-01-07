@@ -42,8 +42,7 @@ The start, end and walls can be assigned by clicking the regarding button above 
 
 Furthermore, it is possible to change the size of the grid, which refers to the number of cells in every row and column.
 
-![alt text](./screenshots/overviewGridSizeSmall.png "Overview with fewer grid cells")
-![alt text](./screenshots/overviewGridSizeBig.png "Overview with a lot of grid cells")
+![alt text](./screenshots/overviewGridSizeSmall.png "Overview with fewer grid cells")![alt text](./screenshots/overviewGridSizeBig.png "Overview with a lot of grid cells")
 
  The two screenshots above show the contrast of the biggest and the smallest possible grid.
 
@@ -73,6 +72,14 @@ The algorithm execution might not be successful since it is possible that a wall
 ![alt text](./screenshots/messageAlgorithmFinished.png "Success message")![alt text](./screenshots/messageEndUnreachable.png "End not found message")
 
 ## Settings
-![alt text](./screenshots/settingsControl.png "Overview with a lot of grid cells")
+Two different kind of settings are provided to customize the user experience. The settings can be found in the right corner of the applications toolbar. The slider allows to set the whole application into dark mode, which is more pleasing in night times and doesn't exhaust the eyes. The slider in the screenshot below shows a sun on the left side and a moon on the right side. For obvious reasons, the moon represents night and thus dark mode.
+![alt text](./screenshots/settingsControl.png "Settings in toolbar")
+![alt text](./screenshots/overviewDarkMode.png "Overview of application in dark mode")
+
+The above screenshot shows the application in dark mode.
+
+The more interesting settings can be opened by clicking the gear wheel symbol. This will open a popup window which is presented in the screenshot below. This window allows to adjust the different colors of the grid cells. Every row of this settings is one possible constraint of the grid. The constraint is stated at the beginning of the row. Further on, an input field allows to directly insert a color in hex format. The currently selected color is visualized by the painter palette next to the input field. The reset button at the end of each row allows to reset just that one color back to its original value. The 'Reset all colors' button at the bottom of the settings window accordingly allows to reset all colors at once.
 ![alt text](./screenshots/settingsPopUp.png "Settings popup")
+
+For easier handling a color picker is already reachable by clicking on the colored painter palette. The color picker allows to select some predefined colors at the bottom and also to browse through colors and find an appealing color.
 ![alt text](./screenshots/settingsPopUpColorSelection.png "Settings popup color selection")
