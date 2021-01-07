@@ -1,11 +1,15 @@
 <div class="container">
     <div class="btn-group" role="group">
-        <button type="button" class="btn btn-success small-margin-right" (click)="setStart()">Set start</button>
-        <button type="button" class="btn btn-secondary small-margin-sides" (click)="modifyWalls()">Add/Remove
+        <button type="button" class="btn btn-success small-margin-right" [disabled]="setStartDisabled"
+            (click)="setStart()">Set start</button>
+        <button type="button" class="btn btn-secondary small-margin-sides" [disabled]="modifyWallsDisabled"
+            (click)="modifyWalls()">Add/Remove
             walls</button>
-        <button type="button" class="btn btn-secondary small-margin-sides" (click)="removeAllWalls()">Remove all
+        <button type="button" class="btn btn-secondary small-margin-sides" [disabled]="removeAllWallsDisabled"
+            (click)="removeAllWalls()">Remove all
             walls</button>
-        <button type="button" class="btn btn-primary small-margin-left" (click)="setEnd()">Set end</button>
+        <button type="button" class="btn btn-primary small-margin-left" [disabled]="setEndDisabled"
+            (click)="setEnd()">Set end</button>
     </div>
     <app-graph-grid-size></app-graph-grid-size>
 </div>

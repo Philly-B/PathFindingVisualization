@@ -30,7 +30,12 @@ import { distinct, switchMap, switchMapTo, take, tap } from 'rxjs/operators';
 import { SettingsState } from 'src/app/store/settings-store/settings.reducer';
 import { selectSettingsState } from 'src/app/store/settings-store/settings.selectors';
 import { selectGraphState, selectGridSize } from 'src/app/store/graph-store/graph.selectors';
-import { GraphControlsEvent, GraphInteractionService } from '../../services/graph-interaction.service';
+import {
+  GraphControlMode,
+  GraphControlSettings,
+  GraphControlsEvent,
+  GraphInteractionService,
+} from '../../services/graph-interaction.service';
 @Component({
   selector: 'app-graph-view',
   templateUrl: './graph-view.component.html',
@@ -65,7 +70,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.graphInteractionService.getGraphControlEventsObservable().subscribe(this.handleGraphControlsEvent)
+      this.graphInteractionService.getGraphControlSettingsEventsObservable().subscribe(this.handleGraphControlsEvent)
     );
 
     // algorithm related events
@@ -117,28 +122,19 @@ export class GraphViewComponent implements OnInit, OnDestroy {
     }
   };
 
-  private handleGraphControlsEvent = (event: GraphControlsEvent): void => {
-    this.setNextClickedHexagonToStart = false;
-    this.setNextClickedHexagonToEnd = false;
-    this.isModifyWallsEnabled = false;
-    switch (event) {
-      case GraphControlsEvent.SET_START:
-        this.setNextClickedHexagonToStart = true;
-        break;
-      case GraphControlsEvent.SET_END:
-        this.setNextClickedHexagonToEnd = true;
-        break;
-      case GraphControlsEvent.SET_WALLS:
-        this.isModifyWallsEnabled = true;
-        break;
-      case GraphControlsEvent.REMOVE_ALL_WALLS:
-        this.graphUtilService.setGraphConstraintOfGraphCell(
-          this.graph.grid,
-          GraphCellConstraint.WALL,
-          GraphCellConstraint.PASSABLE
-        );
-        this.store.dispatch(removeAllWalls());
-        break;
+  private handleGraphControlsEvent = (graphControlSettings: GraphControlSettings): void => {
+    this.setNextClickedHexagonToStart = graphControlSettings.setStart === GraphControlMode.ENABLED;
+    this.setNextClickedHexagonToEnd = graphControlSettings.setEnd === GraphControlMode.ENABLED;
+    this.isModifyWallsEnabled = graphControlSettings.modifyWalls === GraphControlMode.ENABLED;
+
+    if (graphControlSettings.removeAllWalls === GraphControlMode.ENABLED) {
+      this.graphUtilService.setGraphConstraintOfGraphCell(
+        this.graph.grid,
+        GraphCellConstraint.WALL,
+        GraphCellConstraint.PASSABLE
+      );
+      this.store.dispatch(removeAllWalls());
+      this.graphInteractionService.addEventForStateHandled(GraphControlsEvent.REMOVE_ALL_WALLS);
     }
   };
 
@@ -206,6 +202,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.END);
       this.store.dispatch(setEnd({ endPosition: referenceToGraphCell }));
     }
+    this.graphInteractionService.addEventForStateHandled(GraphControlsEvent.SET_END);
   }
 
   private handleStart(hexagonClicked: GraphCell, referenceToGraphCell: RowColumnPair) {
@@ -216,6 +213,7 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.START);
       this.store.dispatch(setStart({ startPosition: referenceToGraphCell }));
     }
+    this.graphInteractionService.addEventForStateHandled(GraphControlsEvent.SET_START);
   }
 
   private setExclusiveConstraint(cell: RowColumnPair, constraint: GraphCellConstraint): void {
