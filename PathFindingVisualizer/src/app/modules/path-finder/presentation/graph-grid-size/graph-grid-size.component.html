@@ -3,7 +3,7 @@
         <span class="description">Grid Size</span>
         <span class="left-label">small</span>
         <input type="range" min="{{min}}" max="{{max}}" step="{{stepSize}}" value="{{initialGridSize}}"
-            (change)="valueChanged($event)" />
+            (change)="valueChanged($event)" [disabled]="disabled" />
         <span class="right-label">BIG</span>
     </ng-container>
 </div>
