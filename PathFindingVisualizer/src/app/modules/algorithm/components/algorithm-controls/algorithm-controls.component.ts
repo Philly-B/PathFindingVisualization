@@ -169,6 +169,7 @@ export class AlgorithmControlsComponent implements OnDestroy {
       if (error instanceof BaseError) {
         this.notificationService.notifyError(error.getMessage());
       }
+      this.reset();
     }
   };
 
