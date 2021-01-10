@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { AlgorithmProcessingState } from 'src/app/model/AlgorithmProcessingState';
+import { GraphDrawingMode } from 'src/app/model/GraphDrawingMode';
 import { LocalStorageService } from 'src/app/services/local-storage.service';
 import { AppState } from '../app.reducer';
+import { setGraphDrawingMode } from '../graph-store/graph.actions';
 import {
   SET_ALGORITHM,
   SET_ALGORITHM_SPEED,
@@ -14,6 +17,7 @@ import {
   LOAD_FROM_LOCAL_STORAGE,
   reloadAlgorithmState,
   setAlgorithmState,
+  SET_ALGORITHM_PROCESSING_STATE,
 } from './algorithm.actions';
 import { AlgorithmState, ALGORITHM_STATE_LOCAL_STORAGE_KEY } from './algorithm.reducer';
 import { selectAlgorithmState } from './algorithm.selectors';
@@ -25,6 +29,26 @@ export class AlgorithmEffects {
     private store$: Store<AppState>,
     private localStorage: LocalStorageService
   ) {}
+
+  setDrawingModeLoopWhileAlgorithm$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(SET_ALGORITHM_PROCESSING_STATE),
+      map((a) => {
+        if (a.processingState === AlgorithmProcessingState.RUNNING) {
+          return setGraphDrawingMode({ graphDrawingMode: GraphDrawingMode.CONTINUOUS_REDRAW });
+        }
+        return setGraphDrawingMode({ graphDrawingMode: GraphDrawingMode.STATIC_IMAGE });
+      })
+    )
+  );
+
+  setDrawingModeWhenResetting$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(SET_ALGORITHM_PROCESSING_STATE),
+      filter((a) => a.processingState === AlgorithmProcessingState.NONE),
+      map((a) => setGraphDrawingMode({ graphDrawingMode: GraphDrawingMode.REDRAW_ONCE }))
+    )
+  );
 
   triggerSaveToLocalStorage$ = createEffect(() =>
     this.actions$.pipe(

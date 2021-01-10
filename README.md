@@ -58,8 +58,3 @@ The documentation has been written down without much of a prove reading, therefo
 ###### Move states to modules
 
 The application state is already split up into multiple smaller states. These should be moved to the angular modules to allow a cleaner access/visibility model.
-
-
-###### Stop extensive redrawing of p5
-
-P5 is redrawing the grid continuously which leads to a higher CPU usage than necessary.

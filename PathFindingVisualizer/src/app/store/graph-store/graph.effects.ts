@@ -29,6 +29,8 @@ import {
   triggerEndButton,
   setGraphDrawingMode,
   SET_GRAPH_DRAWING_MODE,
+  ENABLE_GRAPH_CONTROLS,
+  DISABLE_GRAPH_CONTROLS,
 } from './graph.actions';
 import { GraphState, GRAPH_STATE_LOCAL_STORAGE_KEY } from './graph.reducer';
 import { selectGraphState } from './graph.selectors';

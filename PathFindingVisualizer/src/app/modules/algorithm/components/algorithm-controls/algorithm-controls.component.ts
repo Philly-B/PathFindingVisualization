@@ -11,10 +11,12 @@ import {
   WALL_FIELD_ID,
 } from 'src/app/constants/AlgorithmConstants';
 import { BaseError } from 'src/app/errors/BaseError';
+import { AlgorithmProcessingState } from 'src/app/model/AlgorithmProcessingState';
 import { GraphCellConstraint } from 'src/app/model/GraphCell';
 import { RowColumnPair } from 'src/app/model/RowColumnPair';
 import { GraphUtilService } from 'src/app/services/graph-util.service';
 import { NotificationService } from 'src/app/services/notification.service';
+import { setAlgorithmProcessingState } from 'src/app/store/algorithm-store/algorithm.actions';
 import { selectFeatureAlgorithm, selectFeatureAlgorithmSpeed } from 'src/app/store/algorithm-store/algorithm.selectors';
 import { AppState } from 'src/app/store/app.reducer';
 import {
@@ -78,6 +80,7 @@ export class AlgorithmControlsComponent implements OnDestroy {
   run = (): void => {
     this.stopped = false;
     this.store.dispatch(disableGraphControls());
+    this.store.dispatch(setAlgorithmProcessingState({ processingState: AlgorithmProcessingState.RUNNING }));
     if (this.algorithmImpl === undefined) {
       this.store
         .select(selectGraphState)
@@ -89,6 +92,7 @@ export class AlgorithmControlsComponent implements OnDestroy {
   };
   stop() {
     this.stopped = true;
+    this.store.dispatch(setAlgorithmProcessingState({ processingState: AlgorithmProcessingState.STOPPED }));
   }
   reset() {
     this.algorithmImpl = undefined;
@@ -96,6 +100,7 @@ export class AlgorithmControlsComponent implements OnDestroy {
     this.done = false;
     this.store.dispatch(resetAlgorithmData());
     this.store.dispatch(enableGraphControls());
+    this.store.dispatch(setAlgorithmProcessingState({ processingState: AlgorithmProcessingState.NONE }));
   }
 
   private setAlgorithmSpeed = (algorithmSpeed: number): void => {
@@ -139,6 +144,7 @@ export class AlgorithmControlsComponent implements OnDestroy {
       } else {
         this.notificationService.notifySuccess('The algorithm finished.');
       }
+      this.store.dispatch(setAlgorithmProcessingState({ processingState: AlgorithmProcessingState.FINISHED }));
     } else if (this.algorithmImpl && !this.done && !this.algorithmImpl.finished) {
       this.algorithmImpl.continueAlgorithm();
     }

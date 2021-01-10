@@ -34,7 +34,6 @@ export class P5UtilService {
       drawingMode$.subscribe((drawingMode) => this.setDrawingMode(drawingMode, picture));
     };
     picture.draw = () => {
-      console.log('draw');
       this.drawHexagons(picture, graph.grid, pictureShift, settings);
     };
 
