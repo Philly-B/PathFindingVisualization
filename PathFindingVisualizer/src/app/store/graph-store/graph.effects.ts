@@ -1,3 +1,4 @@
+import { state } from '@angular/animations';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -75,6 +76,8 @@ export class GraphEffects {
   setStart$ = createEffect(() =>
     this.actions$.pipe(
       ofType(SET_START),
+      withLatestFrom(this.store$.select(selectGraphState)),
+      filter(([a, state]) => state.graphControlSettings.setStart === GraphControlMode.ENABLED),
       map((a) => triggerStartButton())
     )
   );
@@ -82,6 +85,8 @@ export class GraphEffects {
   setEnd$ = createEffect(() =>
     this.actions$.pipe(
       ofType(SET_END),
+      withLatestFrom(this.store$.select(selectGraphState)),
+      filter(([a, state]) => state.graphControlSettings.setEnd === GraphControlMode.ENABLED),
       map((a) => triggerEndButton())
     )
   );

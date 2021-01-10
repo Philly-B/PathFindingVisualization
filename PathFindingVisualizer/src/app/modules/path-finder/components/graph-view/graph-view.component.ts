@@ -187,6 +187,11 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       hexagonClicked.graphCellConstraint = GraphCellConstraint.PASSABLE;
       this.store.dispatch(removeWall({ exWall: referenceToGraphCell }));
     } else {
+      if (hexagonClicked.graphCellConstraint === GraphCellConstraint.START) {
+        this.store.dispatch(setStart({ startPosition: undefined }));
+      } else if (hexagonClicked.graphCellConstraint === GraphCellConstraint.END) {
+        this.store.dispatch(setEnd({ endPosition: undefined }));
+      }
       hexagonClicked.graphCellConstraint = GraphCellConstraint.WALL;
       this.store.dispatch(setWall({ wall: referenceToGraphCell }));
     }
@@ -197,6 +202,11 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       this.graph.grid[hexagonClicked.row][hexagonClicked.column].graphCellConstraint = GraphCellConstraint.PASSABLE;
       this.store.dispatch(setEnd({ endPosition: undefined }));
     } else {
+      if (hexagonClicked.graphCellConstraint === GraphCellConstraint.START) {
+        this.store.dispatch(setStart({ startPosition: undefined }));
+      } else if (hexagonClicked.graphCellConstraint === GraphCellConstraint.WALL) {
+        this.store.dispatch(removeWall({ exWall: referenceToGraphCell }));
+      }
       this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.END);
       this.store.dispatch(setEnd({ endPosition: referenceToGraphCell }));
     }
@@ -207,6 +217,11 @@ export class GraphViewComponent implements OnInit, OnDestroy {
       this.graph.grid[hexagonClicked.row][hexagonClicked.column].graphCellConstraint = GraphCellConstraint.PASSABLE;
       this.store.dispatch(setStart({ startPosition: undefined }));
     } else {
+      if (hexagonClicked.graphCellConstraint === GraphCellConstraint.END) {
+        this.store.dispatch(setEnd({ endPosition: undefined }));
+      } else if (hexagonClicked.graphCellConstraint === GraphCellConstraint.WALL) {
+        this.store.dispatch(removeWall({ exWall: referenceToGraphCell }));
+      }
       this.setExclusiveConstraint(referenceToGraphCell, GraphCellConstraint.START);
       this.store.dispatch(setStart({ startPosition: referenceToGraphCell }));
     }
