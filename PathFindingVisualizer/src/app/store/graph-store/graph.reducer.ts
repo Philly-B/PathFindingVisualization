@@ -5,6 +5,7 @@ import {
   GraphControlSettings,
   initialGraphControlSettings,
 } from 'src/app/model/GraphControlSettings';
+import { GraphDrawingMode } from 'src/app/model/GraphDrawingMode';
 import { INITIAL_NUMBER_OF_HEX_PER_ROW } from '../../constants/GeneralConstants';
 import { GraphCellConstraint } from '../../model/GraphCell';
 import { RowColumnPair } from '../../model/RowColumnPair';
@@ -24,6 +25,7 @@ import {
   triggerRemoveAllWallsButton,
   enableGraphControls,
   disableGraphControls,
+  setGraphDrawingMode,
 } from './graph.actions';
 
 export class GraphState {
@@ -37,6 +39,7 @@ export class GraphState {
   finalPath: RowColumnPair[];
 
   graphControlSettings: GraphControlSettings;
+  graphDrawingMode: GraphDrawingMode;
 }
 
 export const initialState: GraphState = {
@@ -50,6 +53,7 @@ export const initialState: GraphState = {
   finalPath: [],
 
   graphControlSettings: initialGraphControlSettings,
+  graphDrawingMode: GraphDrawingMode.REDRAW_ONCE,
 };
 
 export const GRAPH_STATE_LOCAL_STORAGE_KEY = 'graph-state';
@@ -61,6 +65,7 @@ const graphReducerInternal = createReducer(
   on(removeWall, (state, { exWall }) => ({ ...createNewState(state), walls: duplicateAndRemove(state.walls, exWall) })),
   on(setEnd, (state, { endPosition }) => ({ ...createNewState(state), endPosition })),
   on(removeAllWalls, (state) => ({ ...createNewState(state), walls: [] })),
+  on(setGraphDrawingMode, (state, { graphDrawingMode }) => ({ ...createNewState(state), graphDrawingMode })),
 
   on(triggerStartButton, (state) => ({
     ...createNewState(state),
@@ -187,6 +192,7 @@ const createNewState = (oldState: GraphState): GraphState => {
     visited: duplicateArray(oldState.visited),
     finalPath: duplicateArray(oldState.finalPath),
     graphControlSettings: createGraphControlSettingsCopy(oldState.graphControlSettings),
+    graphDrawingMode: oldState.graphDrawingMode,
   };
   return newState;
 };

@@ -5,7 +5,8 @@ import { P5Settings } from '../models/P5Settings';
 import { Graph } from 'src/app/model/Graph';
 import { GraphCell } from 'src/app/model/GraphCell';
 import { getColorForHexagon } from 'src/app/utils/ColorMappingUtils';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { GraphDrawingMode } from 'src/app/model/GraphDrawingMode';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,13 @@ import { Subject } from 'rxjs';
 export class P5UtilService {
   constructor() {}
 
-  graphDefinition = (picture, graph: Graph, settings: P5Settings, hexagonClickedCallback: (hexagonClicked) => void) => {
+  graphDefinition = (
+    picture,
+    graph: Graph,
+    settings: P5Settings,
+    hexagonClickedCallback: (hexagonClicked) => void,
+    drawingMode$: Observable<GraphDrawingMode>
+  ) => {
     const pictureShift: P5Vector = {
       x: settings.hexagonSizePx * 1.8,
       y: settings.hexagonSizePx * 3,
@@ -23,8 +30,11 @@ export class P5UtilService {
     picture.setup = () => {
       const canvas = picture.createCanvas(settings.canvasSizePx, settings.canvasSizePx);
       picture.angleMode(picture.RADIANS);
+      picture.noLoop();
+      drawingMode$.subscribe((drawingMode) => this.setDrawingMode(drawingMode, picture));
     };
     picture.draw = () => {
+      console.log('draw');
       this.drawHexagons(picture, graph.grid, pictureShift, settings);
     };
 
@@ -48,6 +58,22 @@ export class P5UtilService {
     }
 
     return undefined;
+  };
+
+  private setDrawingMode = (drawingMode: GraphDrawingMode, picture): void => {
+    switch (drawingMode) {
+      case GraphDrawingMode.CONTINUOUS_REDRAW:
+        picture.loop();
+        break;
+      case GraphDrawingMode.REDRAW_ONCE:
+        picture.redraw(5);
+        break;
+      case GraphDrawingMode.STATIC_IMAGE:
+        picture.noLoop();
+        break;
+      default:
+        throw new Error('unknown parameter ' + drawingMode);
+    }
   };
 
   private handleMouseEvent = (

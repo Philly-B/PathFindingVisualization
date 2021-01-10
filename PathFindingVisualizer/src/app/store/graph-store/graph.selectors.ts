@@ -11,3 +11,5 @@ export const selectGraphControlSettings = createSelector(
   selectGraphState,
   (state: GraphState) => state.graphControlSettings
 );
+
+export const selectGraphDrawingMode = createSelector(selectGraphState, (state: GraphState) => state.graphDrawingMode);

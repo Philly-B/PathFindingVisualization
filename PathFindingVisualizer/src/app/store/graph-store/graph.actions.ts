@@ -1,4 +1,5 @@
 import { createAction, props, union } from '@ngrx/store';
+import { GraphDrawingMode } from 'src/app/model/GraphDrawingMode';
 import { GraphCellConstraint } from '../../model/GraphCell';
 import { RowColumnPair } from '../../model/RowColumnPair';
 import { GraphState } from './graph.reducer';
@@ -31,6 +32,12 @@ export const triggerRemoveAllWallsButton = createAction(TRIGGER_REMOVE_ALL_WALLS
 
 export const SET_GRID_SIZE = '[Graph Component] set grid size';
 export const setGridSize = createAction(SET_GRID_SIZE, props<{ gridSize: number }>());
+
+export const SET_GRAPH_DRAWING_MODE = '[Graph Component] set graph drawing mode';
+export const setGraphDrawingMode = createAction(
+  SET_GRAPH_DRAWING_MODE,
+  props<{ graphDrawingMode: GraphDrawingMode }>()
+);
 
 // PERSISTENCE
 export const SAVE_TO_LOCAL_STORAGE = '[Graph Component] save to local storage';
@@ -72,6 +79,7 @@ const all = union({
   removeWall,
   removeAllWalls,
   setGridSize,
+  setGraphDrawingMode,
 
   // graph controls
   triggerStartButton,

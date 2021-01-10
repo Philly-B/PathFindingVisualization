@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { GraphControlMode, GraphControlSettings } from 'src/app/model/GraphControlSettings';
+import { GraphDrawingMode } from 'src/app/model/GraphDrawingMode';
 import { LocalStorageService } from 'src/app/services/local-storage.service';
 import { AppState } from '../app.reducer';
 import {
@@ -25,6 +27,8 @@ import {
   TRIGGER_START_BUTTON,
   triggerStartButton,
   triggerEndButton,
+  setGraphDrawingMode,
+  SET_GRAPH_DRAWING_MODE,
 } from './graph.actions';
 import { GraphState, GRAPH_STATE_LOCAL_STORAGE_KEY } from './graph.reducer';
 import { selectGraphState } from './graph.selectors';
@@ -36,6 +40,35 @@ export class GraphEffects {
     private store$: Store<AppState>,
     private localStorage: LocalStorageService
   ) {}
+
+  setDrawingModeLoop$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TRIGGER_START_BUTTON, TRIGGER_END_BUTTON, TRIGGER_MODIFY_WALLS_BUTTON),
+      withLatestFrom(this.store$.select(selectGraphState)),
+      map(([a, graphState]) => {
+        if (
+          this.anyGraphControlTrue(graphState.graphControlSettings) &&
+          graphState.graphDrawingMode !== GraphDrawingMode.CONTINUOUS_REDRAW
+        ) {
+          return setGraphDrawingMode({ graphDrawingMode: GraphDrawingMode.CONTINUOUS_REDRAW });
+        } else if (
+          this.noGraphControlTrue(graphState.graphControlSettings) &&
+          graphState.graphDrawingMode !== GraphDrawingMode.STATIC_IMAGE
+        ) {
+          return setGraphDrawingMode({ graphDrawingMode: GraphDrawingMode.STATIC_IMAGE });
+        }
+        return undefined;
+      }),
+      filter((a) => a !== undefined)
+    )
+  );
+
+  setDrawingModeOnce$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(REMOVE_ALL_WALLS),
+      map((a) => setGraphDrawingMode({ graphDrawingMode: GraphDrawingMode.REDRAW_ONCE }))
+    )
+  );
 
   setStart$ = createEffect(() =>
     this.actions$.pipe(
@@ -64,7 +97,8 @@ export class GraphEffects {
         TRIGGER_END_BUTTON,
         TRIGGER_REMOVE_ALL_WALLS_BUTTON,
         TRIGGER_MODIFY_WALLS_BUTTON,
-        TRIGGER_START_BUTTON
+        TRIGGER_START_BUTTON,
+        SET_GRAPH_DRAWING_MODE
       ),
       map((a) => saveToLocalStorage())
     )
@@ -88,4 +122,20 @@ export class GraphEffects {
       ])
     )
   );
+
+  private anyGraphControlTrue = (graphControlSettings: GraphControlSettings): boolean => {
+    return (
+      graphControlSettings.setStart === GraphControlMode.ENABLED ||
+      graphControlSettings.setEnd === GraphControlMode.ENABLED ||
+      graphControlSettings.modifyWalls === GraphControlMode.ENABLED
+    );
+  };
+
+  private noGraphControlTrue = (graphControlSettings: GraphControlSettings): boolean => {
+    return (
+      graphControlSettings.setStart !== GraphControlMode.ENABLED &&
+      graphControlSettings.setEnd !== GraphControlMode.ENABLED &&
+      graphControlSettings.modifyWalls !== GraphControlMode.ENABLED
+    );
+  };
 }
