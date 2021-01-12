@@ -17,7 +17,7 @@ export class AlgorithmSpeedComponent implements OnInit, OnDestroy {
   max = 500;
   stepSize = 100;
 
-  labels = ['Like Instant', 'Super Fast', 'Fast', 'Normal', 'Slow', 'Super Slow'];
+  labels = ['Almost Instant', 'Super Fast', 'Fast', 'Normal', 'Slow', 'Super Slow'];
 
   private subscription: Subscription;
 
