@@ -13,6 +13,7 @@ export class ModalSettingsComponent implements AfterViewInit {
   modifiableColors: string[] = [];
   fieldNameToLabelMap = {};
   modifiableSettings: ModifiableSettings;
+  resetButtonDisabled = { all: true };
 
   @ViewChildren(NgxMatColorPickerInput) pickerInputs: QueryList<NgxMatColorPickerInput>;
 
@@ -54,16 +55,22 @@ export class ModalSettingsComponent implements AfterViewInit {
       if (fieldOfInput !== colorFieldToReset) continue;
       const currentColor = this.hexToRgb(ColorSettings.initialSettings[fieldOfInput]);
       ngxColorPicker.value = new Color(currentColor.r, currentColor.g, currentColor.b);
+      this.resetButtonDisabled[fieldOfInput] = true;
       break;
     }
+    this.updateResetAllButtonDisabled();
   }
+
 
   resetAllColors(): void {
     for (const ngxColorPicker of this.pickerInputs) {
       const fieldOfInput = ngxColorPicker.getConnectedOverlayOrigin().nativeElement.name;
       const currentColor = this.hexToRgb(ColorSettings.initialSettings[fieldOfInput]);
       ngxColorPicker.value = new Color(currentColor.r, currentColor.g, currentColor.b);
+
+      this.resetButtonDisabled[fieldOfInput] = true;
     }
+    this.updateResetAllButtonDisabled();
   }
 
   ngAfterViewInit(): void {
@@ -72,8 +79,36 @@ export class ModalSettingsComponent implements AfterViewInit {
         const fieldOfInput = ngxColorPicker.getConnectedOverlayOrigin().nativeElement.name;
         const currentColor = this.hexToRgb(this.modifiableSettings.colorSettings[fieldOfInput]);
         ngxColorPicker.value = new Color(currentColor.r, currentColor.g, currentColor.b);
+
+        this.resetButtonDisabled[fieldOfInput] = this.isSameColor(ngxColorPicker, fieldOfInput);
       }
+      this.updateResetAllButtonDisabled();
     });
+  }
+
+  colorChanged = (colorField) => {
+    for (const ngxColorPicker of this.pickerInputs) {
+      const fieldOfInput = ngxColorPicker.getConnectedOverlayOrigin().nativeElement.name;
+      if (fieldOfInput !== colorField) continue;
+      this.resetButtonDisabled[fieldOfInput] = this.isSameColor(ngxColorPicker, colorField);
+      break;
+    }
+    this.updateResetAllButtonDisabled();
+  }
+
+  private updateResetAllButtonDisabled = (): void => {
+
+    for (const ngxColorPicker of this.pickerInputs) {
+      const fieldOfInput = ngxColorPicker.getConnectedOverlayOrigin().nativeElement.name;
+      if (!this.resetButtonDisabled[fieldOfInput]) {
+        this.resetButtonDisabled.all = false;
+        return;
+      }
+    }
+    this.resetButtonDisabled.all = true;
+  }
+  private isSameColor = (ngxColorPicker: NgxMatColorPickerInput, colorField): boolean => {
+    return '#' + ngxColorPicker.value.hex === ColorSettings.initialSettings[colorField];
   }
 
   private hexToRgb(hex: string): { r: number; g: number; b: number } {

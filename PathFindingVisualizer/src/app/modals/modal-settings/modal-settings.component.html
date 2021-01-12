@@ -5,13 +5,16 @@
         <label class="label label-info ">{{fieldNameToLabelMap[colorField]}}</label>
         <input [name]="colorField" class="color-input-field form-control" [ngxMatColorPicker]="picker">
         <ngx-mat-color-toggle matSuffix [for]="picker"></ngx-mat-color-toggle>
-        <ngx-mat-color-picker #picker [color]="modifiableSettings.colorSettings[colorField]">
+        <ngx-mat-color-picker #picker [color]="modifiableSettings.colorSettings[colorField]"
+            (closed)="colorChanged(colorField)">
         </ngx-mat-color-picker>
-        <button class="btn btn-info f" (click)="resetColor(colorField)">reset</button>
+        <button class="btn btn-info f" (click)="resetColor(colorField)"
+            [disabled]="resetButtonDisabled[colorField] === undefined || resetButtonDisabled[colorField]">reset</button>
     </div>
 </ng-container>
 <div class="buttons-end float-right" mat-dialog-actions>
-    <button class="btn btn-info" (click)="resetAllColors()">Reset all colors</button>
+    <button class="btn btn-info" (click)="resetAllColors()" [disabled]="resetButtonDisabled.all">Reset all
+        colors</button>
     <button class="btn btn-danger" (click)="onNoClick()">Close</button>
     <button class="btn btn-success" (click)="onYesClick()" cdkFocusInitial>Save</button>
 </div>
