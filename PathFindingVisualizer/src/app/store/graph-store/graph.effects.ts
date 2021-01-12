@@ -1,8 +1,7 @@
-import { state } from '@angular/animations';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { GraphControlMode, GraphControlSettings } from 'src/app/model/GraphControlSettings';
 import { GraphDrawingMode } from 'src/app/model/GraphDrawingMode';
 import { LocalStorageService } from 'src/app/services/local-storage.service';
@@ -30,22 +29,22 @@ import {
   triggerEndButton,
   setGraphDrawingMode,
   SET_GRAPH_DRAWING_MODE,
-  ENABLE_GRAPH_CONTROLS,
-  DISABLE_GRAPH_CONTROLS,
 } from './graph.actions';
+import { SettingsActionsTypes, UPDATE_COLOR_SETTINGS } from 'src/app/store/settings-store/settings.actions';
 import { GraphState, GRAPH_STATE_LOCAL_STORAGE_KEY } from './graph.reducer';
 import { selectGraphState } from './graph.selectors';
 
 @Injectable()
 export class GraphEffects {
   constructor(
-    private actions$: Actions<GraphActionsTypes>,
+    private graphActions$: Actions<GraphActionsTypes>,
+    private settingsActions$: Actions<SettingsActionsTypes>,
     private store$: Store<AppState>,
     private localStorage: LocalStorageService
-  ) {}
+  ) { }
 
   setDrawingModeLoop$ = createEffect(() =>
-    this.actions$.pipe(
+    this.graphActions$.pipe(
       ofType(TRIGGER_START_BUTTON, TRIGGER_END_BUTTON, TRIGGER_MODIFY_WALLS_BUTTON),
       withLatestFrom(this.store$.select(selectGraphState)),
       map(([a, graphState]) => {
@@ -67,14 +66,21 @@ export class GraphEffects {
   );
 
   setDrawingModeOnce$ = createEffect(() =>
-    this.actions$.pipe(
+    this.graphActions$.pipe(
       ofType(REMOVE_ALL_WALLS),
       map((a) => setGraphDrawingMode({ graphDrawingMode: GraphDrawingMode.REDRAW_ONCE }))
     )
   );
 
+  setDrawingModeOnceForSettings$ = createEffect(() =>
+    this.settingsActions$.pipe(
+      ofType(UPDATE_COLOR_SETTINGS),
+      map((a) => setGraphDrawingMode({ graphDrawingMode: GraphDrawingMode.REDRAW_ONCE }))
+    )
+  );
+
   setStart$ = createEffect(() =>
-    this.actions$.pipe(
+    this.graphActions$.pipe(
       ofType(SET_START),
       withLatestFrom(this.store$.select(selectGraphState)),
       filter(([a, state]) => state.graphControlSettings.setStart === GraphControlMode.ENABLED),
@@ -83,7 +89,7 @@ export class GraphEffects {
   );
 
   setEnd$ = createEffect(() =>
-    this.actions$.pipe(
+    this.graphActions$.pipe(
       ofType(SET_END),
       withLatestFrom(this.store$.select(selectGraphState)),
       filter(([a, state]) => state.graphControlSettings.setEnd === GraphControlMode.ENABLED),
@@ -92,7 +98,7 @@ export class GraphEffects {
   );
 
   triggerSaveToLocalStorage$ = createEffect(() =>
-    this.actions$.pipe(
+    this.graphActions$.pipe(
       ofType(
         SET_START,
         SET_END,
@@ -112,7 +118,7 @@ export class GraphEffects {
   );
 
   saveToLocalStorage$ = createEffect(() =>
-    this.actions$.pipe(
+    this.graphActions$.pipe(
       ofType(SAVE_TO_LOCAL_STORAGE),
       withLatestFrom(this.store$.select(selectGraphState)),
       map(([action, store]) => this.localStorage.persistState(GRAPH_STATE_LOCAL_STORAGE_KEY, store)),
@@ -121,7 +127,7 @@ export class GraphEffects {
   );
 
   loadFromLocalStorage$ = createEffect(() =>
-    this.actions$.pipe(
+    this.graphActions$.pipe(
       ofType(LOAD_FROM_LOCAL_STORAGE),
       switchMap((a) => [
         setGraphState({ newState: this.localStorage.getState<GraphState>(GRAPH_STATE_LOCAL_STORAGE_KEY) }),

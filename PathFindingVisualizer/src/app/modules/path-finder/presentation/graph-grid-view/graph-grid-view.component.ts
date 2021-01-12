@@ -1,12 +1,13 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Store } from '@ngrx/store';
 import * as p5 from 'p5';
+import { map } from 'rxjs/operators';
 import { Graph } from 'src/app/model/Graph';
 import { GraphCell } from 'src/app/model/GraphCell';
 import { P5Settings } from 'src/app/p5-additionals/models/P5Settings';
 import { P5UtilService } from 'src/app/p5-additionals/utils/p5-util.service';
 import { AppState } from 'src/app/store/app.reducer';
-import { selectGraphDrawingMode } from 'src/app/store/graph-store/graph.selectors';
+import { selectGraphState } from 'src/app/store/graph-store/graph.selectors';
 
 @Component({
   selector: 'app-graph-grid-view',
@@ -20,7 +21,7 @@ export class GraphGridViewComponent implements OnInit {
 
   private p5Graph: p5;
 
-  constructor(private el: ElementRef, private p5UtilService: P5UtilService, private store: Store<AppState>) {}
+  constructor(private el: ElementRef, private p5UtilService: P5UtilService, private store: Store<AppState>) { }
 
   ngOnInit(): void {
     const graphDefinition = (picture) =>
@@ -29,7 +30,7 @@ export class GraphGridViewComponent implements OnInit {
         this.graph,
         this.p5Settings,
         this.handleHexagonClickEvent,
-        this.store.select(selectGraphDrawingMode)
+        this.store.select(selectGraphState).pipe(map(graphState => graphState.graphDrawingMode))
       );
     this.p5Graph = new p5(graphDefinition, this.el.nativeElement);
   }
